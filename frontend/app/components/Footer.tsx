@@ -2,6 +2,8 @@
 
 import { DEFAULT_IMAGE } from "../constants"; 
 import Link from "next/link";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faInstagram, faFacebookF } from '@fortawesome/free-brands-svg-icons'
 
 const Footer = () => {
     return (
@@ -38,8 +40,8 @@ const Footer = () => {
                 <div>
                     <h3 className="font-bold mb-2 uppercase">Follow Us</h3>
                     <div className="flex space-x-4">
-                        <a href="#"><img src="/instagram.svg" alt="Instagram" className="h-5 w-5" /></a>
-                        <a href="#"><img src="/facebook.svg" alt="Facebook" className="h-5 w-5" /></a>
+                        <a href="#"><FontAwesomeIcon icon={faInstagram} className="h-5 w-5" /></a>
+                        <a href="#"><FontAwesomeIcon icon={faFacebookF} className="h-5 w-5" /></a>
                     </div>
                 </div>
             </div>

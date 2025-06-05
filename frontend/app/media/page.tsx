@@ -1,5 +1,7 @@
 "use client";
 import Image from "next/image";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faInstagram, faFacebookF } from '@fortawesome/free-brands-svg-icons'
 
 export default function MediaPage() {
   const mediaItems = [
@@ -44,10 +46,10 @@ export default function MediaPage() {
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-extrabold text-center uppercase mb-6">Media</h1>
 
-        <div className="flex justify-center gap-4 mb-10 text-2xl">
-          <a href="#" className="hover:opacity-80">📷</a>
-          <a href="#" className="hover:opacity-80">📘</a>
-        </div>
+        {/* <div className="flex justify-center gap-4 mb-10 text-2xl">
+          <a href="#" className="hover:opacity-80"><FontAwesomeIcon icon={faInstagram} /></a>
+          <a href="#" className="hover:opacity-80"><FontAwesomeIcon icon={faFacebookF} /></a>
+        </div> */}
 
         <h2 className="text-xl font-bold uppercase mb-6">Media Gallery</h2>
 

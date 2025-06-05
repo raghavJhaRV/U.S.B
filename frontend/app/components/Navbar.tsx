@@ -1,22 +1,23 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { DEFAULT_IMAGE } from "../constants"; 
 
 export default function Navbar() {
   return (
     <nav className="bg-black text-white py-4 px-6 flex items-center justify-between shadow-md relative z-50">
       {/* Logo aligned and overflowing slightly */}
-      {/* <div className="relative -top-4">
+      <div className="relative -top-4">
         <Link href="/">
           <Image
-            src="/images/logo_U.S.B.jpg" // Make sure the image is in /public/images
+            src={DEFAULT_IMAGE}
             alt="United STORM Logo"
             width={100}
             height={100}
             className="object-contain"
           />
         </Link>
-      </div> */}
+      </div>
 
       {/* Navigation Links */}
       <ul className="hidden md:flex items-center space-x-6 font-semibold uppercase tracking-wide text-sm">
