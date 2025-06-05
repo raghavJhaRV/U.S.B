@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { DEFAULT_IMAGE } from "../constants"; 
+import { DEFAULT_IMAGE } from "../constants"; // or use "/images/media1.jpg"
 
 const events = [
   {
@@ -27,32 +27,27 @@ const events = [
 export default function EventsPage() {
   return (
     <div className="bg-black text-white min-h-screen px-4 py-12">
+      <h1 className="text-4xl font-extrabold text-center mb-12 uppercase">Events</h1>
       <h2 className="text-2xl font-bold uppercase mb-6">Upcoming Tournaments</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {events.map((event) => (
-          <Link key={event.slug} href={`/events/${event.slug}`}>
-            <div className="relative group overflow-hidden shadow-lg cursor-pointer">
-              <div
-                className="h-64 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(${event.image})`,
-                }}
+          <div key={event.slug} className="bg-black group shadow-lg">
+            <div
+              className="h-48 bg-cover bg-center"
+              style={{ backgroundImage: `url(${event.image})` }}
+            ></div>
+            <div className="p-4">
+              <p className="font-bold text-lg uppercase leading-tight">{event.title}</p>
+              <p className="text-sm text-gray-400 mb-4">{event.date}</p>
+              <Link
+                href={`/events/${event.slug}`}
+                className="border px-4 py-2 inline-block font-bold hover:bg-white hover:text-black transition"
               >
-                <div className="absolute inset-0 bg-black bg-opacity-50 p-4 flex flex-col justify-end">
-                  <p className="text-white text-xl font-extrabold uppercase leading-tight">
-                    {event.title}
-                  </p>
-                  <p className="text-gray-300 text-sm mb-4">{event.date}</p>
-                  <div>
-                    <span className="inline-block border border-white text-white px-4 py-2 text-sm font-bold hover:bg-white hover:text-black transition">
-                      View Details
-                    </span>
-                  </div>
-                </div>
-              </div>
+                View Details
+              </Link>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

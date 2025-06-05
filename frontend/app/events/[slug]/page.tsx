@@ -8,8 +8,16 @@ const events = {
   "winter-invitational": "Winter Invitational",
 };
 
-export default async function EventBracketPage({ params }: { params: { slug: string } }) {
-  const eventName = events[params.slug as keyof typeof events];
+type Props = {
+  params: {
+    slug: string;
+  };
+};
+
+export default async function EventBracketPage(props: Props) {
+  const { slug } = props.params;
+  const eventName = events[slug as keyof typeof events];
+
   if (!eventName) return notFound();
 
   return (
