@@ -1,5 +1,6 @@
 "use client";
 
+import { DEFAULT_IMAGE } from "../constants";
 import Image from "next/image";
 
 import Link from "next/link";

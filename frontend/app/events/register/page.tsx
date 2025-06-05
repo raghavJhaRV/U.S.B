@@ -1,10 +1,11 @@
 "use client";
 
+import { DEFAULT_IMAGE } from "../../constants";
 export default function RegisterTeamPage() {
   return (
     <div className="bg-black text-white min-h-screen px-6 py-12">
       <div className="max-w-2xl mx-auto text-center">
-        <img src="/images/logo_U.S.B.jpg" alt="Logo" className="mx-auto mb-6 w-24" />
+        <img src={DEFAULT_IMAGE} alt="Logo" className="mx-auto mb-6 w-24" />
         <h1 className="text-4xl font-extrabold uppercase mb-4">Registration</h1>
 
         <form className="space-y-4">

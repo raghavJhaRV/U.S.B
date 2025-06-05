@@ -1,10 +1,15 @@
 "use client";
 
+import { DEFAULT_IMAGE } from "../constants";
 
 export default function AboutUsPage() {
   return (
     <div className="bg-black text-white min-h-screen">
-
+      <img
+        src={DEFAULT_IMAGE}
+        alt="About Us"
+        className="absolute inset-0 w-full h-full object-cover opacity-60"
+      />
 
       <main className="max-w-4xl mx-auto px-6 py-16">
         <h1 className="text-4xl font-extrabold uppercase text-center mb-6">

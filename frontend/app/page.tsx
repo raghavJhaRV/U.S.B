@@ -9,8 +9,6 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="bg-black text-white min-h-screen">
-      <Navbar />
-
       {/* Hero Section */}
       <section className="relative h-[80vh] w-full overflow-hidden">
         <img
@@ -60,9 +58,9 @@ export default function Home() {
             <h2 className="font-bold text-xl mb-4">EVENTS</h2>
             {/* <img src="/tournament.jpg" alt="Tournaments" className="mb-4 w-full h-40 object-cover" /> */}
             <Link href="/events">
-            <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
-              VIEW SCHEDULE
-            </button>
+              <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
+                VIEW SCHEDULE
+              </button>
             </Link>
           </div>
 
@@ -70,11 +68,13 @@ export default function Home() {
           <div className="bg-white shadow-lg p-6 text-center">
             <h2 className="font-bold text-xl mb-4">LATEST NEWS</h2>
             {/* <img src="/news.jpg" alt="News" className="mb-4 w-full h-40 object-cover" /> */}
-            <p className="font-semibold mb-2">Lorem ipsum doldr sit amet</p>
+            {/* <p className="font-semibold mb-2">Lorem ipsum doldr sit amet</p> */}
             <span className="text-gray-500 text-sm block mb-4">April 23, 2015</span>
-            <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
-              READ MORE
-            </button>
+            <Link href="/news">
+              <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
+                READ MORE
+              </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -87,8 +87,8 @@ export default function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
             {/* Hall of Fame Card */}
             {[
-              { name: "David Johnson", img: "/hof1.jpg" },
-              { name: "Aingela Lee", img: "/hof2.jpg" },
+              { name: "Kyler Varga", img: "/hof1.jpg" },
+              { name: "Ike", img: "/hof2.jpg" },
               { name: "Angela Lee", img: "/hof3.jpg" },
               { name: "Sam Nichols", img: "/hof4.jpg" },
               { name: "", img: "/hof5.jpg" },
@@ -110,7 +110,6 @@ export default function Home() {
         </div>
       </section>
 
-      <Footer />
     </div>
   );
 }

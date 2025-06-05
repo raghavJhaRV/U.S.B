@@ -1,32 +1,25 @@
 "use client";
 
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import { DEFAULT_IMAGE } from "../constants"; // Assume this = "/images/media1.jpg"
 
 const products = [
   {
     title: "Legends Jersey",
-    img: "/merch/jersey.jpg", // place images in /public/merch/
   },
   {
     title: "Classic T-Shirt",
-    img: "/merch/tshirt.jpg",
   },
   {
     title: "Legends Hoodie",
-    img: "/merch/hoodie.jpg",
   },
   {
     title: "Icon Snapback",
-    img: "/merch/cap.jpg",
   },
 ];
 
 export default function MerchandisePage() {
   return (
     <div className="bg-black text-white min-h-screen">
-
-
       <main className="max-w-6xl mx-auto px-4 py-12">
         <h1 className="text-4xl font-extrabold text-center uppercase mb-10">
           Merchandise
@@ -36,7 +29,7 @@ export default function MerchandisePage() {
           {products.map((item, index) => (
             <div key={index} className="text-center">
               <img
-                src={item.img}
+                src={DEFAULT_IMAGE}
                 alt={item.title}
                 className="w-full object-cover mb-4"
               />
@@ -45,8 +38,6 @@ export default function MerchandisePage() {
           ))}
         </div>
       </main>
-
-
     </div>
   );
 }
