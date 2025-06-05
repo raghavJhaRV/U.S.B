@@ -15,7 +15,7 @@ export default function Navbar() {
         <li><a href="#" className="hover:text-gray-400">Registration</a></li>
         <li><a href="#" className="hover:text-gray-400">Merchandise</a></li>
         <li><a href="#" className="hover:text-gray-400">Media</a></li>
-        <li><a href="#" className="hover:text-gray-400">Proud Aurs</a></li>
+        <li><a href="#" className="hover:text-gray-400">Proud partners</a></li>
         <li>
           <a
             href="#"
