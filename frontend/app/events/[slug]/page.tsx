@@ -1,3 +1,4 @@
+// app/events/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -7,19 +8,21 @@ const events = {
   "winter-invitational": "Winter Invitational",
 };
 
-export default function EventBracketPage({ params }: { params: { slug: string } }) {
+export default async function EventBracketPage({ params }: { params: { slug: string } }) {
   const eventName = events[params.slug as keyof typeof events];
   if (!eventName) return notFound();
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
+    <div className="max-w-5xl mx-auto px-4 py-12 text-white bg-black min-h-screen">
       <h1 className="text-4xl font-extrabold uppercase text-center mb-6">{eventName}</h1>
 
       <div className="text-center mb-6">
         <Link
           href="/events/register"
-          className="border border-white py-2 px-4 mt-4 inline-block hover:bg-white hover:text-black transition"
-        >REGISTER YOUR TEAM</Link>
+          className="border border-white py-2 px-4 mt-4 inline-block font-bold hover:bg-white hover:text-black transition"
+        >
+          REGISTER YOUR TEAM
+        </Link>
       </div>
 
       {/* Boys Section */}

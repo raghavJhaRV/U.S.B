@@ -1,5 +1,7 @@
 "use client"
 
+import { DEFAULT_IMAGE } from "../constants"; 
+import Link from "next/link";
 
 const Footer = () => {
     return (
@@ -7,18 +9,18 @@ const Footer = () => {
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
                 {/* Logo */}
                 <div className="flex flex-col items-start">
-                    <img src="/logo.png" alt="United STORM Logo" className="h-16 mb-4" />
+                    <img src={DEFAULT_IMAGE} alt="United STORM Logo" className="h-30 mb-4" />
                 </div>
 
                 {/* Learn More */}
                 <div>
                     <h3 className="font-bold mb-2 uppercase">Learn More</h3>
                     <ul className="space-y-1 text-gray-300">
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Teams</a></li>
-                        <li><a href="#">Schedule</a></li>
-                        <li><a href="#">News</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><Link href="/about">About</Link></li>
+                        <li><Link href="/news">News</Link></li>
+                        {/* <li><Link href="/teams">Teams</Link></li> */}
+                        {/* <li><Link href="/schedule">Schedule</Link></li> */}
+                        <li><Link href="/contact">Contact</Link></li>
                     </ul>
                 </div>
 
@@ -26,9 +28,9 @@ const Footer = () => {
                 <div>
                     <h3 className="font-bold mb-2 uppercase">Get Started</h3>
                     <ul className="space-y-1 text-gray-300">
-                        <li><a href="#">Registration</a></li>
-                        <li><a href="#">Join a Team</a></li>
-                        <li><a href="#">Support</a></li>
+                        <li><Link href="/registration">Registration</Link></li>
+                        {/* <li><Link href="/join-team">Join a Team</Link></li> */}
+                        <li><Link href="/sponsor-us">Sponser Us</Link></li>
                     </ul>
                 </div>
 

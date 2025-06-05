@@ -2,34 +2,64 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const partners = new Array(12).fill("/images/partner-logo.png"); // Replace with real logo paths
+const partners = [
+  {
+    name: "CSYBA",
+    logo: "/images/partners/CSYBA.png",
+    link: "#",
+  },
+  {
+    name: "Alpha Business Consulting",
+    logo: "/images/partners/ABC.jpg",
+    link: "https://alphabusinessconsulting.ca/",
+  },
+  {
+    name: "Jumpstart",
+    logo: "/images/partners/jumpstart.png",
+    link: "#",
+  },
+  {
+    name: "Greatway",
+    logo: "/images/partners/Greatway.png",
+    link: "https://www.greatwayfinancial.com/",
+  },
+  {
+    name: "KidSport",
+    logo: "/images/partners/kidsport.png",
+    link: "http://kidsportcanada.ca/",
+  },
+];
 
 export default function PartnersPage() {
   return (
     <div className="bg-black text-white min-h-screen px-4 py-12">
-      {/* Heading */}
-      <h1 className="text-4xl font-extrabold text-center uppercase mb-12">Proud Partners</h1>
+      <h1 className="text-4xl font-extrabold text-center uppercase mb-12">
+        Proud Partners
+      </h1>
 
-      {/* Partner Logos Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 max-w-6xl mx-auto mb-12">
-        {partners.map((logo, i) => (
-          <div
+      {/* Logos without box */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-10 max-w-6xl mx-auto mb-16">
+        {partners.map((partner, i) => (
+          <a
             key={i}
-            className="bg-gray-800 flex items-center justify-center h-28 rounded-md border border-gray-600"
+            href={partner.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center hover:scale-105 transition"
           >
             <Image
-              src={logo}
-              alt={`Partner logo ${i + 1}`}
-              width={100}
-              height={60}
+              src={partner.logo}
+              alt={partner.name}
+              width={150}
+              height={80}
               className="object-contain"
             />
-          </div>
+          </a>
         ))}
       </div>
 
       {/* Call to Action */}
-      <div className="text-center mb-20">
+      <div className="text-center">
         <h2 className="text-xl font-semibold mb-4">
           Interested in becoming a sponsor?
         </h2>

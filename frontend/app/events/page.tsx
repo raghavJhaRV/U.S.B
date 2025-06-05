@@ -1,34 +1,58 @@
 "use client";
 
-import { DEFAULT_IMAGE } from "../constants";
-import Image from "next/image";
-
 import Link from "next/link";
+import { DEFAULT_IMAGE } from "../constants"; 
 
 const events = [
-  { name: "Spring Showdown", slug: "spring-showdown", date: "April 7–9" },
-  { name: "Fall Classic", slug: "fall-classic", date: "October 19–15" },
-  { name: "Winter Invitational", slug: "winter-invitational", date: "January 19–21" },
+  {
+    slug: "spring-showdown",
+    title: "Spring Showdown",
+    date: "April 7–9",
+    image: DEFAULT_IMAGE,
+  },
+  {
+    slug: "fall-classic",
+    title: "Fall Classic",
+    date: "October 19–15",
+    image: DEFAULT_IMAGE,
+  },
+  {
+    slug: "winter-invitational",
+    title: "Winter Invitational",
+    date: "January 19–21",
+    image: DEFAULT_IMAGE,
+  },
 ];
 
 export default function EventsPage() {
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
-      <h1 className="text-4xl font-extrabold uppercase text-center mb-10">Events</h1>
-      <h2 className="text-xl font-bold mb-6">Upcoming Tournaments</h2>
+    <div className="bg-black text-white min-h-screen px-4 py-12">
+      <h2 className="text-2xl font-bold uppercase mb-6">Upcoming Tournaments</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {events.map((event) => (
-          <div key={event.slug} className="bg-black border border-white p-4 text-center">
-            <h3 className="font-bold text-lg mb-1">{event.name}</h3>
-            <p className="text-sm mb-4">{event.date}</p>
-            <Link
-              href={`/events/${event.slug}`}
-              className="border px-4 py-2 font-bold hover:bg-white hover:text-black transition"
-            >
-              View Details
-            </Link>
-          </div>
+          <Link key={event.slug} href={`/events/${event.slug}`}>
+            <div className="relative group overflow-hidden shadow-lg cursor-pointer">
+              <div
+                className="h-64 bg-cover bg-center"
+                style={{
+                  backgroundImage: `url(${event.image})`,
+                }}
+              >
+                <div className="absolute inset-0 bg-black bg-opacity-50 p-4 flex flex-col justify-end">
+                  <p className="text-white text-xl font-extrabold uppercase leading-tight">
+                    {event.title}
+                  </p>
+                  <p className="text-gray-300 text-sm mb-4">{event.date}</p>
+                  <div>
+                    <span className="inline-block border border-white text-white px-4 py-2 text-sm font-bold hover:bg-white hover:text-black transition">
+                      View Details
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Link>
         ))}
       </div>
     </div>

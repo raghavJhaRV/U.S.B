@@ -1,8 +1,7 @@
 "use client";
 
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 import Link from "next/link";
+import { DEFAULT_IMAGE } from "./constants"; 
 // import Image from "next/image";
 // import heroImage from "../public/images/media1.jpg";
 
@@ -12,7 +11,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-[80vh] w-full overflow-hidden">
         <img
-          src="/images/media1.jpg"
+          src={DEFAULT_IMAGE}
           alt="Basketball Hero"
           className="absolute inset-0 w-full h-full object-cover opacity-60"
         />
@@ -45,7 +44,7 @@ export default function Home() {
           {/* Player Highlights */}
           <div className="bg-white shadow-lg p-6 text-center">
             <h2 className="font-bold text-xl mb-4">PLAYER HIGHLIGHTS</h2>
-            {/* <img src="/highlight.jpg" alt="Highlight" className="mb-4 w-full h-40 object-cover" /> */}
+            <img src={DEFAULT_IMAGE} alt="Highlight" className="mb-4 w-full h-40 object-cover" />
             <Link href="/player-highlights">
               <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
                 JOIN A TEAM
@@ -56,7 +55,7 @@ export default function Home() {
           {/* Events */}
           <div className="bg-white shadow-lg p-6 text-center">
             <h2 className="font-bold text-xl mb-4">EVENTS</h2>
-            {/* <img src="/tournament.jpg" alt="Tournaments" className="mb-4 w-full h-40 object-cover" /> */}
+            <img src={DEFAULT_IMAGE} alt="Tournaments" className="mb-4 w-full h-40 object-cover" />
             <Link href="/events">
               <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
                 VIEW SCHEDULE
@@ -67,8 +66,8 @@ export default function Home() {
           {/* Latest News */}
           <div className="bg-white shadow-lg p-6 text-center">
             <h2 className="font-bold text-xl mb-4">LATEST NEWS</h2>
-            {/* <img src="/news.jpg" alt="News" className="mb-4 w-full h-40 object-cover" /> */}
-            {/* <p className="font-semibold mb-2">Lorem ipsum doldr sit amet</p> */}
+            <img src={DEFAULT_IMAGE} alt="News" className="mb-4 w-full h-40 object-cover" />
+            {/* <p className="font-semibold mb-2">Lorem ipsum dolor sit amet</p> */}
             <span className="text-gray-500 text-sm block mb-4">April 23, 2015</span>
             <Link href="/news">
               <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
@@ -91,14 +90,13 @@ export default function Home() {
               { name: "Ike", img: "/hof2.jpg" },
               { name: "Angela Lee", img: "/hof3.jpg" },
               { name: "Sam Nichols", img: "/hof4.jpg" },
-              { name: "", img: "/hof5.jpg" },
             ].map((player, index) => (
               <div key={index} className="flex flex-col items-center">
-                {/* <img
-                  src={player.img}
+                <img
+                  src={DEFAULT_IMAGE}
                   alt={player.name}
                   className="w-full h-48 object-cover rounded-md shadow-md"
-                /> */}
+                />
                 {player.name && (
                   <p className="mt-2 text-sm font-bold uppercase text-center">
                     {player.name}
