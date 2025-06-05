@@ -1,55 +1,76 @@
-"use client";
-
+import { notFound } from "next/navigation";
 import Link from "next/link";
-import { DEFAULT_IMAGE } from "../../constants"; // or hardcode "/images/media1.jpg"
 
-const events = [
-  {
-    slug: "spring-showdown",
-    title: "Spring Showdown",
-    date: "April 7–9",
-    image: DEFAULT_IMAGE, // Use "/images/media1.jpg" if not using constant
-  },
-  {
-    slug: "fall-classic",
-    title: "Fall Classic",
-    date: "October 19–15",
-    image: DEFAULT_IMAGE,
-  },
-  {
-    slug: "winter-invitational",
-    title: "Winter Invitational",
-    date: "January 19–21",
-    image: DEFAULT_IMAGE,
-  },
-];
+const events = {
+  "spring-showdown": "Spring Showdown",
+  "fall-classic": "Fall Classic",
+  "winter-invitational": "Winter Invitational",
+};
 
-export default function EventsPage() {
+export default function EventBracketPage({ params }: { params: { slug: string } }) {
+  const eventName = events[params.slug as keyof typeof events];
+  if (!eventName) return notFound();
+
   return (
-    <div className="bg-black text-white min-h-screen px-4 py-12">
-      <h1 className="text-4xl font-extrabold text-center mb-12 uppercase">Events</h1>
-      <h2 className="text-2xl font-bold uppercase mb-6">Upcoming Tournaments</h2>
+    <div className="max-w-5xl mx-auto px-4 py-12">
+      <h1 className="text-4xl font-extrabold uppercase text-center mb-6">{eventName}</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {events.map((event) => (
-          <div key={event.slug} className="bg-black border border-white group">
-            <div
-              className="h-48 bg-cover bg-center"
-              style={{ backgroundImage: `url(${event.image})` }}
-            ></div>
-            <div className="p-4">
-              <p className="font-bold text-lg uppercase leading-tight">{event.title}</p>
-              <p className="text-sm text-gray-400 mb-4">{event.date}</p>
-              <Link
-                href={`/events/${event.slug}`}
-                className="border px-4 py-2 inline-block font-bold hover:bg-white hover:text-black transition"
-              >
-                View Details
-              </Link>
-            </div>
-          </div>
-        ))}
+      <div className="text-center mb-6">
+        <Link
+          href="/events/register"
+          className="border border-white py-2 px-4 mt-4 inline-block hover:bg-white hover:text-black transition"
+        >REGISTER YOUR TEAM</Link>
       </div>
+
+      {/* Boys Section */}
+      <section className="mb-10">
+        <h2 className="text-lg font-bold">BOYS</h2>
+        <div className="flex gap-2 mt-2 mb-4">
+          {["U11", "U13", "U15", "U16", "U18"].map((age) => (
+            <button key={age} className="px-4 py-1 border rounded">{age}</button>
+          ))}
+        </div>
+        <table className="w-full text-left border-separate border-spacing-y-2">
+          <tbody>
+            {["U11", "U13", "U15"].map((team) => (
+              <tr key={team}>
+                <td className="py-2">9:00 AM</td>
+                <td>{team}</td>
+                <td className="text-right">
+                  <button className="border px-4 py-1 rounded hover:bg-white hover:text-black transition">
+                    Bracket
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      {/* Girls Section */}
+      <section>
+        <h2 className="text-lg font-bold">GIRLS</h2>
+        <div className="flex gap-2 mt-2 mb-4">
+          {["U11", "U13", "U15", "U16", "U18"].map((age) => (
+            <button key={age} className="px-4 py-1 border rounded">{age}</button>
+          ))}
+        </div>
+        <table className="w-full text-left border-separate border-spacing-y-2">
+          <tbody>
+            {["U11", "U13", "U15"].map((team) => (
+              <tr key={team}>
+                <td className="py-2">9:00 AM</td>
+                <td>{team}</td>
+                <td className="text-right">
+                  <button className="border px-4 py-1 rounded hover:bg-white hover:text-black transition">
+                    Bracket
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
     </div>
   );
 }
