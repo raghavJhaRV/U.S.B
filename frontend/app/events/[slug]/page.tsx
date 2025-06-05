@@ -1,4 +1,3 @@
-// app/events/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -8,16 +7,9 @@ const events = {
   "winter-invitational": "Winter Invitational",
 };
 
-type Props = {
-  params: {
-    slug: string;
-  };
-};
-
-export default async function EventBracketPage(props: Props) {
-  const { slug } = props.params;
+export default async function EventBracketPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params; // ✅ await params
   const eventName = events[slug as keyof typeof events];
-
   if (!eventName) return notFound();
 
   return (
