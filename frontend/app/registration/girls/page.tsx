@@ -9,7 +9,7 @@ export default function RegistrationPage() {
 
   return (
     <div className="bg-black text-white min-h-screen">
-      <Navbar />
+
 
       <main className="max-w-3xl mx-auto px-4 py-12">
         <h1 className="text-4xl font-extrabold text-center uppercase">Registration</h1>
@@ -65,7 +65,7 @@ export default function RegistrationPage() {
         </form>
       </main>
 
-      <Footer />
+
     </div>
   );
 }

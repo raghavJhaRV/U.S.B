@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 export default function RegistrationPage() {
   return (
     <div className="bg-black text-white min-h-screen">
-      <Navbar />
+
       <section className="text-center mt-16 px-4">
         <h1 className="text-5xl font-extrabold uppercase mb-10">Registration</h1>
 
@@ -27,7 +27,7 @@ export default function RegistrationPage() {
           </a>
         </div>
       </section>
-      <Footer />
+
     </div>
   );
 }

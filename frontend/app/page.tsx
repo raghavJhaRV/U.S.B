@@ -2,8 +2,9 @@
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Link from "next/link";
 // import Image from "next/image";
-// import heroImage from "/public/hero.jpg"; // <-- Add this image to `public/hero.jpg`
+// import heroImage from "../public/images/media1.jpg";
 
 export default function Home() {
   return (
@@ -12,14 +13,11 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative h-[80vh] w-full overflow-hidden">
-        {/* <Image
-          src={heroImage}
+        <img
+          src="/images/media1.jpg"
           alt="Basketball Hero"
-          layout="fill"
-          objectFit="cover"
-          quality={90}
-          className="opacity-60"
-        /> */}
+          className="absolute inset-0 w-full h-full object-cover opacity-60"
+        />
         <div className="absolute inset-0 flex flex-col items-start justify-center text-left px-8 sm:px-20">
           <h1 className="text-5xl sm:text-6xl font-extrabold uppercase">
             United S.T.O.R.M. Basketball
@@ -50,18 +48,22 @@ export default function Home() {
           <div className="bg-white shadow-lg p-6 text-center">
             <h2 className="font-bold text-xl mb-4">PLAYER HIGHLIGHTS</h2>
             {/* <img src="/highlight.jpg" alt="Highlight" className="mb-4 w-full h-40 object-cover" /> */}
-            <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
-              JOIN A TEAM
-            </button>
+            <Link href="/player-highlights">
+              <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
+                JOIN A TEAM
+              </button>
+            </Link>
           </div>
 
           {/* Events */}
           <div className="bg-white shadow-lg p-6 text-center">
             <h2 className="font-bold text-xl mb-4">EVENTS</h2>
             {/* <img src="/tournament.jpg" alt="Tournaments" className="mb-4 w-full h-40 object-cover" /> */}
+            <Link href="/events">
             <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
               VIEW SCHEDULE
             </button>
+            </Link>
           </div>
 
           {/* Latest News */}
