@@ -1,5 +1,6 @@
 "use client";
 // import Image from "next/image";
+import Link from "next/link";
 
 export default function Navbar() {
   return (
@@ -11,18 +12,18 @@ export default function Navbar() {
 
       {/* Links */}
       <ul className="hidden md:flex items-center space-x-6 font-semibold uppercase tracking-wide text-sm">
-        <li><a href="#" className="hover:text-gray-400">About Us</a></li>
-        <li><a href="#" className="hover:text-gray-400">Registration</a></li>
-        <li><a href="#" className="hover:text-gray-400">Merchandise</a></li>
-        <li><a href="#" className="hover:text-gray-400">Media</a></li>
-        <li><a href="#" className="hover:text-gray-400">Proud partners</a></li>
+        <li><Link href="/about" className="hover:text-gray-400">About Us</Link></li>
+        <li><Link href="/registration" className="hover:text-gray-400">Registration</Link></li>
+        <li><Link href="/merchandise" className="hover:text-gray-400">Merchandise</Link></li>
+        <li><Link href="/media" className="hover:text-gray-400">Media</Link></li>
+        <li><Link href="/partners" className="hover:text-gray-400">Proud Partners</Link></li>
         <li>
-          <a
-            href="#"
+          <Link
+            href="/registration"
             className="border border-white rounded px-4 py-1 hover:bg-white hover:text-black transition"
           >
             Register Now
-          </a>
+          </Link>
         </li>
       </ul>
     </nav>
