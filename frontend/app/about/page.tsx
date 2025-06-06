@@ -1,55 +1,72 @@
 "use client";
-
+import Image from "next/image";
 import { DEFAULT_IMAGE } from "../constants";
 
 export default function AboutUsPage() {
   return (
-    <div className="bg-black text-white min-h-screen">
-      <img
-        src={DEFAULT_IMAGE}
-        alt="About Us"
-        className="absolute inset-0 w-full h-full object-cover opacity-60"
-      />
+    <div className="relative bg-black text-white min-h-screen overflow-hidden">
+      {/* Background Image */}
+      <div className="fixed inset-0 -z-10">
+        <img
+          src="/images/aboutUs/backgroundImg.png"
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-70" />
+      </div>
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
-        <h1 className="text-4xl font-extrabold uppercase text-center mb-6">
-          About Us.
+      {/* Main Content */}
+      <main className="relative z-10 max-w-3xl mx-auto px-6 py-20">
+        {/* Logo */}
+        <div className="flex justify-center mb-10">
+          <Image
+            src={DEFAULT_IMAGE}
+            alt="U.S.B Logo"
+            width={100}
+            height={100}
+            className="object-contain"
+          />
+        </div>
+
+        {/* Heading */}
+        <h1 className="text-4xl md:text-5xl font-extrabold uppercase text-center mb-4 tracking-wide">
+          About Us
         </h1>
-        <p className="text-center text-lg font-semibold mb-12 uppercase">
+        <p className="text-center text-sm md:text-lg uppercase tracking-wider text-gray-200 mb-12">
           Strength. Together. Opportunity. Resilience. Multicultural.
         </p>
 
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold uppercase mb-2">History</h2>
-          <p className="text-gray-200">
-            United S.T.O.R.M has been a family-owned basketball club in Calgary since 2010. 
-            We offer training and teams year-round. Each spring season we’ve had 14–20 girls 
-            and boys teams from ages 9 to 13. Many players have gone on to play college/university 
-            basketball. Though based in Calgary, we’ve had players join from all over Alberta.
+        {/* History */}
+        <section className="mb-12">
+          <h2 className="text-xl font-bold uppercase mb-2">History</h2>
+          <p className="text-gray-200 leading-relaxed">
+            United S.T.O.R.M has been a family-owned basketball club in Calgary since 2010.
+            We offer training and teams year-round. Each spring, we’ve had 14–20 girls and boys
+            teams from ages 9 to 13. Many players have gone on to play college or university basketball.
+            Though based in Calgary, we’ve welcomed players from all over Alberta.
           </p>
         </section>
 
-        <section className="mb-10">
-          <h2 className="text-2xl font-bold uppercase mb-2">Philosophy</h2>
-          <p className="text-gray-200">
-            Our club teaches individual strength, teamwork, resilience, and celebrates diversity. 
-            We believe basketball helps kids navigate life’s ups and downs and prepares them for 
-            future challenges. Our environment is friendly, inclusive, and growth-oriented for 
-            all newcomers regardless of skill level.
+        {/* Philosophy */}
+        <section className="mb-12">
+          <h2 className="text-xl font-bold uppercase mb-2">Philosophy</h2>
+          <p className="text-gray-200 leading-relaxed">
+            Our club promotes strength, teamwork, and diversity. We believe basketball builds character
+            and resilience, helping kids navigate life’s challenges. Our inclusive environment supports
+            growth for all athletes.
           </p>
         </section>
 
+        {/* Coaches */}
         <section>
-          <h2 className="text-2xl font-bold uppercase mb-2">Coaches</h2>
-          <p className="text-gray-200">
-            Our coaches are passionate, experienced, and focused on player development. Many have 
-            post-secondary playing experience or coaching backgrounds. We provide guidance to help 
-            each athlete reach their potential, emphasizing teamwork, conditioning, and game IQ.
+          <h2 className="text-xl font-bold uppercase mb-2">Coaches</h2>
+          <p className="text-gray-200 leading-relaxed">
+            Our passionate coaches have experience in post-secondary basketball and player development.
+            They guide each athlete to reach their highest potential through structured teamwork,
+            conditioning, and game IQ development.
           </p>
         </section>
       </main>
-
-
     </div>
   );
 }

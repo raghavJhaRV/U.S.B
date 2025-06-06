@@ -1,29 +1,31 @@
 "use client";
 import Link from "next/link";
+import { DEFAULT_IMAGE } from "../constants";
+import Image from "next/image";
 
 const trainings = [
   {
     title: "2025 Fall Elite Training",
     subtitle: "September 2 – October 28",
-    image: "/images/fall.jpg",
+    image: 'images/media1.jpg',
     href: "/training/fall",
   },
   {
     title: "Sunday Spring Training",
     subtitle: "April – June Sundays",
-    image: "/images/spring.jpg",
+    image: 'images/media1.jpg',
     href: "/training/spring",
   },
   {
     title: "1-on-1 Training",
     subtitle: "Private Coaching Sessions",
-    image: "/images/1on1.jpg",
+    image: DEFAULT_IMAGE,
     href: "/training/1on1",
   },
   {
     title: "Shooting Machine Sessions",
     subtitle: "Improve Your Shooting",
-    image: "/images/shooting.jpg",
+    image: DEFAULT_IMAGE,
     href: "/training/shooting",
   },
 ];
@@ -31,23 +33,26 @@ const trainings = [
 export default function TrainingPage() {
   return (
     <div className="bg-black text-white min-h-screen px-6 py-12">
-      <div className="text-center mb-10">
-        <h1 className="text-4xl font-extrabold uppercase">Training Sessions</h1>
+      {/* Heading */}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-extrabold uppercase">Training Sessions</h1>
+        <p className="mt-2 text-sm text-gray-400 uppercase">Elevate your game with us</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {trainings.map((t, i) => (
           <Link key={i} href={t.href}>
-            <div className="relative group h-[280px] cursor-pointer overflow-hidden bg-gray-800">
+            <div className="relative h-[300px] group overflow-hidden rounded-lg shadow-lg cursor-pointer">
               <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-300 scale-100 group-hover:scale-105"
+                className="absolute inset-0 bg-center bg-cover transition-transform duration-500 group-hover:scale-110"
                 style={{ backgroundImage: `url(${t.image})` }}
-              ></div>
-              <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-60 group-hover:bg-opacity-40 transition duration-300" />
 
-              <div className="absolute inset-0 flex flex-col justify-end p-4 z-10">
-                <p className="text-sm uppercase text-white opacity-80 mb-1">{t.subtitle}</p>
-                <h2 className="font-extrabold text-lg leading-tight uppercase">{t.title}</h2>
+              <div className="absolute inset-0 flex flex-col justify-end p-6 z-10">
+                <p className="text-sm uppercase text-gray-300 mb-1">{t.subtitle}</p>
+                <h2 className="text-xl font-bold uppercase leading-tight">{t.title}</h2>
               </div>
             </div>
           </Link>

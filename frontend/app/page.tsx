@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { DEFAULT_IMAGE } from "./constants"; 
+import { DEFAULT_IMAGE } from "./constants";
 // import Image from "next/image";
 // import heroImage from "../public/images/media1.jpg";
+import { faInstagram, faFacebookF } from '@fortawesome/free-brands-svg-icons'
+// import { faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export default function Home() {
   return (
@@ -29,10 +32,10 @@ export default function Home() {
           </div>
           <div className="absolute bottom-6 flex gap-4">
             <a href="#" className="text-white text-2xl">
-              🟣
+              <FontAwesomeIcon icon={faInstagram} />
             </a>
             <a href="#" className="text-white text-2xl">
-              🅕
+              <FontAwesomeIcon icon={faFacebookF} />
             </a>
           </div>
         </div>
