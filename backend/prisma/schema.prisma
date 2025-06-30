@@ -1,15 +1,66 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Team {
+  id       String         @id @default(cuid())
+  gender   String // "boys" or "girls"
+  ageGroup String // "U11", "U13", etc.
+  players  Registration[]
+  events   Event[]
+
+  @@unique([gender, ageGroup], name: "gender_ageGroup")
+}
+
+model Program {
+  id            String         @id @default(cuid())
+  name          String
+  description   String
+  season        String
+  price         Float
+  registrations Registration[]
+
+  @@unique([name])
+}
+
+model Registration {
+  id             String   @id @default(cuid())
+  playerName     String
+  parentName     String
+  email          String
+  phone          String
+  waiverAccepted Boolean
+  createdAt      DateTime @default(now())
+  waiverUrl      String?
+
+  teamId    String
+  programId String
+  team      Team    @relation(fields: [teamId], references: [id])
+  program   Program @relation(fields: [programId], references: [id])
+
+  payment   Payment?  @relation("RegistrationPayment")
+}
+
+model Event {
+  id     String   @id @default(cuid())
+  title  String
+  date   DateTime
+  teamId String
+  team   Team     @relation(fields: [teamId], references: [id])
+}
+
+model Payment {
+  id             String @id @default(cuid())
+  registrationId String @unique
+
+  registration Registration @relation("RegistrationPayment", fields: [registrationId], references: [id])
+
+  amount    Float
+  method    String
+  createdAt DateTime @default(now())
 }
