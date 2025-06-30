@@ -8,6 +8,10 @@ import * as programs from './api/programs';
 import * as register from './api/register';
 import * as registrations from './api/registrations';
 import * as events from './api/events';
+import fetch from 'node-fetch';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 const app = express();
 app.use(express.json());
@@ -37,6 +41,21 @@ app.get('/api/admin/exportRegistrations', async (req, res, next) => {
       .status(response.status)
       .set(Object.fromEntries(response.headers))
       .send(await response.text());
+  } catch (err) {
+    next(err);
+  }
+});
+app.get('/api/events', async (req, res, next) => {
+  try {
+    const { teamId } = req.query;
+
+    const events = await prisma.event.findMany({
+      where: teamId ? { teamId: String(teamId) } : undefined,
+      orderBy: { date: 'asc' },
+      include: { team: true },
+    });
+
+    res.json(events);
   } catch (err) {
     next(err);
   }

@@ -20,3 +20,23 @@ export const sendMail = async (to: string, subject: string, html: string) => {
     html,
   });
 };
+
+export async function sendRegistrationConfirmation(email: string, playerName: string, eTransferNote?: string) {
+  const html = `
+    <p>Hi ${playerName},</p>
+    <p>You have successfully registered for the program.</p>
+    ${
+      eTransferNote
+        ? `<p><strong>E-Transfer Instructions:</strong><br>${eTransferNote}</p>`
+        : ''
+    }
+    <p>We will contact you soon with more details.</p>
+    <p>Thank you,<br>United S.T.O.R.M. Basketball</p>
+  `;
+
+  await sendMail(
+    email,
+    'Registration Confirmation - United S.T.O.R.M.',
+    html
+  );
+}

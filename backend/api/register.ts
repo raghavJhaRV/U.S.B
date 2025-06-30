@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
-import { sendMail } from '../mailer';
+import { sendMail, sendRegistrationConfirmation } from '../mailer';
 
 const prisma = new PrismaClient();
 
@@ -14,6 +14,7 @@ export const POST = async (req: Request, res: Response) => {
       waiverAccepted,
       teamId,
       programId,
+      eTransferNote,
     } = req.body;
 
     if (!playerName || !email || !teamId || !programId) {
@@ -29,17 +30,14 @@ export const POST = async (req: Request, res: Response) => {
         waiverAccepted,
         teamId,
         programId,
+        eTransferNote,
       },
     });
 
+
     // ✅ Send registration confirmation email
-    await sendMail(
-      email,
-      'Registration Confirmation - United S.T.O.R.M.',
-      `<p>Hi ${playerName},</p>
-      <p>You have successfully registered for the program. We will contact you soon with more details.</p>
-      <p>Thank you,<br>United S.T.O.R.M. Basketball</p>`
-    );
+    await sendRegistrationConfirmation(email, playerName, eTransferNote);
+
 
     res.status(201).json(registration);
   } catch (error) {

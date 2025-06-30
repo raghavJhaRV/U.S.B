@@ -74,6 +74,19 @@ async function main() {
     });
   }
 
+  // step 4: Run the main function and handle errors
+  await prisma.event.upsert({
+    where: { id: 'dummy-u13-july' },
+    update: {},
+    create: {
+      id: 'dummy-u13-july',
+      title: 'U13 Boys Summer Tournament',
+      date: new Date('2025-07-20'),
+      teamId: boysU13!.id, // ✅ use existing ID
+    },
+  });
+
+
   console.log('✅ Seed complete!');
 }
 

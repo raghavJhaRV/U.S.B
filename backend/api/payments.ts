@@ -34,13 +34,11 @@ export async function POST(req: any, res: any) {
   try {
     const { registrationId, amount, method } = req.body;
 
-    const registration = await prisma.registration.findUnique({
-      where: { id: registrationId },
-    });
-
-    if (!registration) {
-      return res.status(404).json({ error: 'Registration not found' });
+    if (!registrationId || !amount || !method) {
+      return res.status(400).json({ error: 'Missing required fields' });
     }
+
+
 
     const payment = await prisma.payment.create({
       data: {
@@ -50,13 +48,19 @@ export async function POST(req: any, res: any) {
       },
     });
 
-    await sendMail(
-      registration.email,
-      'Payment Confirmation - United S.T.O.R.M.',
-      `<p>Hi ${registration.playerName},</p>
-  <p>Your payment of $${amount} has been received via ${method}.</p>
-  <p>Thank you for your support!</p>`
-    );
+    const registration = await prisma.registration.findUnique({
+      where: { id: registrationId },
+    });
+
+    if (registration) {
+      await sendMail(
+        registration.email,
+        'Payment Confirmation - United S.T.O.R.M.',
+        `<p>Hi ${registration.playerName},</p>
+         <p>We have received your payment of $${amount.toFixed(2)} via ${method}.</p>
+         <p>Thank you for your support!<br>United S.T.O.R.M. Basketball</p>`
+      );
+    }
 
     res.status(201).json(payment);
   } catch (error) {

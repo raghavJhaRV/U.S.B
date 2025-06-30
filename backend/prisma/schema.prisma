@@ -9,8 +9,8 @@ datasource db {
 
 model Team {
   id       String         @id @default(cuid())
-  gender   String // "boys" or "girls"
-  ageGroup String // "U11", "U13", etc.
+  gender   String 
+  ageGroup String 
   players  Registration[]
   events   Event[]
 
@@ -29,21 +29,21 @@ model Program {
 }
 
 model Registration {
-  id             String   @id @default(cuid())
+  id             String          @id @default(cuid())
   playerName     String
   parentName     String
   email          String
   phone          String
   waiverAccepted Boolean
-  createdAt      DateTime @default(now())
+  createdAt      DateTime        @default(now())
   waiverUrl      String?
+  eTransferNote  String?
 
-  teamId    String
-  programId String
-  team      Team    @relation(fields: [teamId], references: [id])
-  program   Program @relation(fields: [programId], references: [id])
-
-  payment   Payment?  @relation("RegistrationPayment")
+  teamId         String
+  programId      String
+  team           Team            @relation(fields: [teamId], references: [id])
+  program        Program         @relation(fields: [programId], references: [id])
+  payment        Payment?        @relation("RegistrationPayment")
 }
 
 model Event {

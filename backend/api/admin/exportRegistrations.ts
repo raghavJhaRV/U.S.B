@@ -25,6 +25,7 @@ export async function GET() {
       Price: r.program?.price?.toFixed(2) || '',
       PaymentAmount: r.payment?.amount?.toFixed(2) || '',
       PaymentMethod: r.payment?.method || '',
+      ETransferNote: r.eTransferNote || '',
       CreatedAt: r.createdAt.toISOString(),
     }));
 

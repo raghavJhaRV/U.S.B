@@ -2,16 +2,27 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 // GET - already done
-export async function GET(_req: Request) {
-  const events = await prisma.event.findMany({
-    orderBy: { date: 'asc' },
-    include: { team: true },
-  });
+export async function GET(req: Request) {
+  const url = new URL(req.url || '', `http://${req.headers.get('host')}`);
+  const teamId = url.searchParams.get('teamId');
 
-  return new Response(JSON.stringify(events), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  try {
+    const events = await prisma.event.findMany({
+      where: teamId ? { teamId } : undefined,
+      orderBy: { date: 'asc' },
+      include: { team: true },
+    });
+
+    return new Response(JSON.stringify(events), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return new Response(JSON.stringify({ error: 'Failed to fetch events' }), {
+      status: 500,
+    });
+  }
 }
 
 // ✅ POST - create a new event
