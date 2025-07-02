@@ -1,0 +1,57 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export async function getTeams() {
+  const res = await fetch(`${API_URL}/api/teams`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch teams');
+  return res.json();
+}
+
+export async function fetchData(path: string) {
+  const res = await fetch(`${API_URL}/api/${path}`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch data');
+  return res.json();
+}
+
+export async function login(email: string, password: string) {
+  const res = await fetch(`${API_URL}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!res.ok) {
+    throw new Error('Login failed');
+  }
+
+  return res.json();
+}
+
+export async function getEvents() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/events`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch events: ${res.status}`);
+  }
+  return res.json();
+}
+
+
+
+export async function deleteTeam(id: string) {
+  const token = localStorage.getItem('adminJwt');
+  const res = await fetch(`${API_URL}/api/teams/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Delete failed: ${errorText}`);
+  }
+
+  return res.json();
+}
+
+
