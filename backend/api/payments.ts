@@ -1,32 +1,22 @@
 // backend/api/payments.ts
-import { PrismaClient } from '@prisma/client';
-import { sendMail } from '../mailer';
+import { PrismaClient } from '@prisma/client'
+import { sendMail } from '../mailer'
+import { Request, Response } from 'express'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
-export async function GET(_req: Request) {
+export async function GET(req: Request, res: Response) {
   try {
     const payments = await prisma.payment.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
-        registration: {
-          include: {
-            team: true,
-            program: true,
-          },
-        },
+        registration: { include: { team: true, program: true } },
       },
-    });
-
-    return new Response(JSON.stringify(payments), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('Error fetching payments:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch payments' }), {
-      status: 500,
-    });
+    })
+    return res.json(payments)
+  } catch (err) {
+    console.error(err)
+    return res.status(500).json({ error: 'Failed to fetch payments' })
   }
 }
 
@@ -68,3 +58,4 @@ export async function POST(req: any, res: any) {
     res.status(500).json({ error: 'Something went wrong' });
   }
 }
+
