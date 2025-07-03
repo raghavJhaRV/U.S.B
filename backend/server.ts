@@ -45,6 +45,7 @@ app.use(express.json());
 const allowedOrigins = [
   'http://localhost:3000',          // dev
   'https://usb-admin.onrender.com', // your hosted admin
+  'https://usb-backend.onrender.com',       // your hosted public
 ];
 
 app.use(cors({
