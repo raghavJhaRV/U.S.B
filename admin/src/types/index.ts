@@ -18,7 +18,10 @@ export interface Registration {
 export interface Program {
   id: string;
   name: string;
-}
+  description?: string;
+  season: string;
+  price: number;
+};
 
 export interface Event {
   id: string;

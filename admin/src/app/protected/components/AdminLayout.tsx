@@ -19,7 +19,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [pathname, router]);
 
-  if (!isAuthorized) return null; // ⛔ block render until checked
+  if (!isAuthorized) return null; 
 
   return (
     <div className="flex h-screen">
