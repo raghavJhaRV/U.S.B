@@ -6,12 +6,14 @@ export interface Team {
 
 export interface Registration {
   id: string;
+  programName: string;
   playerName: string;
   parentName: string;
   email: string;
   phone: string;
   waiverUrl?: string;
   teamId: string;
+  teamLabel?: string;
   programId: string;
 }
 
