@@ -42,23 +42,13 @@ const prisma = new PrismaClient();
 // Global middleware
 app.use(cookieParser());
 app.use(express.json());
-const allowedOrigins = [
-  'https://usb-admin.onrender.com', // your hosted admin
-  'https://usb-backend.onrender.com',       // your hosted public
-];
-
 app.use(cors({
-  origin: (incomingOrigin, callback) => {
-    // incomingOrigin is undefined for curl/postman, so allow it too
-    if (!incomingOrigin || allowedOrigins.includes(incomingOrigin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`Not allowed by CORS: ${incomingOrigin}`));
-    }
-  },
-  methods: ['GET','POST','PUT','DELETE'],
-  allowedHeaders: ['Content-Type','Authorization'],
+  origin: 'https://usb-admin.onrender.com', 
+  credentials: true, 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
 // --- Public routes ---
 app.get(
   '/api/teams',
