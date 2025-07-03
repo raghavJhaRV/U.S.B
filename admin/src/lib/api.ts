@@ -12,11 +12,12 @@ export async function fetchData(path: string) {
   return res.json();
 }
 
-export async function login(email: string, password: string) {
+export async function login( password: string) {
   const res = await fetch(`${API_URL}/api/admin/login`, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ password }),
   });
 
   if (!res.ok) {

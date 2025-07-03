@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Sidebar from '../../../components/Sidebar';
+import { jwtDecode } from 'jwt-decode';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -11,15 +12,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (token === process.env.NEXT_PUBLIC_ADMIN_TOKEN) {
-      setIsAuthorized(true);
-    } else {
+    const token = localStorage.getItem('adminJwt');
+    if (!token) {
+      router.replace('/login');
+      return;
+    }
+    try {
+      const { exp } = jwtDecode<{ exp: number }>(token);
+      if (Date.now() < exp * 1000) {
+        setIsAuthorized(true);
+      } else {
+        setIsAuthorized(false);
+        router.replace('/login');
+      }
+    } catch (error) {
+      console.error('Invalid token:', error);
+      setIsAuthorized(false);
       router.replace('/login');
     }
   }, [pathname, router]);
 
-  if (!isAuthorized) return null; 
+  if (!isAuthorized) return null;
 
   return (
     <div className="flex h-screen">
