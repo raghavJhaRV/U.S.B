@@ -43,9 +43,9 @@ const prisma = new PrismaClient();
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
-  origin: ['https://usb-admin.onrender.com', 'https://usb-backend.onrender.com'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: [ 'https://usb-admin.onrender.com' ],    
+  methods: ['GET','POST','PUT','DELETE'],
+  allowedHeaders: ['Content-Type','Authorization']
 }));
 
 // --- Public routes ---
