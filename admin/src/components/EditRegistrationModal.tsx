@@ -20,7 +20,7 @@ export default function EditRegistrationModal({ registration, open, onClose, onS
       <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Edit Registration</h2>
         <div className="space-y-3">
-          {(['playerName','parentName','email','phone','waiverUrl'] as const).map((field) => (
+          {(['playerName','parentName','email','phone','waiverUrl'] as (keyof Registration)[]).map((field) => (
             <div key={field}>
               <label className="block text-sm font-medium capitalize">
                 {field.replace(/([A-Z])/g, ' $1')}
@@ -28,7 +28,7 @@ export default function EditRegistrationModal({ registration, open, onClose, onS
               <input
                 type="text"
                 className="mt-1 w-full border px-2 py-1 rounded"
-                value={(form as any)[field] ?? ''}
+                value={form[field] ?? ''}
                 onChange={(e) => setForm({ ...form, [field]: e.target.value })}
               />
             </div>
