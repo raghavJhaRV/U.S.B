@@ -7,7 +7,7 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     // remove the token so your guard will kick you back to /login
-    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminJwt'); 
     // optionally clear the cookie too, if you left it in place:
     // document.cookie = 'adminToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     router.replace('/login');
