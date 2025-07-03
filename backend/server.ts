@@ -43,7 +43,7 @@ const prisma = new PrismaClient();
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://usb-backend.onrender.com/',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
