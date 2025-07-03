@@ -1,13 +1,13 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getTeams() {
-  const res = await fetch(`${API_URL}/api/teams`, { cache: 'no-store' });
+  const res = await fetch(`${API_URL}/api/teams`, { cache: 'no-store', credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch teams');
   return res.json();
 }
 
 export async function fetchData(path: string) {
-  const res = await fetch(`${API_URL}/api/${path}`, { cache: 'no-store' });
+  const res = await fetch(`${API_URL}/api/${path}`, { cache: 'no-store', credentials: 'include' });
   if (!res.ok) throw new Error('Failed to fetch data');
   return res.json();
 }
@@ -27,7 +27,7 @@ export async function login(email: string, password: string) {
 }
 
 export async function getEvents() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/events`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/events`, { credentials: 'include' });
   if (!res.ok) {
     throw new Error(`Failed to fetch events: ${res.status}`);
   }
