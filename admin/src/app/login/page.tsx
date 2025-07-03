@@ -7,7 +7,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    const res = await fetch('https://usb-backend.onrender.com/api/admin/login', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password }),      // { password: "…" }
