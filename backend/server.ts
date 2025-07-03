@@ -43,11 +43,14 @@ const prisma = new PrismaClient();
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
-  origin: [ 'https://usb-admin.onrender.com' ],    
+  origin: [
+    'https://usb-admin.onrender.com',    // ← your admin “app” URL
+    'https://usb-backend.onrender.com',  // ← if you ever hit your own backend from itself
+    'http://localhost:3000'              // ← for local dev
+  ],
   methods: ['GET','POST','PUT','DELETE'],
-  allowedHeaders: ['Content-Type','Authorization']
+  allowedHeaders: ['Content-Type','Authorization'],
 }));
-
 // --- Public routes ---
 app.get(
   '/api/teams',
