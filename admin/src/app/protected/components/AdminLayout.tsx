@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../../components/Sidebar';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isAuthorized, setIsAuthorized] = useState(false);
