@@ -1,5 +1,6 @@
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
+console.log('dns.setDefaultResultOrder("ipv4first")', dns.getDefaultResultOrder());
 import express, { Request, Response, NextFunction } from 'express';
 import fetch from 'node-fetch';
 import cookieParser from 'cookie-parser';
