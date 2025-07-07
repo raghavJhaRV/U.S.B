@@ -43,8 +43,8 @@ const prisma = new PrismaClient();
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
-  origin: 'https://usb-admin.onrender.com', 
-  credentials: true, 
+  origin: 'https://usb-admin.onrender.com',
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -141,7 +141,14 @@ app.post(
         process.env.JWT_SECRET!,
         { expiresIn: '2h' }
       );
+      res.cookie('adminJwt', token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: 2 * 60 * 60 * 1000,
+      });
       res.json({ token });
+
       return;
     }
     res.status(401).json({ error: 'Unauthorized' });
