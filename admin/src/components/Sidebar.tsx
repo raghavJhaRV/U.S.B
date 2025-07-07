@@ -10,7 +10,7 @@ const navItems = [
   { label: 'Teams',         href: '/protected/teams'         },
   { label: 'Programs',      href: '/protected/programs'      },
   { label: 'Registrations', href: '/protected/registration' },
-  { label: 'Events',        href: '/protected/event'        },
+  { label: 'Events',        href: '/protected/events'        },
   { label: 'Payments',      href: '/protected/payments'      },
 ]
 
