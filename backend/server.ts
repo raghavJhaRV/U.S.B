@@ -1,6 +1,4 @@
-import dns from 'dns';
-dns.setDefaultResultOrder('ipv4first');
-console.log('dns.setDefaultResultOrder("ipv4first")', dns.getDefaultResultOrder());
+import { resolveIPv4DatabaseUrl } from './esolveDbHost';
 import express, { Request, Response, NextFunction } from 'express';
 import fetch from 'node-fetch';
 import cookieParser from 'cookie-parser';
@@ -37,28 +35,30 @@ const envPath = path.resolve(process.cwd(), '.env');
 const app = express();
 
 app.get('/api/_test-db', async (req, res) => {
-  console.log('🔗 Connecting to database...', process.env.DATABASE_URL);
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    // Supabase often requires SSL:
-    ssl: { rejectUnauthorized: false },
-  })
-
   try {
-    await client.connect()
-    const { rows } = await client.query('SELECT 1 AS ok')
-    await client.end()
-    res.json({ success: true, rows })
+    const resolvedUrl = await resolveIPv4DatabaseUrl(process.env.DATABASE_URL!);
+    console.log('✅ Resolved DB IPv4 URL:', resolvedUrl);
+
+    const client = new Client({
+      connectionString: resolvedUrl,
+      ssl: { rejectUnauthorized: false },
+    });
+
+    await client.connect();
+    const { rows } = await client.query('SELECT 1 AS ok');
+    await client.end();
+    res.json({ success: true, rows });
   } catch (err: any) {
-    console.error('DB test error:', err)
-    res
-      .status(500)
-      .json({ success: false, message: err.message })
+    console.error('DB test error:', err);
+    res.status(500).json({ success: false, message: err.message });
   }
-})
+});
 
 
+const resolvedUrl = await resolveIPv4DatabaseUrl(process.env.DATABASE_URL!);
+process.env.DATABASE_URL = resolvedUrl;  // Patch it early
 const prisma = new PrismaClient();
+
 
 // Global middleware
 app.use(cookieParser());
