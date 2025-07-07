@@ -28,8 +28,10 @@ export interface Program {
 export interface Event {
   id: string;
   title: string;
-  date: string;
-  team?: {
+  date: string;               // ISO date string
+  teamId: string;
+  team: {                     // since it’s required in schema
+    id: string;
     gender: string;
     ageGroup: string;
   };
