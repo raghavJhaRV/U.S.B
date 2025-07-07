@@ -27,6 +27,7 @@ console.log('ℹ️  process.cwd():', process.cwd());
 console.log('ℹ️  Contents of cwd:', readdirSync(process.cwd()));
 console.log('🔑 process.env.ADMIN_PASSWORD:', process.env.ADMIN_PASSWORD);
 console.log('🔑 process.env.JWT_SECRET:', process.env.JWT_SECRET);
+console.log('❓ DATABASE_URL:', process.env.DATABASE_URL);
 
 const envPath = path.resolve(process.cwd(), '.env');
 const app = express();
