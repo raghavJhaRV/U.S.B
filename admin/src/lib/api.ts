@@ -7,10 +7,17 @@ export async function getTeams() {
 }
 
 export async function fetchData(path: string) {
-  const res = await fetch(`${API_URL}/api/${path}`, { cache: 'no-store', credentials: 'include' });
+  const token = localStorage.getItem('adminJwt');
+  const res = await fetch(`${API_URL}/api/${path}`, {
+    cache: 'no-store',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
   if (!res.ok) throw new Error('Failed to fetch data');
   return res.json();
 }
+
 
 export async function login( password: string) {
   const res = await fetch(`${API_URL}/api/admin/login`, {

@@ -25,6 +25,10 @@ export default function LoginPage() {
 
     const { token } = await res.json();        // { token: "…" }
     localStorage.setItem('adminJwt', token);    // ← store under "adminJwt"
+
+    document.cookie = `adminJwt=${token}; path=/;`;
+
+    
     router.replace('/protected/dashboard');
   };
 
