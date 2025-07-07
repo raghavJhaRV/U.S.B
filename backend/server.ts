@@ -31,6 +31,22 @@ console.log('❓ DATABASE_URL:', process.env.DATABASE_URL);
 
 const envPath = path.resolve(process.cwd(), '.env');
 const app = express();
+
+app.get('/api/_test-db', async (req, res) => {
+  try {
+    // use pg directly so we isolate Prisma
+    const { Client } = require('pg');
+    const client = new Client({ connectionString: process.env.DATABASE_URL });
+    await client.connect();
+    const { rows } = await client.query('SELECT 1 AS ok');
+    await client.end();
+    res.json({ success: true, rows });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
 const prisma = new PrismaClient();
 
 // Global middleware
