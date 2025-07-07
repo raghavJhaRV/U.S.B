@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { Client } from 'pg';
 
 import * as exportRegistrations from './api/admin/exportRegistrations';
 import * as payments from './api/payments';
@@ -20,7 +21,6 @@ import path from 'path';
 import { readdirSync } from 'fs';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
-const { Client } = require('pg')
 
 // Load environment variables
 dotenv.config();
@@ -34,18 +34,24 @@ const envPath = path.resolve(process.cwd(), '.env');
 const app = express();
 
 app.get('/api/_test-db', async (req, res) => {
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    // Supabase often requires SSL:
+    ssl: { rejectUnauthorized: false },
+  })
+
   try {
-    // use pg directly so we isolate Prisma
-    const { Client } = require('pg');
-    const client = new Client({ connectionString: process.env.DATABASE_URL });
-    await client.connect();
-    const { rows } = await client.query('SELECT 1 AS ok');
-    await client.end();
-    res.json({ success: true, rows });
+    await client.connect()
+    const { rows } = await client.query('SELECT 1 AS ok')
+    await client.end()
+    res.json({ success: true, rows })
   } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message });
+    console.error('DB test error:', err)
+    res
+      .status(500)
+      .json({ success: false, message: err.message })
   }
-});
+})
 
 
 const prisma = new PrismaClient();
