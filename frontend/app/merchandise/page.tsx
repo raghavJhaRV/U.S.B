@@ -1,21 +1,6 @@
 "use client";
-
-import { DEFAULT_IMAGE } from "../constants"; // Assume this = "/images/media1.jpg"
-
-const products = [
-  {
-    title: "Legends Jersey",
-  },
-  {
-    title: "Classic T-Shirt",
-  },
-  {
-    title: "Legends Hoodie",
-  },
-  {
-    title: "Icon Snapback",
-  },
-];
+import Link from "next/link";
+import { products } from "./products";
 
 export default function MerchandisePage() {
   return (
@@ -26,18 +11,22 @@ export default function MerchandisePage() {
         </h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-          {products.map((item, index) => (
-            <div key={index} className="text-center">
-              <img
-                src={DEFAULT_IMAGE}
-                alt={item.title}
-                className="w-full object-cover mb-4"
-              />
-              <p className="font-bold uppercase tracking-wide">{item.title}</p>
-            </div>
+          {products.map((item) => (
+            <Link key={item.id} href={`/merchandise/${item.id}`}>
+              <div className="text-center cursor-pointer hover:opacity-80 transition">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full object-cover mb-4"
+                />
+                <p className="font-bold uppercase tracking-wide">{item.title}</p>
+              </div>
+            </Link>
           ))}
         </div>
       </main>
     </div>
   );
 }
+
+

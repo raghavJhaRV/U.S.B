@@ -1,8 +1,8 @@
 "use client";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faInstagram, faFacebookF } from '@fortawesome/free-brands-svg-icons'
-import { faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInstagram, faFacebookF } from '@fortawesome/free-brands-svg-icons';
+import { faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
 export default function ContactPage() {
   return (
@@ -13,13 +13,31 @@ export default function ContactPage() {
         <p className="mt-2 text-sm text-gray-300 max-w-md mx-auto">
           Have questions or need more information? Fill out the form below and we will get back to you shortly.
         </p>
+
+        {/* Social Links */}
         <div className="flex justify-center gap-4 mt-4">
-          <a href="#" className="text-xl"><FontAwesomeIcon icon={faInstagram} /></a>
-          <a href="#" className="text-xl"><FontAwesomeIcon icon={faFacebookF} /></a>
+          <a
+            href="https://www.instagram.com/united.storm.basketball"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xl hover:text-gray-400 transition"
+            aria-label="Instagram"
+          >
+            <FontAwesomeIcon icon={faInstagram} />
+          </a>
+          <a
+            href="https://www.facebook.com/unitedstormbasketball"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xl hover:text-gray-400 transition"
+            aria-label="Facebook"
+          >
+            <FontAwesomeIcon icon={faFacebookF} />
+          </a>
         </div>
       </div>
 
-      {/* Form */}
+      {/* Contact Form */}
       <form className="max-w-3xl mx-auto space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input
@@ -53,20 +71,6 @@ export default function ContactPage() {
         </button>
       </form>
 
-      {/* Contact Info */}
-      <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 text-center gap-8 max-w-3xl mx-auto border-t border-gray-700 pt-12">
-        <div>
-          <div className="text-2xl mb-2"><FontAwesomeIcon icon={faEnvelope} /></div>
-          <h3 className="text-lg font-bold uppercase">Email</h3>
-          <p className="text-sm">info@example.com</p>
-        </div>
-        <div>
-          <div className="text-2xl mb-2"><FontAwesomeIcon icon={faPhone} /></div>
-          <h3 className="text-lg font-bold uppercase">Call</h3>
-          <p className="text-sm">(123) 456-7890</p>
-        </div>
-      </div>
-
       {/* Footer */}
       <footer className="text-center mt-16 text-xs text-gray-400">
         ©2024 United S.T.O.R.M. Basketball
@@ -74,3 +78,4 @@ export default function ContactPage() {
     </div>
   );
 }
+

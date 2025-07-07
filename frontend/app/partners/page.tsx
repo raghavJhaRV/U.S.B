@@ -37,7 +37,7 @@ export default function PartnersPage() {
         Proud Partners
       </h1>
 
-      {/* Logos without box */}
+      {/* Partner Logo Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-10 max-w-6xl mx-auto mb-16">
         {partners.map((partner, i) => (
           <a
@@ -47,13 +47,15 @@ export default function PartnersPage() {
             rel="noopener noreferrer"
             className="flex items-center justify-center hover:scale-105 transition"
           >
-            <Image
-              src={partner.logo}
-              alt={partner.name}
-              width={150}
-              height={80}
-              className="object-contain"
-            />
+            <div className="relative w-36 h-20 sm:w-40 sm:h-24 md:w-44 md:h-28">
+              <Image
+                src={partner.logo}
+                alt={partner.name}
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100px, 150px"
+              />
+            </div>
           </a>
         ))}
       </div>
@@ -73,3 +75,4 @@ export default function PartnersPage() {
     </div>
   );
 }
+

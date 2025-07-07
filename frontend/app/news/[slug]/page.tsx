@@ -11,12 +11,11 @@ export default function NewsDetailPage() {
           Lorem Ipsum Dolor Sit Amet
         </h1>
 
-        <div className="w-full h-64 sm:h-96 bg-neutral-700 relative mb-6">
+        <div className="relative w-full h-64 sm:h-96 bg-neutral-700 mb-6">
           <Image
             src="/images/media1.jpg"
             alt="News Image"
-            layout="fill"
-            objectFit="cover"
+            fill            
             className="rounded"
           />
         </div>

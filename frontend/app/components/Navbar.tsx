@@ -23,10 +23,10 @@ export default function Navbar() {
       <ul className="hidden md:flex items-center space-x-6 font-semibold uppercase tracking-wide text-sm">
         <li><Link href="/" className="hover:text-gray-400">Home</Link></li>
         <li><Link href="/about" className="hover:text-gray-400">About</Link></li>
-        <li><Link href="/registration" className="hover:text-gray-400">Registration</Link></li>
+        {/*<li><Link href="/registration" className="hover:text-gray-400">Registration</Link></li>*/}
         <li><Link href="/merchandise" className="hover:text-gray-400">Merchandise</Link></li>
         <li><Link href="/media" className="hover:text-gray-400">Media</Link></li>
-        <li><Link href="/training" className="hover:text-gray-400">Training</Link></li>
+        {/*<li><Link href="/training" className="hover:text-gray-400">Training</Link></li>*/}
         <li><Link href="/events" className="hover:text-gray-400">Events</Link></li>
         <li><Link href="/news" className="hover:text-gray-400">News</Link></li>
         <li><Link href="/contact" className="hover:text-gray-400">Contact</Link></li>

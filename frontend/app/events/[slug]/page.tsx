@@ -1,79 +1,25 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 
-const events = {
-  "spring-showdown": "Spring Showdown",
-  "fall-classic": "Fall Classic",
-  "winter-invitational": "Winter Invitational",
-};
+export default async function EventDetailPage({ params }: { params: { slug: string } }) {
+  const res = await fetch(`http://localhost:3000/api/events?slug=${params.slug}`);
+  if (!res.ok) return notFound();
 
-export default async function EventBracketPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params; // ✅ await params
-  const eventName = events[slug as keyof typeof events];
-  if (!eventName) return notFound();
+  const event = await res.json();
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12 text-white bg-black min-h-screen">
-      <h1 className="text-4xl font-extrabold uppercase text-center mb-6">{eventName}</h1>
-
-      <div className="text-center mb-6">
-        <Link
-          href="/events/register"
-          className="border border-white py-2 px-4 mt-4 inline-block font-bold hover:bg-white hover:text-black transition"
-        >
-          REGISTER YOUR TEAM
-        </Link>
+    <div className="bg-black text-white min-h-screen px-6 py-12">
+      <div className="max-w-2xl mx-auto text-center">
+        <img src={event.image || "/images/media1.jpg"} alt={event.title} className="mx-auto mb-6 w-24" />
+        <h1 className="text-4xl font-extrabold uppercase mb-2">{event.title}</h1>
+        <p className="text-gray-400 mb-6">
+          {new Date(event.date).toLocaleDateString(undefined, {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          })}
+        </p>
+        {/* You can add registration form or event details here */}
       </div>
-
-      {/* Boys Section */}
-      <section className="mb-10">
-        <h2 className="text-lg font-bold">BOYS</h2>
-        <div className="flex gap-2 mt-2 mb-4">
-          {["U11", "U13", "U15", "U16", "U18"].map((age) => (
-            <button key={age} className="px-4 py-1 border rounded">{age}</button>
-          ))}
-        </div>
-        <table className="w-full text-left border-separate border-spacing-y-2">
-          <tbody>
-            {["U11", "U13", "U15"].map((team) => (
-              <tr key={team}>
-                <td className="py-2">9:00 AM</td>
-                <td>{team}</td>
-                <td className="text-right">
-                  <button className="border px-4 py-1 rounded hover:bg-white hover:text-black transition">
-                    Bracket
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      {/* Girls Section */}
-      <section>
-        <h2 className="text-lg font-bold">GIRLS</h2>
-        <div className="flex gap-2 mt-2 mb-4">
-          {["U11", "U13", "U15", "U16", "U18"].map((age) => (
-            <button key={age} className="px-4 py-1 border rounded">{age}</button>
-          ))}
-        </div>
-        <table className="w-full text-left border-separate border-spacing-y-2">
-          <tbody>
-            {["U11", "U13", "U15"].map((team) => (
-              <tr key={team}>
-                <td className="py-2">9:00 AM</td>
-                <td>{team}</td>
-                <td className="text-right">
-                  <button className="border px-4 py-1 rounded hover:bg-white hover:text-black transition">
-                    Bracket
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
     </div>
   );
 }

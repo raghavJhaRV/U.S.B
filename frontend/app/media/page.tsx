@@ -13,31 +13,15 @@ export default function MediaPage() {
     },
     {
       type: "PHOTO",
-      title: "TOURNAMENT PHOTO ALBUM",
+      title: " PHOTO ALBUM",
       image: "/images/media1.jpg",
+      link: "/media/album", 
     },
     {
       type: "WATCH",
       title: "VIRTUAL TRAINING",
       image: "/images/media1.jpg",
-      link: "https://www.youtube.com/watch?v=PEHMuGS-z3Y&pp=ygUXdW5pdGVkIHN0b3JtIGJhc2tldGJhbGw%3D",
-    },
-    {
-      type: "WATCH",
-      title: "Highlight Reel",
-      image: "/images/media1.jpg",
-      link: "https://www.youtube.com/watch?v=ofzPz4xpT6c",
-    },
-    {
-      type: "",
-      title: "DAVID JOHNSON",
-      image: "/images/media1.jpg",
-    },
-    {
-      type: "WATCH",
-      title: "ANGELA LEE",
-      image: "/images/media1.jpg",
-      link: "https://www.youtube.com/watch?v=D3LzryYql-I",
+      link: "https://www.youtube.com/watch?v=mQuwGHfm9dk&embeds_referring_euri=https%3A%2F%2Fusbball.ca%2F&source_ve_path=Mjg2NjYD",
     },
   ];
 
@@ -61,9 +45,9 @@ export default function MediaPage() {
                   <Image
                     src={item.image}
                     alt={item.title}
-                    layout="fill"
-                    objectFit="cover"
-                    className="transition-transform duration-300 group-hover:scale-105"
+                    width={400}
+                    height={256}
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
                 <div className="absolute bottom-4 left-4 text-left">

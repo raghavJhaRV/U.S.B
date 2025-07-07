@@ -1,55 +1,73 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { DEFAULT_IMAGE } from "../constants"; // or use "/images/media1.jpg"
+import { DEFAULT_IMAGE } from "../constants"; // fallback image
 
-const events = [
-  {
-    slug: "spring-showdown",
-    title: "Spring Showdown",
-    date: "April 7–9",
-    image: DEFAULT_IMAGE,
-  },
-  {
-    slug: "fall-classic",
-    title: "Fall Classic",
-    date: "October 19–15",
-    image: DEFAULT_IMAGE,
-  },
-  {
-    slug: "winter-invitational",
-    title: "Winter Invitational",
-    date: "January 19–21",
-    image: DEFAULT_IMAGE,
-  },
-];
+type Event = {
+  id: string;
+  title: string;
+  date: string;
+  team?: { id: string; ageGroup: string; gender: string }; // optional if included
+};
 
 export default function EventsPage() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/events")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch events");
+        return res.json();
+      })
+      .then((data) => {
+        setEvents(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error loading events:", err);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <div className="bg-black text-white min-h-screen px-4 py-12">
       <h1 className="text-4xl font-extrabold text-center mb-12 uppercase">Events</h1>
       <h2 className="text-2xl font-bold uppercase mb-6">Upcoming Tournaments</h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {events.map((event) => (
-          <div key={event.slug} className="bg-black group shadow-lg">
-            <div
-              className="h-48 bg-cover bg-center"
-              style={{ backgroundImage: `url(${event.image})` }}
-            ></div>
-            <div className="p-4">
-              <p className="font-bold text-lg uppercase leading-tight">{event.title}</p>
-              <p className="text-sm text-gray-400 mb-4">{event.date}</p>
-              <Link
-                href={`/events/${event.slug}`}
-                className="border px-4 py-2 inline-block font-bold hover:bg-white hover:text-black transition"
-              >
-                View Details
-              </Link>
+      {loading ? (
+        <p className="text-center text-gray-400">Loading events...</p>
+      ) : events.length === 0 ? (
+        <p className="text-center text-red-400">No events found.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {events.map((event) => (
+            <div key={event.id} className="bg-black group shadow-lg">
+              <div
+                className="h-48 bg-cover bg-center"
+                style={{ backgroundImage: `url(${DEFAULT_IMAGE})` }}
+              ></div>
+              <div className="p-4">
+                <p className="font-bold text-lg uppercase leading-tight">{event.title}</p>
+                <p className="text-sm text-gray-400 mb-4">
+                  {new Date(event.date).toLocaleDateString(undefined, {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
+                <Link
+                  href={`/events/${event.id}`}
+                  className="border px-4 py-2 inline-block font-bold hover:bg-white hover:text-black transition"
+                >
+                  View Details
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

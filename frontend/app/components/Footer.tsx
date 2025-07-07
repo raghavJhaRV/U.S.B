@@ -20,8 +20,6 @@ const Footer = () => {
                     <ul className="space-y-1 text-gray-300">
                         <li><Link href="/about">About</Link></li>
                         <li><Link href="/news">News</Link></li>
-                        {/* <li><Link href="/teams">Teams</Link></li> */}
-                        {/* <li><Link href="/schedule">Schedule</Link></li> */}
                         <li><Link href="/contact">Contact</Link></li>
                     </ul>
                 </div>
@@ -31,8 +29,7 @@ const Footer = () => {
                     <h3 className="font-bold mb-2 uppercase">Get Started</h3>
                     <ul className="space-y-1 text-gray-300">
                         <li><Link href="/registration">Registration</Link></li>
-                        {/* <li><Link href="/join-team">Join a Team</Link></li> */}
-                        <li><Link href="/sponsor-us">Sponser Us</Link></li>
+                        <li><Link href="/sponsor-us">Sponsor Us</Link></li>
                     </ul>
                 </div>
 
@@ -40,8 +37,20 @@ const Footer = () => {
                 <div>
                     <h3 className="font-bold mb-2 uppercase">Follow Us</h3>
                     <div className="flex space-x-4">
-                        <a href="#"><FontAwesomeIcon icon={faInstagram} className="h-5 w-5" /></a>
-                        <a href="#"><FontAwesomeIcon icon={faFacebookF} className="h-5 w-5" /></a>
+                        <a
+                            href="https://www.instagram.com/united.storm.basketball"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <FontAwesomeIcon icon={faInstagram} className="h-5 w-5" />
+                        </a>
+                        <a
+                            href="https://www.facebook.com/unitedstormbasketball/?ref=_xav_ig_profile_page_web"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <FontAwesomeIcon icon={faFacebookF} className="h-5 w-5" />
+                        </a>
                     </div>
                 </div>
             </div>
@@ -49,7 +58,9 @@ const Footer = () => {
             {/* Bottom Text */}
             <div className="text-center mt-10 text-gray-400 text-xs">
                 <p className="mb-1">
-                    <span className="font-semibold text-white">Strength. Together. Opportunity. Resilience. Multicultural.</span>
+                    <span className="font-semibold text-white">
+                        Strength. Together. Opportunity. Resilience. Multicultural.
+                    </span>
                 </p>
                 <p>© 2024 United S.T.O.R.M. Basketball</p>
             </div>

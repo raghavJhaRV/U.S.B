@@ -7,13 +7,13 @@ const trainings = [
   {
     title: "2025 Fall Elite Training",
     subtitle: "September 2 – October 28",
-    image: 'images/media1.jpg',
+    image: "/images/media1.jpg",
     href: "/training/fall",
   },
   {
     title: "Sunday Spring Training",
     subtitle: "April – June Sundays",
-    image: 'images/media1.jpg',
+    image: "/images/media1.jpg",
     href: "/training/spring",
   },
   {
@@ -44,9 +44,13 @@ export default function TrainingPage() {
         {trainings.map((t, i) => (
           <Link key={i} href={t.href}>
             <div className="relative h-[300px] group overflow-hidden rounded-lg shadow-lg cursor-pointer">
-              <div
-                className="absolute inset-0 bg-center bg-cover transition-transform duration-500 group-hover:scale-110"
-                style={{ backgroundImage: `url(${t.image})` }}
+              {/* Optimized Image usage */}
+              <Image
+                src={t.image}
+                alt={t.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black bg-opacity-60 group-hover:bg-opacity-40 transition duration-300" />
 
@@ -61,3 +65,4 @@ export default function TrainingPage() {
     </div>
   );
 }
+

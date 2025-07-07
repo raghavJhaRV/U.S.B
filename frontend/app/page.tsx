@@ -2,11 +2,8 @@
 
 import Link from "next/link";
 import { DEFAULT_IMAGE } from "./constants";
-// import Image from "next/image";
-// import heroImage from "../public/images/media1.jpg";
-import { faInstagram, faFacebookF } from '@fortawesome/free-brands-svg-icons'
-// import { faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faInstagram, faFacebookF } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function Home() {
   return (
@@ -31,10 +28,20 @@ export default function Home() {
             </a>
           </div>
           <div className="absolute bottom-6 flex gap-4">
-            <a href="#" className="text-white text-2xl">
+            <a
+              href="https://www.instagram.com/united.storm.basketball"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white text-2xl"
+            >
               <FontAwesomeIcon icon={faInstagram} />
             </a>
-            <a href="#" className="text-white text-2xl">
+            <a
+              href="https://www.facebook.com/unitedstormbasketball/?ref=_xav_ig_profile_page_web"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white text-2xl"
+            >
               <FontAwesomeIcon icon={faFacebookF} />
             </a>
           </div>
@@ -70,7 +77,6 @@ export default function Home() {
           <div className="bg-white shadow-lg p-6 text-center">
             <h2 className="font-bold text-xl mb-4">LATEST NEWS</h2>
             <img src={DEFAULT_IMAGE} alt="News" className="mb-4 w-full h-40 object-cover" />
-            {/* <p className="font-semibold mb-2">Lorem ipsum dolor sit amet</p> */}
             <span className="text-gray-500 text-sm block mb-4">April 23, 2015</span>
             <Link href="/news">
               <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
@@ -85,16 +91,20 @@ export default function Home() {
       <section className="bg-black text-white py-12 px-6">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-extrabold mb-10 uppercase">Hall of Fame</h2>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
-            {/* Hall of Fame Card */}
+          <div className="flex overflow-x-auto space-x-6 scrollbar-hide px-2 sm:px-6">
             {[
+              { name: "Kyler Varga", img: "/image.webp" },
+              { name: "Ike Imegwu", img: "/image1.jpg" },
+              { name: "Angela Lee", img: "/hof3.jpg" },
+              { name: "Sam Nichols", img: "/hof4.jpg" },
+              { name: "Wol Wol", img:"/hof4.jpg" },
               { name: "Kyler Varga", img: "/hof1.jpg" },
               { name: "Ike", img: "/hof2.jpg" },
               { name: "Angela Lee", img: "/hof3.jpg" },
               { name: "Sam Nichols", img: "/hof4.jpg" },
+              { name: "Wol Wol", img:"/hof4.jpg" },
             ].map((player, index) => (
-              <div key={index} className="flex flex-col items-center">
+              <div key={index} className="flex-shrink-0 w-48 sm:w-52 md:w-60 text-center">
                 <img
                   src={DEFAULT_IMAGE}
                   alt={player.name}
@@ -110,7 +120,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }
+
