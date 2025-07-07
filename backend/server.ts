@@ -29,13 +29,6 @@ console.log('🔑 process.env.ADMIN_PASSWORD:', process.env.ADMIN_PASSWORD);
 console.log('🔑 process.env.JWT_SECRET:', process.env.JWT_SECRET);
 
 const envPath = path.resolve(process.cwd(), '.env');
-const result = dotenv.config({ path: envPath });
-if (result.error) {
-  console.error('❌ Failed to load .env from', envPath, result.error);
-} else {
-  console.log('✅ Loaded .env from', envPath, 'with keys:', Object.keys(result.parsed ?? {}));
-}
-
 const app = express();
 const prisma = new PrismaClient();
 
