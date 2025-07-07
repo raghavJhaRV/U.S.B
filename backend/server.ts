@@ -36,6 +36,7 @@ const envPath = path.resolve(process.cwd(), '.env');
 const app = express();
 
 app.get('/api/_test-db', async (req, res) => {
+  console.log('🔗 Connecting to database...', process.env.DATABASE_URL);
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
     // Supabase often requires SSL:
