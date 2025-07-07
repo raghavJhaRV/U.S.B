@@ -39,9 +39,10 @@ const app = express();
 app.get('/api/_test-db', async (req, res) => {
   console.log('🔗 Connecting to database...', process.env.DATABASE_URL);
   const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  });
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+  family: 4,    // ← force IPv4
+});
 
   try {
     await client.connect();
