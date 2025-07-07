@@ -20,6 +20,7 @@ import path from 'path';
 import { readdirSync } from 'fs';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
+const { Client } = require('pg')
 
 // Load environment variables
 dotenv.config();
