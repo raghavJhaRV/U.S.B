@@ -1,4 +1,3 @@
-import { resolveIPv4DatabaseUrl } from './esolveDbHost';
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 console.log('dns.setDefaultResultOrder("ipv4first")', dns.getDefaultResultOrder());
@@ -38,15 +37,13 @@ const envPath = path.resolve(process.cwd(), '.env');
 const app = express();
 
 app.get('/api/_test-db', async (req, res) => {
+  console.log('🔗 Connecting to database...', process.env.DATABASE_URL);
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
+
   try {
-    const resolvedUrl = await resolveIPv4DatabaseUrl(process.env.DATABASE_URL!);
-    console.log('✅ Resolved DB IPv4 URL:', resolvedUrl);
-
-    const client = new Client({
-      connectionString: resolvedUrl,
-      ssl: { rejectUnauthorized: false },
-    });
-
     await client.connect();
     const { rows } = await client.query('SELECT 1 AS ok');
     await client.end();
@@ -58,10 +55,7 @@ app.get('/api/_test-db', async (req, res) => {
 });
 
 
-const resolvedUrl = await resolveIPv4DatabaseUrl(process.env.DATABASE_URL!);
-process.env.DATABASE_URL = resolvedUrl;  // Patch it early
 const prisma = new PrismaClient();
-
 
 // Global middleware
 app.use(cookieParser());
