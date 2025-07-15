@@ -1,14 +1,10 @@
 import { notFound } from "next/navigation";
 
-// ✅ Define type properly
-interface PageProps {
-  params: {
-    slug: string;
-  };
-}
-
-// ✅ Use it in your async function — do NOT inline the type here
-export default async function EventDetailPage({ params }: PageProps) {
+export default async function EventDetailPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
   const res = await fetch(`${process.env.REACT_APP_API_URL}/api/events?slug=${params.slug}`);
   if (!res.ok) return notFound();
 
