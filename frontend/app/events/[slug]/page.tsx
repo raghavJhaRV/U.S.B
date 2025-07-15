@@ -1,11 +1,17 @@
 // app/events/[slug]/page.tsx
 import { notFound } from "next/navigation";
 
+// Define the interface for your page component's props
+// This explicitly tells TypeScript what `params` should look like
+interface EventDetailPageProps {
+  params: {
+    slug: string;
+  };
+}
+
 export default async function EventDetailPage({
   params,
-}: {
-  params: { slug: string };
-}) {
+}: EventDetailPageProps) { // Use your defined interface here
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/events?slug=${params.slug}`);
   if (!res.ok) return notFound();
 
