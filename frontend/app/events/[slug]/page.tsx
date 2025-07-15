@@ -1,3 +1,4 @@
+"use client";
 // app/events/[slug]/page.tsx
 import { notFound } from "next/navigation";
 
