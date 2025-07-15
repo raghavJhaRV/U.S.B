@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 export default async function EventDetailPage({ params }: { params: { slug: string } }) {
-  const res = await fetch(`http://localhost:3000/api/events?slug=${params.slug}`);
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/api/events?slug=${params.slug}`);
   if (!res.ok) return notFound();
 
   const event = await res.json();

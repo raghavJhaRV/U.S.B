@@ -16,7 +16,7 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/events")
+    fetch(`${process.env.REACT_APP_API_URL}/api/events`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch events");
         return res.json();

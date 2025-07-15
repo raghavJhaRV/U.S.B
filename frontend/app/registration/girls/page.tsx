@@ -27,12 +27,12 @@ export default function RegistrationPage() {
   const [selectedTeam, setSelectedTeam] = useState("");
 
   useEffect(() => {
-   fetch("http://localhost:3000/api/programs")
+   fetch(`${process.env.REACT_APP_API_URL}/api/programs`)
       .then((res) => res.json())
       .then(setPrograms)
       .catch((err) => console.error("Failed to load programs:", err));
 
-    fetch("http://localhost:3000/api/teams")
+    fetch(`${process.env.REACT_APP_API_URL}/api/teams`)
       .then((res) => res.json())
       .then((data) => {
         setAgeGroups(data);
