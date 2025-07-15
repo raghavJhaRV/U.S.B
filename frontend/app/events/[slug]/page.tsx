@@ -1,16 +1,7 @@
 "use client";
-// app/events/[slug]/page.tsx
 import { notFound } from "next/navigation";
 
-// app/events/[slug]/page.tsx
-
-type Props = {
-  params: {
-    slug: string;
-  };
-};
-
-export default async function EventPage({ params }: Props) {
+export default async function EventPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
 
   return (
