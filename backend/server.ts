@@ -63,7 +63,7 @@ app.use(cookieParser());
 app.use(express.json());
 const origins = ['http://localhost:3000'];
 app.use(cors({
-  origin: origins,
+   origin: 'https://usb-admin.onrender.com',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
