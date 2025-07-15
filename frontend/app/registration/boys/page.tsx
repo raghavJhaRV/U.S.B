@@ -29,7 +29,7 @@ export default function RegistrationPage() {
   const [selectedTeam, setSelectedTeam] = useState("");
 
   useEffect(() => {
-  fetch(`${process.env.REACT_APP_API_URL}/api/programs`)
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/programs`)
     .then((res) => {
       if (!res.ok) throw new Error("Failed to fetch programs");
       return res.json();
@@ -37,7 +37,7 @@ export default function RegistrationPage() {
     .then(setPrograms)
     .catch((err) => console.error("Failed to load programs:", err));
 
-   fetch(`${process.env.REACT_APP_API_URL}/api/teams`)
+   fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/teams`)
     .then((res) => {
       if (!res.ok) throw new Error("Failed to fetch teams");
       return res.json();
@@ -59,7 +59,7 @@ export default function RegistrationPage() {
     e.preventDefault();
 
     try {
-      const res =await fetch(`${process.env.REACT_APP_API_URL}/api/register`, {
+      const res =await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

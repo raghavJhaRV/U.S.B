@@ -12,11 +12,12 @@ type Event = {
 };
 
 export default function EventsPage() {
+  console.log("API URL:", process.env.NEXT_PUBLIC_API_URL); // Debug log to check env variable
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/api/events`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/events`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch events");
         return res.json();
