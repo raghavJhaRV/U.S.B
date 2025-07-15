@@ -61,8 +61,9 @@ const prisma = new PrismaClient();
 // Global middleware
 app.use(cookieParser());
 app.use(express.json());
+const origins = ['http://localhost:3000'];
 app.use(cors({
-  origin: 'https://usb-admin.onrender.com',
+  origin: origins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
