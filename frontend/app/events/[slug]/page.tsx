@@ -1,5 +1,11 @@
 import { notFound } from "next/navigation";
 
+type Props = {
+  params: {
+    slug: string;
+  };
+};
+
 export default async function EventDetailPage({ params }: { params: { slug: string } }) {
   const res = await fetch(`${process.env.REACT_APP_API_URL}/api/events?slug=${params.slug}`);
   if (!res.ok) return notFound();
