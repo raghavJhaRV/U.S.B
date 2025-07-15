@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Request, Response } from 'express';
 
 const prisma = new PrismaClient();
@@ -49,5 +50,26 @@ export async function DELETE(req: any, res: any) {
   } catch (error: any) {
     console.error('Delete Program Error:', error);
     res.status(500).json({ error: 'Failed to delete program' });
+  }
+}
+
+export async function PUT(req: Request, res: Response) {
+  const { id } = req.params;
+  const { name, description, season, price } = req.body;
+  if (!name || !season || price === undefined) {
+    return res.status(400).json({ error: 'Missing name, season or price' });
+  }
+  try {
+    const updated = await prisma.program.update({
+      where: { id },
+      data: { name, description: description ?? '', season, price: parseFloat(price) },
+    });
+    return res.json(updated);
+  } catch (err: any) {
+    if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
+      return res.status(404).json({ error: 'Program not found' });
+    }
+    console.error('Update Program Error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }

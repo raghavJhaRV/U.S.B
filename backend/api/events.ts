@@ -1,66 +1,96 @@
+// src/api/events.ts
+import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
 const prisma = new PrismaClient();
 
-// GET - already done
-export async function GET(req: Request) {
-  const url = new URL(req.url || '', `http://${req.headers.get('host')}`);
-  const teamId = url.searchParams.get('teamId');
-
+// GET /api/events[?teamId=…]
+export async function GET(req: Request, res: Response) {
   try {
+    const where = req.query.teamId
+      ? { teamId: String(req.query.teamId) }
+      : undefined;
+
     const events = await prisma.event.findMany({
-      where: teamId ? { teamId } : undefined,
+      where,
       orderBy: { date: 'asc' },
       include: { team: true },
     });
 
-    return new Response(JSON.stringify(events), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    console.error('Error fetching events:', error);
-    return new Response(JSON.stringify({ error: 'Failed to fetch events' }), {
-      status: 500,
-    });
+    return res.json(events);
+  } catch (err) {
+    console.error('Fetch events error:', err);
+    return res.status(500).json({ error: 'Failed to fetch events' });
   }
 }
 
-// ✅ POST - create a new event
-export async function POST(req: Request) {
+// POST /api/events
+export async function POST(req: Request, res: Response) {
+  const { title, date, teamId } = req.body;
+  console.log('Creating event:', { title, date, teamId });
+  if (!title || !date || !teamId) {
+    return res.status(400).json({ error: 'Missing title, date or teamId' });
+  }
+
   try {
-    const body = await req.json();
-    const { title, date, teamId } = body;
-
-    if (!title || !date || !teamId) {
-      return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400 });
-    }
-
     const created = await prisma.event.create({
       data: { title, date: new Date(date), teamId },
+      include: { team: true }
     });
-
-    return new Response(JSON.stringify(created), { status: 201 });
-  } catch (error) {
-    console.error('Create Event Error:', error);
-    return new Response(JSON.stringify({ error: 'Something went wrong' }), { status: 500 });
+    return res.status(201).json(created);
+  } catch (err) {
+    console.error('Create event error:', err);
+    return res.status(500).json({ error: 'Failed to create event' });
   }
 }
 
-// ✅ DELETE - delete event by ID
-export async function DELETE(req: Request) {
+// PUT /api/events/:id
+export async function PUT(req: Request, res: Response) {
+  const { id } = req.params;
+  const { title, date, teamId } = req.body;
+
+  if (!title || !date || !teamId) {
+    return res.status(400).json({ error: 'Missing title, date or teamId' });
+  }
+
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return new Response(JSON.stringify({ error: 'Event ID is required' }), { status: 400 });
+    const updated = await prisma.event.update({
+      where: { id },
+      data: {
+        title,
+        date: new Date(date),
+        teamId,
+      },
+    });
+    return res.json(updated);
+  } catch (err: any) {
+    console.error('Update event error:', err);
+    if (
+      err instanceof PrismaClientKnownRequestError &&
+      err.code === 'P2025'
+    ) {
+      return res.status(404).json({ error: 'Event not found' });
     }
+    return res.status(500).json({ error: 'Failed to update event' });
+  }
+}
 
+// DELETE /api/events/:id
+export async function DELETE(req: Request, res: Response) {
+  const { id } = req.params;
+
+  try {
     await prisma.event.delete({ where: { id } });
-
-    return new Response(JSON.stringify({ message: 'Event deleted' }), { status: 200 });
-  } catch (error) {
-    console.error('Delete Event Error:', error);
-    return new Response(JSON.stringify({ error: 'Something went wrong' }), { status: 500 });
+    return res.json({ message: 'Event deleted' });
+  } catch (err: any) {
+    console.error('Delete event error:', err);
+    if (
+      err instanceof PrismaClientKnownRequestError &&
+      err.code === 'P2025'
+    ) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    return res.status(500).json({ error: 'Failed to delete event' });
   }
 }
