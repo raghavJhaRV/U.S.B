@@ -1,12 +1,14 @@
 import { notFound } from "next/navigation";
 
-type Props = {
+// ✅ Define type properly
+interface PageProps {
   params: {
     slug: string;
   };
-};
+}
 
-export default async function EventDetailPage({ params }: Props) {
+// ✅ Use it in your async function — do NOT inline the type here
+export default async function EventDetailPage({ params }: PageProps) {
   const res = await fetch(`${process.env.REACT_APP_API_URL}/api/events?slug=${params.slug}`);
   if (!res.ok) return notFound();
 
@@ -24,7 +26,6 @@ export default async function EventDetailPage({ params }: Props) {
             year: "numeric",
           })}
         </p>
-        {/* You can add registration form or event details here */}
       </div>
     </div>
   );
