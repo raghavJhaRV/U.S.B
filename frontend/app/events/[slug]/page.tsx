@@ -6,7 +6,7 @@ type Props = {
   };
 };
 
-export default async function EventDetailPage({ params }: { params: { slug: string } }) {
+export default async function EventDetailPage({ params }: Props) {
   const res = await fetch(`${process.env.REACT_APP_API_URL}/api/events?slug=${params.slug}`);
   if (!res.ok) return notFound();
 
