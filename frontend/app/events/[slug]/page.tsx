@@ -1,16 +1,13 @@
 // app/events/[slug]/page.tsx
 
-import { notFound } from "next/navigation"; // Import notFound for 404 handling
+import { notFound } from "next/navigation";
 
-// Define the types for the component's props
+// Define the types for the component's props - Updated for Next.js 15
 type Props = {
-  params: {
-    slug: string; // The dynamic segment from the URL, e.g., 'tech-conference-2025'
-  };
-  // >>> THIS LINE IS THE CRITICAL FIX <<<
-  // searchParams is included for full PageProps compatibility in Next.js async components.
-  // The absence of this property is causing the Type 'Props' does not satisfy the constraint 'PageProps' error.
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{
+    slug: string;
+  }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 // Define the type for an individual event object in the dummy data
@@ -22,8 +19,8 @@ type DummyEvent = {
 };
 
 export default async function EventPage({ params }: Props) {
-  // const { slug } = await params; // ❌ REMOVE THE `AWAIT` HERE ❌
-  const { slug } = params; // ✅ CORRECT: params is already an object ✅
+  // In Next.js 15, params is a Promise and needs to be awaited
+  const { slug } = await params;
 
   // --- Dummy Data (Simulating a database or API response) ---
   const dummyEvents: DummyEvent[] = [
