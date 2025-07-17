@@ -21,11 +21,9 @@ type DummyEvent = {
   description: string;
 };
 
-// EventPage is an asynchronous Server Component that fetches and displays event details
 export default async function EventPage({ params }: Props) {
-  // Await the 'params' object to ensure it's fully resolved before access.
-  // This prevents the "params should be awaited" runtime error.
-  const { slug } = await params;
+  // const { slug } = await params; // ❌ REMOVE THE `AWAIT` HERE ❌
+  const { slug } = params; // ✅ CORRECT: params is already an object ✅
 
   // --- Dummy Data (Simulating a database or API response) ---
   const dummyEvents: DummyEvent[] = [
@@ -79,15 +77,12 @@ export default async function EventPage({ params }: Props) {
     },
   ];
 
-  // Attempt to find the event that matches the 'slug' from the URL.
   const event = dummyEvents.find((e) => e.slug === slug);
 
-  // If no event is found for the given slug, trigger Next.js's notFound()
   if (!event) {
     notFound();
   }
 
-  // --- Render the Event Details ---
   return (
     <div className="container mx-auto p-6 bg-gray-900 text-white min-h-screen">
       <h1 className="text-4xl font-extrabold text-center mb-6 text-blue-400">{event.title}</h1>
