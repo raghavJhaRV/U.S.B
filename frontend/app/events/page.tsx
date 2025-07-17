@@ -17,7 +17,7 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/events`)
+    fetch(`https://usb-backend.onrender.com/api/events`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch events");
         return res.json();

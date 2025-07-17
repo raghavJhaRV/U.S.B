@@ -31,6 +31,7 @@ export default function Navbar() {
         <li><Link href="/news" className="hover:text-gray-400">News</Link></li>
         <li><Link href="/contact" className="hover:text-gray-400">Contact</Link></li>
         <li><Link href="/partners" className="hover:text-gray-400">Proud Partners</Link></li>
+        <li><Link href="/calendar" className="hover:text-gray-400">Calendar</Link></li>
         <li>
           <Link
             href="/registration"

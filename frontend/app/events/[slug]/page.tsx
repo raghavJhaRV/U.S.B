@@ -1,31 +1,29 @@
+// app/events/[slug]/page.tsx
+
 import { notFound } from "next/navigation";
 
 type Props = {
   params: {
     slug: string;
   };
+  // Add searchParams to align with Next.js PageProps type
+  searchParams?: { [key: string]: string | string[] | undefined };
 };
 
-export default async function EventDetailPage({ params }: Props) {
-  const res = await fetch(`${process.env.REACT_APP_API_URL}/api/events?slug=${params.slug}`);
-  if (!res.ok) return notFound();
+export default async function EventPage({ params }: Props) {
+  const { slug } = params;
 
+  const res = await fetch(`https://usb-backend.onrender.com/api/events/${slug}`);
   const event = await res.json();
 
+  if (!event) {
+    notFound();
+  }
+
   return (
-    <div className="bg-black text-white min-h-screen px-6 py-12">
-      <div className="max-w-2xl mx-auto text-center">
-        <img src={event.image || "/images/media1.jpg"} alt={event.title} className="mx-auto mb-6 w-24" />
-        <h1 className="text-4xl font-extrabold uppercase mb-2">{event.title}</h1>
-        <p className="text-gray-400 mb-6">
-          {new Date(event.date).toLocaleDateString(undefined, {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          })}
-        </p>
-        {/* You can add registration form or event details here */}
-      </div>
+    <div>
+      <h1>{event.title}</h1>
+      <p>{event.date}</p>
     </div>
   );
 }

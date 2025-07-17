@@ -22,6 +22,10 @@ export default function RegistrationPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
+  const [waiverAccepted, setWaiverAccepted] = useState(false);
+  const [waiverSignature, setWaiverSignature] = useState("");
+
+
   const [programs, setPrograms] = useState<Program[]>([]);
   const [ageGroups, setAgeGroups] = useState<Team[]>([]);
 
@@ -29,26 +33,26 @@ export default function RegistrationPage() {
   const [selectedTeam, setSelectedTeam] = useState("");
 
   useEffect(() => {
-  fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/programs`)
-    .then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch programs");
-      return res.json();
-    })
-    .then(setPrograms)
-    .catch((err) => console.error("Failed to load programs:", err));
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/programs`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch programs");
+        return res.json();
+      })
+      .then(setPrograms)
+      .catch((err) => console.error("Failed to load programs:", err));
 
-   fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/teams`)
-    .then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch teams");
-      return res.json();
-    })
-    .then((data) => {
-      console.log("👉 Hardcoded gender for page:", gender);
-      console.log("👉 Fetched teams from API:", data);
-      setAgeGroups(data);
-    })
-    .catch((err) => console.error("Failed to load age groups:", err));
-}, []);
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/teams`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch teams");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("👉 Hardcoded gender for page:", gender);
+        console.log("👉 Fetched teams from API:", data);
+        setAgeGroups(data);
+      })
+      .catch((err) => console.error("Failed to load age groups:", err));
+  }, []);
 
 
   const filteredGroups = ageGroups.filter(
@@ -59,7 +63,7 @@ export default function RegistrationPage() {
     e.preventDefault();
 
     try {
-      const res =await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/register`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -67,7 +71,8 @@ export default function RegistrationPage() {
           parentName,
           email,
           phone,
-          waiverAccepted: true,
+          waiverAccepted,
+          waiverSignature,
           teamId: selectedTeam,
           programId,
           eTransferNote: `Registration for ${playerName}`,
@@ -133,9 +138,8 @@ export default function RegistrationPage() {
                 <button
                   key={group.id}
                   type="button"
-                  className={`border py-2 px-4 ${
-                    selectedTeam === group.id ? "bg-white text-black" : "bg-transparent"
-                  }`}
+                  className={`border py-2 px-4 ${selectedTeam === group.id ? "bg-white text-black" : "bg-transparent"
+                    }`}
                   onClick={() => setSelectedTeam(group.id)}
                 >
                   {group.ageGroup}
@@ -158,9 +162,8 @@ export default function RegistrationPage() {
                 <button
                   key={program.id}
                   type="button"
-                  className={`border py-2 px-4 ${
-                    programId === program.id ? "bg-white text-black" : "bg-transparent"
-                  }`}
+                  className={`border py-2 px-4 ${programId === program.id ? "bg-white text-black" : "bg-transparent"
+                    }`}
                   onClick={() => setProgramId(program.id)}
                 >
                   {program.name}
@@ -168,6 +171,30 @@ export default function RegistrationPage() {
               ))}
             </div>
           </div>
+
+          <input
+            type="checkbox"
+            required
+            checked={waiverAccepted}
+            onChange={(e) => setWaiverAccepted(e.target.checked)}
+            className="mr-2"
+          />
+          <label>I have read and agree to the <a href="/waiver.pdf" target="_blank" className="underline">waiver</a></label>
+
+          <input
+            type="text"
+            placeholder="Type your full name as digital signature"
+            value={waiverSignature}
+            onChange={(e) => setWaiverSignature(e.target.value)}
+            className="w-full p-3 border border-white bg-transparent placeholder-white focus:outline-none"
+            required
+          />
+
+          <p className="text-sm text-gray-300 mt-4">
+            💸 Please send your e-transfer to: <strong>stormbasketball@gmail.com</strong><br />
+            Include your player's name in the message field.
+          </p>
+
 
           <button
             type="submit"
