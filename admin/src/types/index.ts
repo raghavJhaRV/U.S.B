@@ -43,3 +43,33 @@ export interface Payment {
   method: string;
   createdAt: string;
 };
+
+export interface News {
+    id: string;
+    title: string;
+    content: string;
+    imageUrl: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Media {
+    id: string;
+    title: string;
+    url: string;
+    type: string; // "image" | "video"
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Merchandise {
+  id: string;
+  name: string; // Changed from 'title' to 'name' for consistency with backend code
+  description: string;
+  price: number;
+  imageUrl: string;
+  stock: number;
+  category: string;   // Add this line
+  isActive: boolean;  // Add this line
+  created_at: string;
+}

@@ -12,6 +12,9 @@ const navItems = [
   { label: 'Registrations', href: '/protected/registration' },
   { label: 'Events',        href: '/protected/events'        },
   { label: 'Payments',      href: '/protected/payments'      },
+  { label: 'News',          href: '/protected/news'          },
+  { label: 'Media',         href: '/protected/media'         },
+  { label: 'Merchandise',   href: '/protected/merchandise'   },
 ]
 
 export default function Sidebar() {

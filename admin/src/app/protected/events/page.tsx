@@ -117,7 +117,7 @@ export default function EventsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<Event | null>(null);
-  const API = process.env.NEXT_PUBLIC_API_URL!;
+  const API = process.env.NEXT_PUBLIC_API_URL; 
 
   // load events + teams
   useEffect(() => {
