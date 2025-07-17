@@ -1,7 +1,10 @@
+// frontend/src/app/calendar/page.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css"; // Don't forget to import the CSS
 import Link from "next/link";
 
 type Event = {
@@ -19,6 +22,9 @@ const mockEvents: Event[] = [
   { id: "4", title: "Summer Team Outing", date: "2025-07-25" },
 ];
 
+// Define the type for the value returned by react-calendar's onChange
+type ValuePiece = Date | null;
+type CalendarValue = ValuePiece | [ValuePiece, ValuePiece];
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -37,6 +43,18 @@ export default function CalendarPage() {
     */
   }, []);
 
+  // Handler for the Calendar's onChange event
+  const handleCalendarChange = (value: CalendarValue) => {
+    // If the calendar returns a single Date or null, set it directly.
+    if (value instanceof Date || value === null) {
+      setSelectedDate(value);
+    } else if (Array.isArray(value)) {
+      // If it's an array (meaning a date range), take the first date.
+      // Adjust this logic if you intend to handle date ranges differently.
+      setSelectedDate(value[0] instanceof Date ? value[0] : null);
+    }
+  };
+
   const eventsForDate = selectedDate
     ? events.filter((e) => new Date(e.date).toDateString() === selectedDate.toDateString())
     : [];
@@ -49,11 +67,10 @@ export default function CalendarPage() {
 
       <div className="max-w-4xl mx-auto bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
         <Calendar
-          onChange={setSelectedDate}
+          onChange={handleCalendarChange} // Use the new handler here
           value={selectedDate}
           className="dark-calendar" // Note: prop is 'className', not 'calendarClassName'
           tileClassName={({ date }) => {
-            // This logic now works because `events` state is populated
             const hasEvent = events.some(
               (e) => new Date(e.date).toDateString() === date.toDateString()
             );
@@ -98,6 +115,56 @@ export default function CalendarPage() {
           )}
         </div>
       )}
+
+      {/* Add your custom CSS for the calendar here, e.g., using a <style jsx global> block */}
+      <style jsx global>{`
+        /* Minimal example for dark theme - expand as needed */
+        .dark-calendar {
+          background-color: #1f2937; /* A dark gray */
+          border: 1px solid #4b5563;
+          color: white; /* Text color */
+          border-radius: 8px;
+          padding: 10px;
+        }
+
+        .dark-calendar .react-calendar__navigation button {
+          color: white; /* Navigation arrows */
+        }
+
+        .dark-calendar .react-calendar__month-view__weekdays__weekday abbr {
+          text-decoration: none; /* Remove underline from weekday abbreviations */
+          color: #9ca3af; /* Lighter gray for weekdays */
+        }
+
+        .dark-calendar .react-calendar__tile {
+          color: #e5e7eb; /* Day numbers */
+        }
+
+        .dark-calendar .react-calendar__tile--now {
+          background-color: #10b981; /* Green for today */
+          color: white;
+        }
+
+        .dark-calendar .react-calendar__tile--active,
+        .dark-calendar .react-calendar__tile--active:enabled:hover,
+        .dark-calendar .react-calendar__tile--active:enabled:focus {
+          background-color: #3b82f6; /* Blue for selected day */
+          color: white;
+        }
+
+        .dark-calendar .react-calendar__tile:enabled:hover,
+        .dark-calendar .react-calendar__tile:enabled:focus {
+          background-color: #374151; /* Darker gray on hover/focus */
+        }
+
+        .event-day {
+          background-color: #f59e0b !important; /* Orange background for days with events */
+          color: white !important;
+          border-radius: 50%; /* Make it round */
+          /* You might need to adjust padding or dimensions for visual appeal */
+          padding: 0.5em;
+        }
+      `}</style>
     </div>
   );
 }
