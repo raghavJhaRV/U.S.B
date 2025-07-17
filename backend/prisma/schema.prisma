@@ -54,6 +54,50 @@ model Event {
   team   Team     @relation(fields: [teamId], references: [id])
 }
 
+model News {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  imageUrl  String? // Optional image for the news article
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Media {
+  id        String   @id @default(uuid())
+  title     String
+  url       String   @unique // Each media item should have a unique URL
+  type      String   // e.g., "image", "video", "document"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id          String    @id @default(uuid())
+  userId      String?   // If you have users
+  itemId      String?   // e.g., merchandiseId or registrationId
+  itemType    String?   // 'merchandise', 'event_registration'
+  amount      Decimal
+  currency    String
+  status      String    // 'pending', 'succeeded', 'failed', 'refunded'
+  stripeId    String?   @unique // Stripe Payment Intent ID
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Merchandise {
+  id          String   @id @default(uuid())
+  name        String
+  description String?  
+  price       Float
+  imageUrl    String
+  stock       Int
+  category    String   
+  isActive    Boolean  @default(true) 
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt 
+}
+
 model Payment {
   id             String @id @default(cuid())
   registrationId String @unique

@@ -1,7 +1,9 @@
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 console.log('dns.setDefaultResultOrder("ipv4first")', dns.getDefaultResultOrder());
+import { createClient } from '@supabase/supabase-js';
 import express, { Request, Response, NextFunction } from 'express';
+import multer, { File as MulterFile } from 'multer';
 import fetch from 'node-fetch';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -21,6 +23,9 @@ import * as registrations from './api/registrations';
 import * as events from './api/events';
 import { requireAdminAuth } from './middleware/auth';
 import path from 'path';
+import * as newsHandlers from './api/news'
+import * as mediaHandlers from './api/media';
+import merchandiseRouter from './api/merchandise';
 import { readdirSync } from 'fs';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
@@ -33,16 +38,38 @@ console.log('🔑 process.env.ADMIN_PASSWORD:', process.env.ADMIN_PASSWORD);
 console.log('🔑 process.env.JWT_SECRET:', process.env.JWT_SECRET);
 console.log('❓ DATABASE_URL:', process.env.DATABASE_URL);
 
+// --- Supabase Client Initialization ---
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Environment variables SUPABASE_URL and SUPABASE_ANON_KEY must be set.');
+  // Decide whether to exit or throw an error based on your application's tolerance
+  // process.exit(1); // Uncomment to halt server if keys are missing
+}
+
+const supabase = createClient(supabaseUrl!, supabaseAnonKey!); // Use ! to assert non-null if you're sure they are set
+
+
+// Configure Multer for in-memory storage for file processing
+const upload = multer({ storage: multer.memoryStorage() });
+
+
+interface MulterRequest extends Request {
+  file?: MulterFile;
+}
+
+
 const envPath = path.resolve(process.cwd(), '.env');
 const app = express();
 
 app.get('/api/_test-db', async (req, res) => {
   console.log('🔗 Connecting to database...', process.env.DATABASE_URL);
   const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-  family: 4,    // ← force IPv4
-});
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+    family: 4,    // ← force IPv4
+  });
 
   try {
     await client.connect();
@@ -61,15 +88,28 @@ const prisma = new PrismaClient();
 // Global middleware
 app.use(cookieParser());
 app.use(express.json());
-const origins = ['http://localhost:3000'];
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? ['https://usb-admin.onrender.com'] // Only allow your production frontend URL in production
+  : ['http://localhost:3002', 'http://localhost:3000', 'https://usb-admin.onrender.com']; // Allow local dev origins + production in dev
 app.use(cors({
-   origin: 'https://usb-admin.onrender.com',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
 }));
 
 // --- Public routes ---
+app.get('/api/news', newsHandlers.GET);
+app.get('/api/media', mediaHandlers.GET);
+app.use('/api/merchandise', merchandiseRouter);
+
 app.get(
   '/api/teams',
   (req: Request, res: Response, next: NextFunction) => {
@@ -122,6 +162,68 @@ app.get(
     }
   }
 );
+
+
+
+app.post('/api/admin/news', requireAdminAuth, (req, res, next) => {
+  // Use newsHandlers.POST consistently
+  Promise.resolve(newsHandlers.POST(req, res)).catch(next);
+});
+
+app.post('/api/admin/media-upload', requireAdminAuth, upload.single('file'), async (req: MulterRequest, res: Response, next: NextFunction) => {
+    try {
+        console.log('Received file upload request.');
+        if (!req.file) {
+            console.log('No file found in request.');
+            return res.status(400).json({ error: 'No file uploaded.' });
+        }
+
+        console.log('File details:', req.file.originalname, req.file.mimetype, req.file.size);
+
+        const file = req.file;
+        const bucketName = 'usb-media'; // Your Supabase bucket name
+        console.log('Using bucket:', bucketName);
+
+        // Generate a unique file name
+        const fileExtension = file.originalname.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExtension}`;
+        const filePath = `${fileName}`;
+        console.log('Uploading to filePath:', filePath);
+
+        const { data, error: uploadError } = await supabase.storage // Assuming 'supabase' client is defined and properly configured globally or passed here
+            .from(bucketName)
+            .upload(filePath, file.buffer, {
+                contentType: file.mimetype,
+                upsert: false,
+            });
+
+        if (uploadError) {
+            console.error('Supabase upload error:', uploadError);
+            return res.status(500).json({ error: 'Failed to upload file to storage.', details: uploadError.message });
+        }
+        console.log('Supabase upload successful:', data);
+
+        const { data: publicUrlData } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+
+        if (!publicUrlData || !publicUrlData.publicUrl) {
+            console.error('Supabase getPublicUrl error: No public URL returned', publicUrlData);
+            return res.status(500).json({ error: 'Failed to get public URL for uploaded file.' });
+        }
+        console.log('Public URL:', publicUrlData.publicUrl);
+
+        res.json({ url: publicUrlData.publicUrl });
+
+    } catch (error) {
+        console.error('Unhandled error during media upload:', error);
+        // This 'next(error)' would typically be caught by a global error handler in Express
+        // But for direct debugging, make sure you see the actual error here.
+        res.status(500).json({ error: 'Internal Server Error during file upload.', details: (error as Error).message });
+    }
+});
+
+app.post('/api/admin/media', requireAdminAuth, (req, res, next) => { Promise.resolve(mediaHandlers.POST(req, res)).catch(next); });
+
+app.post('/api/admin/merchandise', requireAdminAuth, merchandiseRouter);
 
 app.post(
   '/api/register',
@@ -201,6 +303,15 @@ app.post(
   }
 );
 
+app.delete('/api/admin/news/:id', requireAdminAuth, (req, res, next) => {
+  Promise.resolve(newsHandlers.DELETE(req, res)).catch(next);
+});
+
+app.delete('/api/admin/media/:id', requireAdminAuth, (req, res, next) => { Promise.resolve(mediaHandlers.DELETE(req, res)).catch(next); });
+
+app.delete('/api/admin/merchandise/:id', requireAdminAuth, merchandiseRouter);
+
+
 app.delete(
   '/api/teams/:id',
   requireAdminAuth,
@@ -236,6 +347,14 @@ app.delete(
 
 
 
+app.put('/api/admin/news/:id', requireAdminAuth, (req, res, next) => {
+  // Use newsHandlers.PUT consistently
+  Promise.resolve(newsHandlers.PUT(req, res)).catch(next);
+});
+
+app.put('/api/admin/media/:id', requireAdminAuth, (req, res, next) => { Promise.resolve(mediaHandlers.PUT(req, res)).catch(next); });
+
+app.put('/api/admin/merchandise/:id', requireAdminAuth, merchandiseRouter);
 
 app.put('/api/teams/:id', requireAdminAuth, async (req, res, next) => {
   try {
