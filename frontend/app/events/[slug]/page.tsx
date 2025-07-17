@@ -1,14 +1,19 @@
-// app/events/[slug]/page.tsx (Updated for complete dummy data alignment)
+// app/events/[slug]/page.tsx
 
-import { notFound } from "next/navigation";
+import { notFound } from "next/navigation"; // Import notFound for 404 handling
 
+// Define the types for the component's props
 type Props = {
   params: {
-    slug: string;
+    slug: string; // The dynamic segment from the URL, e.g., 'tech-conference-2025'
   };
+  // >>> THIS LINE IS THE CRITICAL FIX <<<
+  // searchParams is included for full PageProps compatibility in Next.js async components.
+  // The absence of this property is causing the Type 'Props' does not satisfy the constraint 'PageProps' error.
   searchParams?: { [key: string]: string | string[] | undefined };
 };
 
+// Define the type for an individual event object in the dummy data
 type DummyEvent = {
   slug: string;
   title: string;
@@ -16,44 +21,44 @@ type DummyEvent = {
   description: string;
 };
 
+// EventPage is an asynchronous Server Component that fetches and displays event details
 export default async function EventPage({ params }: Props) {
+  // Await the 'params' object to ensure it's fully resolved before access.
+  // This prevents the "params should be awaited" runtime error.
   const { slug } = await params;
 
-  // Ensure this list contains ALL the 'id' values from your EventsPage component,
-  // mapping them to 'slug'.
+  // --- Dummy Data (Simulating a database or API response) ---
   const dummyEvents: DummyEvent[] = [
     {
-      slug: "event1", // Matches id: "event1" from EventsPage
+      slug: "event1",
       title: "Annual Basketball Tournament (Detailed)",
       date: "August 20, 2025",
       description: "Dive deep into the annual basketball tournament details, including teams and schedules.",
     },
     {
-      slug: "event2", // Matches id: "event2" from EventsPage
-      title: "Summer Soccer Camp (Detailed)", // Updated title
+      slug: "event2",
+      title: "Summer Soccer Camp (Detailed)",
       date: "July 25, 2025",
       description: "An intensive summer camp focused on skill development and teamwork in soccer.",
     },
     {
-      slug: "event3", // Matches id: "event3" from EventsPage
-      title: "Fall Track & Field Meet (Detailed)", // Updated title
+      slug: "event3",
+      title: "Fall Track & Field Meet (Detailed)",
       date: "September 10, 2025",
       description: "A competitive track and field meet featuring various athletic events for all ages.",
     },
     {
-      slug: "event4", // Matches id: "event4" from EventsPage
-      title: "Winter Hoops Challenge (Detailed)", // Updated title
+      slug: "event4",
+      title: "Winter Hoops Challenge (Detailed)",
       date: "December 1, 2025",
       description: "Face off against top teams in this exciting winter basketball challenge.",
     },
     {
-      slug: "event5", // Matches id: "event5" from EventsPage
-      title: "Spring Marathon (Detailed)", // Updated title
+      slug: "event5",
+      title: "Spring Marathon (Detailed)",
       date: "April 15, 2026",
       description: "Join runners from across the city in our annual spring marathon event.",
     },
-    // You can keep other specific slugs if you have direct links to them,
-    // but the primary concern is aligning with the EventsPage IDs.
     {
       slug: "tech-conference-2025",
       title: "Annual Tech Conference 2025",
@@ -74,12 +79,15 @@ export default async function EventPage({ params }: Props) {
     },
   ];
 
+  // Attempt to find the event that matches the 'slug' from the URL.
   const event = dummyEvents.find((e) => e.slug === slug);
 
+  // If no event is found for the given slug, trigger Next.js's notFound()
   if (!event) {
     notFound();
   }
 
+  // --- Render the Event Details ---
   return (
     <div className="container mx-auto p-6 bg-gray-900 text-white min-h-screen">
       <h1 className="text-4xl font-extrabold text-center mb-6 text-blue-400">{event.title}</h1>
