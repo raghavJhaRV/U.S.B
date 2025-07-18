@@ -37,6 +37,8 @@ console.log('ℹ️  Contents of cwd:', readdirSync(process.cwd()));
 console.log('🔑 process.env.ADMIN_PASSWORD:', process.env.ADMIN_PASSWORD);
 console.log('🔑 process.env.JWT_SECRET:', process.env.JWT_SECRET);
 console.log('❓ DATABASE_URL:', process.env.DATABASE_URL);
+console.log('❓ DIRECT_DATABASE_URL:', process.env.DIRECT_DATABASE_URL);
+console.log('❓ NODE_ENV:', process.env.NODE_ENV);
 
 // Handle database URL for different environments
 let databaseUrl = process.env.DATABASE_URL;
@@ -55,6 +57,14 @@ if (process.env.NODE_ENV === 'production' && databaseUrl?.includes('pooler')) {
   // For now, use the direct URL as the primary option
   databaseUrl = directUrl;
 }
+
+// Alternative: If you have a separate direct database URL environment variable
+if (process.env.DIRECT_DATABASE_URL) {
+  console.log('🔗 Using DIRECT_DATABASE_URL from environment');
+  databaseUrl = process.env.DIRECT_DATABASE_URL;
+}
+
+console.log('✅ Final database URL being used:', databaseUrl?.replace(/:[^:@]*@/, ':****@'));
 
 // --- Supabase Client Initialization ---
 const supabaseUrl = process.env.SUPABASE_URL;
