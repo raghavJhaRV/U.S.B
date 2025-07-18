@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { DEFAULT_IMAGE } from "../constants"; // fallback image
+import { DEFAULT_IMAGE, API_URL } from "../constants"; // fallback image
 
 type Event = {
   id: string;
@@ -12,7 +12,7 @@ type Event = {
 };
 
 export default function EventsPage() {
-  console.log("API URL:", process.env.NEXT_PUBLIC_API_URL); // Debug log to check env variable
+  console.log("API URL:", API_URL); // Debug log to check API URL
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
