@@ -38,10 +38,8 @@ console.log('🔑 process.env.ADMIN_PASSWORD:', process.env.ADMIN_PASSWORD);
 console.log('🔑 process.env.JWT_SECRET:', process.env.JWT_SECRET);
 console.log('❓ DATABASE_URL:', process.env.DATABASE_URL);
 
-// Try to use connection pooling URL if available
-const databaseUrl = process.env.DATABASE_URL?.includes('pooler') 
-  ? process.env.DATABASE_URL 
-  : process.env.DATABASE_URL?.replace('@db.', '@aws-0-').replace(':5432', ':6543');
+// Use the original DATABASE_URL directly
+const databaseUrl = process.env.DATABASE_URL;
 
 // --- Supabase Client Initialization ---
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -95,9 +93,9 @@ app.get('/api/test-db', async (req, res) => {
 });
 
 app.get('/api/_test-db', async (req, res) => {
-  console.log('🔗 Connecting to database...', process.env.DATABASE_URL);
+  console.log('🔗 Connecting to database...', databaseUrl);
   const client = new Client({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: databaseUrl,
     ssl: { rejectUnauthorized: false },
     family: 4,    // ← force IPv4
   });
@@ -118,7 +116,7 @@ const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
   datasources: {
     db: {
-      url: databaseUrl || process.env.DATABASE_URL,
+      url: databaseUrl,
     },
   },
 });
