@@ -99,12 +99,20 @@ model Merchandise {
 }
 
 model Payment {
-  id             String @id @default(cuid())
-  registrationId String @unique
-
-  registration Registration @relation("RegistrationPayment", fields: [registrationId], references: [id])
-
-  amount    Float
-  method    String
-  createdAt DateTime @default(now())
+  id                    String   @id @default(cuid())
+  amount                Int      // Amount in cents
+  currency              String   @default("usd")
+  status                String   // 'pending', 'succeeded', 'failed', 'refunded'
+  type                  String   // 'merchandise', 'registration'
+  stripePaymentIntentId String?  @unique
+  customerEmail         String?
+  customerName          String?
+  metadata              Json?    // Store additional payment data
+  
+  // Optional relation to registration (only for registration payments)
+  registrationId        String?  @unique
+  registration          Registration? @relation("RegistrationPayment", fields: [registrationId], references: [id])
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }

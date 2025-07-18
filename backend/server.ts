@@ -394,10 +394,40 @@ app.post(
   }
 );
 
+// Payment routes
 app.post(
-  '/api/payments',
+  '/api/payments/merchandise',
   (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(payments.POST(req, res)).catch(next);
+    Promise.resolve(payments.createMerchandisePaymentIntent(req, res)).catch(next);
+  }
+);
+
+app.post(
+  '/api/payments/registration',
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(payments.createRegistrationPaymentIntent(req, res)).catch(next);
+  }
+);
+
+app.post(
+  '/api/payments/confirm',
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(payments.confirmPayment(req, res)).catch(next);
+  }
+);
+
+app.post(
+  '/api/payments/webhook',
+  express.raw({ type: 'application/json' }),
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(payments.handleWebhook(req, res)).catch(next);
+  }
+);
+
+app.get(
+  '/api/payments/:id',
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(payments.getPaymentById(req, res)).catch(next);
   }
 );
 
