@@ -39,8 +39,8 @@ console.log('🔑 process.env.JWT_SECRET:', process.env.JWT_SECRET);
 console.log('❓ DATABASE_URL:', process.env.DATABASE_URL);
 
 // --- Supabase Client Initialization ---
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Environment variables SUPABASE_URL and SUPABASE_ANON_KEY must be set.');
@@ -63,6 +63,15 @@ interface MulterRequest extends Request {
 const envPath = path.resolve(process.cwd(), '.env');
 const app = express();
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
 app.get('/api/_test-db', async (req, res) => {
   console.log('🔗 Connecting to database...', process.env.DATABASE_URL);
   const client = new Client({
@@ -83,14 +92,25 @@ app.get('/api/_test-db', async (req, res) => {
 });
 
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  log: ['query', 'info', 'warn', 'error'],
+});
+
+// Test database connection on startup
+prisma.$connect()
+  .then(() => {
+    console.log('✅ Database connected successfully');
+  })
+  .catch((error) => {
+    console.error('❌ Database connection failed:', error);
+  });
 
 // Global middleware
 app.use(cookieParser());
 app.use(express.json());
 const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? ['https://usb-admin.onrender.com'] // Only allow your production frontend URL in production
-  : ['http://localhost:3002', 'http://localhost:3000', 'https://usb-admin.onrender.com']; // Allow local dev origins + production in dev
+  ? ['https://usb-admin.onrender.com', 'https://u-s-b-frontend.onrender.com'] // Allow both admin and frontend URLs in production
+  : ['http://localhost:3002', 'http://localhost:3000', 'https://usb-admin.onrender.com', 'https://u-s-b-frontend.onrender.com']; // Allow local dev origins + production URLs
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
