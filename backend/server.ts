@@ -38,6 +38,11 @@ console.log('🔑 process.env.ADMIN_PASSWORD:', process.env.ADMIN_PASSWORD);
 console.log('🔑 process.env.JWT_SECRET:', process.env.JWT_SECRET);
 console.log('❓ DATABASE_URL:', process.env.DATABASE_URL);
 
+// Try to use connection pooling URL if available
+const databaseUrl = process.env.DATABASE_URL?.includes('pooler') 
+  ? process.env.DATABASE_URL 
+  : process.env.DATABASE_URL?.replace('@db.', '@aws-0-').replace(':5432', ':6543');
+
 // --- Supabase Client Initialization ---
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -95,6 +100,11 @@ app.get('/api/_test-db', async (req, res) => {
 
 const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
+  datasources: {
+    db: {
+      url: databaseUrl || process.env.DATABASE_URL,
+    },
+  },
 });
 
 // Test database connection on startup
@@ -104,6 +114,7 @@ prisma.$connect()
   })
   .catch((error) => {
     console.error('❌ Database connection failed:', error);
+    console.log('⚠️  Server will continue running but database operations may fail');
   });
 
 // Global middleware
@@ -134,7 +145,10 @@ app.use('/api/merchandise', merchandiseRouter);
 app.get(
   '/api/teams',
   (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(teams.GET(req, res)).catch(next);
+    Promise.resolve(teams.GET(req, res)).catch((error) => {
+      console.error('Teams API error:', error);
+      res.status(500).json({ error: 'Database connection failed. Please try again later.' });
+    });
   }
 );
 
