@@ -77,6 +77,9 @@ if (process.env.NODE_ENV === 'production' && databaseUrl?.includes('pooler')) {
   console.log('⚠️  Still using pooler URL, this might fail but trying anyway');
 }
 
+// Store the original pooler URL for potential fallback
+const originalPoolerUrl = process.env.DATABASE_URL?.includes('pooler') ? process.env.DATABASE_URL : null;
+
 console.log('✅ Final database URL being used:', databaseUrl?.replace(/:[^:@]*@/, ':****@'));
 
 // --- Supabase Client Initialization ---
@@ -150,33 +153,66 @@ app.get('/api/_test-db', async (req, res) => {
 });
 
 
-const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
-  datasources: {
-    db: {
-      url: databaseUrl,
-    },
-  },
-});
+// Create Prisma client with retry logic
+let prisma: PrismaClient;
 
-// Test database connection on startup
-prisma.$connect()
-  .then(() => {
+const createPrismaClient = (url: string) => {
+  return new PrismaClient({
+    log: ['query', 'info', 'warn', 'error'],
+    datasources: {
+      db: {
+        url: url,
+      },
+    },
+  });
+};
+
+prisma = createPrismaClient(databaseUrl || '');
+
+// Test database connection on startup with retry logic
+const testDatabaseConnection = async (url: string, attempt: number = 1): Promise<boolean> => {
+  try {
+    const testClient = createPrismaClient(url);
+    await testClient.$connect();
+    await testClient.$disconnect();
+    return true;
+  } catch (error: any) {
+    console.error(`❌ Database connection attempt ${attempt} failed:`, error.message);
+    return false;
+  }
+};
+
+const initializeDatabase = async () => {
+  // Try the primary database URL first
+  let success = await testDatabaseConnection(databaseUrl || '', 1);
+  
+  if (!success && process.env.NODE_ENV === 'production' && originalPoolerUrl) {
+    console.log('🔄 Trying original pooler URL as fallback...');
+    success = await testDatabaseConnection(originalPoolerUrl, 2);
+    
+    if (success) {
+      console.log('✅ Connected using original pooler URL');
+      // Recreate Prisma client with working URL
+      await prisma.$disconnect();
+      prisma = createPrismaClient(originalPoolerUrl);
+    }
+  }
+  
+  if (success) {
     console.log('✅ Database connected successfully');
-  })
-  .catch((error) => {
-    console.error('❌ Database connection failed:', error);
-    console.log('⚠️  Server will continue running but database operations may fail');
+  } else {
+    console.log('⚠️  All database connection attempts failed. Server will continue running but database operations may fail');
     
     // Additional debugging information
-    if (error.code === 'P1001') {
-      console.log('🔍 P1001 Error: Cannot reach database server');
-      console.log('🔍 This usually means network connectivity issues or incorrect host/port');
-    } else if (error.message?.includes('Tenant or user not found')) {
-      console.log('🔍 Authentication Error: Tenant or user not found');
-      console.log('🔍 This usually means incorrect credentials or pooler configuration');
+    console.log('🔍 Available URLs tried:');
+    console.log('  - Primary:', databaseUrl?.replace(/:[^:@]*@/, ':****@'));
+    if (originalPoolerUrl) {
+      console.log('  - Fallback:', originalPoolerUrl?.replace(/:[^:@]*@/, ':****@'));
     }
-  });
+  }
+};
+
+initializeDatabase();
 
 // Global middleware
 app.use(cookieParser());
