@@ -43,18 +43,26 @@ console.log('❓ NODE_ENV:', process.env.NODE_ENV);
 // Handle database URL for different environments
 let databaseUrl = process.env.DATABASE_URL;
 
-// If we're in production and the URL contains pooler, try to use direct connection as fallback
+// If we're in production and the URL contains pooler, try multiple connection strategies
 if (process.env.NODE_ENV === 'production' && databaseUrl?.includes('pooler')) {
-  // Try to convert pooler URL back to direct connection
+  console.log('🔄 Production pooler URL detected, trying multiple connection strategies');
+  console.log('🔗 Original URL:', databaseUrl);
+  
+  // Strategy 1: Try to convert pooler URL to direct connection
   const directUrl = databaseUrl
     .replace('aws-0-us-west-1.pooler.supabase.com:6543', 'db.bratlcnxybxyydxnnimr.supabase.co:5432')
     .replace('pooler.', '');
   
-  console.log('🔄 Production pooler URL detected, trying direct connection as fallback');
-  console.log('🔗 Original URL:', databaseUrl);
-  console.log('🔗 Direct URL:', directUrl);
+  console.log('🔗 Strategy 1 - Direct URL:', directUrl);
   
-  // For now, use the direct URL as the primary option
+  // Strategy 2: Try with different port (5433 is sometimes used for direct connections)
+  const directUrlAlt = databaseUrl
+    .replace('aws-0-us-west-1.pooler.supabase.com:6543', 'db.bratlcnxybxyydxnnimr.supabase.co:5433')
+    .replace('pooler.', '');
+  
+  console.log('🔗 Strategy 2 - Alternative Direct URL:', directUrlAlt);
+  
+  // For now, try the first strategy
   databaseUrl = directUrl;
 }
 
@@ -62,6 +70,11 @@ if (process.env.NODE_ENV === 'production' && databaseUrl?.includes('pooler')) {
 if (process.env.DIRECT_DATABASE_URL) {
   console.log('🔗 Using DIRECT_DATABASE_URL from environment');
   databaseUrl = process.env.DIRECT_DATABASE_URL;
+}
+
+// Fallback: If still using pooler URL and we're in production, try the original pooler URL
+if (process.env.NODE_ENV === 'production' && databaseUrl?.includes('pooler')) {
+  console.log('⚠️  Still using pooler URL, this might fail but trying anyway');
 }
 
 console.log('✅ Final database URL being used:', databaseUrl?.replace(/:[^:@]*@/, ':****@'));
@@ -154,6 +167,15 @@ prisma.$connect()
   .catch((error) => {
     console.error('❌ Database connection failed:', error);
     console.log('⚠️  Server will continue running but database operations may fail');
+    
+    // Additional debugging information
+    if (error.code === 'P1001') {
+      console.log('🔍 P1001 Error: Cannot reach database server');
+      console.log('🔍 This usually means network connectivity issues or incorrect host/port');
+    } else if (error.message?.includes('Tenant or user not found')) {
+      console.log('🔍 Authentication Error: Tenant or user not found');
+      console.log('🔍 This usually means incorrect credentials or pooler configuration');
+    }
   });
 
 // Global middleware
