@@ -42,13 +42,14 @@ console.log('❓ DATABASE_URL:', process.env.DATABASE_URL);
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Environment variables SUPABASE_URL and SUPABASE_ANON_KEY must be set.');
-  // Decide whether to exit or throw an error based on your application's tolerance
-  // process.exit(1); // Uncomment to halt server if keys are missing
-}
+let supabase: any = null;
 
-const supabase = createClient(supabaseUrl!, supabaseAnonKey!); // Use ! to assert non-null if you're sure they are set
+if (supabaseUrl && supabaseAnonKey) {
+  supabase = createClient(supabaseUrl, supabaseAnonKey);
+  console.log('✅ Supabase client initialized');
+} else {
+  console.warn('⚠️  Supabase environment variables not set. File uploads will be disabled.');
+}
 
 
 // Configure Multer for in-memory storage for file processing
@@ -198,6 +199,10 @@ app.post('/api/admin/media-upload', requireAdminAuth, upload.single('file'), asy
             return res.status(400).json({ error: 'No file uploaded.' });
         }
 
+        if (!supabase) {
+            return res.status(503).json({ error: 'File upload service not available. Supabase not configured.' });
+        }
+
         console.log('File details:', req.file.originalname, req.file.mimetype, req.file.size);
 
         const file = req.file;
@@ -210,7 +215,7 @@ app.post('/api/admin/media-upload', requireAdminAuth, upload.single('file'), asy
         const filePath = `${fileName}`;
         console.log('Uploading to filePath:', filePath);
 
-        const { data, error: uploadError } = await supabase.storage // Assuming 'supabase' client is defined and properly configured globally or passed here
+        const { data, error: uploadError } = await supabase.storage
             .from(bucketName)
             .upload(filePath, file.buffer, {
                 contentType: file.mimetype,
@@ -235,8 +240,6 @@ app.post('/api/admin/media-upload', requireAdminAuth, upload.single('file'), asy
 
     } catch (error) {
         console.error('Unhandled error during media upload:', error);
-        // This 'next(error)' would typically be caught by a global error handler in Express
-        // But for direct debugging, make sure you see the actual error here.
         res.status(500).json({ error: 'Internal Server Error during file upload.', details: (error as Error).message });
     }
 });
