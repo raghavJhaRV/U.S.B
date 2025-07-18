@@ -38,8 +38,23 @@ console.log('🔑 process.env.ADMIN_PASSWORD:', process.env.ADMIN_PASSWORD);
 console.log('🔑 process.env.JWT_SECRET:', process.env.JWT_SECRET);
 console.log('❓ DATABASE_URL:', process.env.DATABASE_URL);
 
-// Use the original DATABASE_URL directly
-const databaseUrl = process.env.DATABASE_URL;
+// Handle database URL for different environments
+let databaseUrl = process.env.DATABASE_URL;
+
+// If we're in production and the URL contains pooler, try to use direct connection as fallback
+if (process.env.NODE_ENV === 'production' && databaseUrl?.includes('pooler')) {
+  // Try to convert pooler URL back to direct connection
+  const directUrl = databaseUrl
+    .replace('aws-0-us-west-1.pooler.supabase.com:6543', 'db.bratlcnxybxyydxnnimr.supabase.co:5432')
+    .replace('pooler.', '');
+  
+  console.log('🔄 Production pooler URL detected, trying direct connection as fallback');
+  console.log('🔗 Original URL:', databaseUrl);
+  console.log('🔗 Direct URL:', directUrl);
+  
+  // For now, use the direct URL as the primary option
+  databaseUrl = directUrl;
+}
 
 // --- Supabase Client Initialization ---
 const supabaseUrl = process.env.SUPABASE_URL;
