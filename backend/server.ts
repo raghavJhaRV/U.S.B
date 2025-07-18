@@ -62,8 +62,12 @@ if (process.env.NODE_ENV === 'production' && databaseUrl?.includes('pooler')) {
   
   console.log('🔗 Strategy 2 - Alternative Direct URL:', directUrlAlt);
   
-  // For now, try the first strategy
-  databaseUrl = directUrl;
+  // Strategy 3: Try the original pooler URL (sometimes it works with proper credentials)
+  console.log('🔗 Strategy 3 - Original Pooler URL:', databaseUrl);
+  
+  // For now, try the original pooler URL first (since the direct connection is failing)
+  // databaseUrl = directUrl; // Commented out to try pooler first
+  console.log('🔄 Using original pooler URL as primary strategy');
 }
 
 // Alternative: If you have a separate direct database URL environment variable
@@ -186,15 +190,32 @@ const initializeDatabase = async () => {
   // Try the primary database URL first
   let success = await testDatabaseConnection(databaseUrl || '', 1);
   
-  if (!success && process.env.NODE_ENV === 'production' && originalPoolerUrl) {
-    console.log('🔄 Trying original pooler URL as fallback...');
-    success = await testDatabaseConnection(originalPoolerUrl, 2);
+  if (!success && process.env.NODE_ENV === 'production') {
+    // Try the direct URL as fallback
+    const directUrl = process.env.DATABASE_URL?.replace('aws-0-us-west-1.pooler.supabase.com:6543', 'db.bratlcnxybxyydxnnimr.supabase.co:5432');
+    if (directUrl && directUrl !== databaseUrl) {
+      console.log('🔄 Trying direct URL as fallback...');
+      success = await testDatabaseConnection(directUrl, 2);
+      
+      if (success) {
+        console.log('✅ Connected using direct URL');
+        // Recreate Prisma client with working URL
+        await prisma.$disconnect();
+        prisma = createPrismaClient(directUrl);
+      }
+    }
     
-    if (success) {
-      console.log('✅ Connected using original pooler URL');
-      // Recreate Prisma client with working URL
-      await prisma.$disconnect();
-      prisma = createPrismaClient(originalPoolerUrl);
+    // If direct URL fails, try original pooler URL
+    if (!success && originalPoolerUrl) {
+      console.log('🔄 Trying original pooler URL as final fallback...');
+      success = await testDatabaseConnection(originalPoolerUrl, 3);
+      
+      if (success) {
+        console.log('✅ Connected using original pooler URL');
+        // Recreate Prisma client with working URL
+        await prisma.$disconnect();
+        prisma = createPrismaClient(originalPoolerUrl);
+      }
     }
   }
   
