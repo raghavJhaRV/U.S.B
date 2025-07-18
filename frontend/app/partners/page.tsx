@@ -23,7 +23,7 @@ const partners = [
   },
   {
     name: "Greatway",
-    logo: "/images/partners/Greatway.png",
+    logo: "/images/partners/greatway.png",
     link: "https://www.greatwayfinancial.com/",
     description: "Financial planning and wealth management"
   },
@@ -74,14 +74,26 @@ export default function PartnersPage() {
                   {/* Logo Container with Glow Effect */}
                   <div className="relative w-32 h-20 sm:w-36 sm:h-24 transition-transform duration-300 group-hover:scale-110">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                    <div className="relative bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                    <div className="relative bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20 flex items-center justify-center overflow-hidden">
                       <Image
                         src={partner.logo}
                         alt={partner.name}
                         fill
-                        className="object-contain filter brightness-0 invert group-hover:brightness-100 group-hover:invert-0 transition-all duration-300"
+                        className="object-contain transition-all duration-300 hover:scale-110"
                         sizes="(max-width: 768px) 128px, 144px"
+                        priority={i < 3} // Prioritize loading first 3 images
+                        onError={(e) => {
+                          // Fallback to partner name if image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<div class="text-white font-bold text-lg text-center">${partner.name}</div>`;
+                          }
+                        }}
                       />
+                      {/* Loading shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
                   </div>
                   
@@ -158,6 +170,11 @@ export default function PartnersPage() {
           to { opacity: 1; transform: translateY(0); }
         }
         
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        
         .animate-fade-in {
           animation: fade-in 1s ease-out;
         }
@@ -168,6 +185,10 @@ export default function PartnersPage() {
         
         .animate-fade-in-up {
           animation: fade-in-up 0.8s ease-out both;
+        }
+        
+        .animate-shimmer {
+          animation: shimmer 2s infinite;
         }
       `}</style>
     </div>
