@@ -13,14 +13,8 @@ type Event = {
   date: string;
 };
 
-// 1. Define your mock data array.
-// Using ISO 8601 format (YYYY-MM-DD) for dates is reliable.
-const mockEvents: Event[] = [
-  { id: "1", title: "Project Alpha Kick-off", date: "2025-07-10" },
-  { id: "2", title: "Quarterly Review", date: "2025-07-17" },
-  { id: "3", title: "Design Sprint Finale", date: "2025-07-17" },
-  { id: "4", title: "Summer Team Outing", date: "2025-07-25" },
-];
+// Import API_URL for dynamic data
+import { API_URL } from "../constants";
 
 // Define the type for the value returned by react-calendar's onChange
 type ValuePiece = Date | null;
@@ -31,16 +25,26 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   useEffect(() => {
-    // 2. Instead of fetching, just set the state with the mock data.
-    setEvents(mockEvents);
-
-    /*
-    // --- Original Fetch Call (now disabled) ---
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/events`)
-      .then((res) => res.json())
-      .then(setEvents)
-      .catch((err) => console.error("Failed to fetch events:", err));
-    */
+    // Fetch events from API
+    fetch(`${API_URL}/api/events`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch events");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Fetched events for calendar:", data);
+        // Transform the data to match the calendar format
+        const calendarEvents = data.map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          date: new Date(event.date).toISOString().split('T')[0] // Convert to YYYY-MM-DD format
+        }));
+        setEvents(calendarEvents);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch events:", err);
+        setEvents([]);
+      });
   }, []);
 
   // Handler for the Calendar's onChange event
