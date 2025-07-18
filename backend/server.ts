@@ -74,8 +74,24 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    databaseUrl: process.env.DATABASE_URL ? 'configured' : 'missing'
   });
+});
+
+// Database test endpoint
+app.get('/api/test-db', async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1 as test`;
+    res.json({ status: 'connected', message: 'Database is working!' });
+  } catch (error) {
+    console.error('Database test failed:', error);
+    res.status(500).json({ 
+      status: 'failed', 
+      error: error.message,
+      databaseUrl: process.env.DATABASE_URL ? 'configured' : 'missing'
+    });
+  }
 });
 
 app.get('/api/_test-db', async (req, res) => {
