@@ -239,16 +239,36 @@ initializeDatabase();
 app.use(cookieParser());
 app.use(express.json());
 const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? ['https://usb-admin.onrender.com', 'https://u-s-b-frontend.onrender.com'] // Allow both admin and frontend URLs in production
-  : ['http://localhost:3002', 'http://localhost:3000', 'https://usb-admin.onrender.com', 'https://u-s-b-frontend.onrender.com']; // Allow local dev origins + production URLs
+  ? [
+      'https://usb-admin.onrender.com', 
+      'https://u-s-b-frontend.onrender.com',
+      'https://usb-frontend.onrender.com',
+      'https://usb-business-consulting.onrender.com'
+    ] // Allow multiple possible frontend URLs in production
+  : [
+      'http://localhost:3002', 
+      'http://localhost:3000', 
+      'https://usb-admin.onrender.com', 
+      'https://u-s-b-frontend.onrender.com',
+      'https://usb-frontend.onrender.com',
+      'https://usb-business-consulting.onrender.com'
+    ]; // Allow local dev origins + production URLs
+
 app.use(cors({
   origin: function (origin, callback) {
+    console.log('🌐 CORS request from origin:', origin);
     // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      console.log('✅ Allowing request with no origin');
+      return callback(null, true);
+    }
     if (allowedOrigins.indexOf(origin) === -1) {
+      console.log('❌ CORS blocked origin:', origin);
+      console.log('✅ Allowed origins:', allowedOrigins);
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
     }
+    console.log('✅ CORS allowed origin:', origin);
     return callback(null, true);
   },
   credentials: true,
