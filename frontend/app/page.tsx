@@ -1,11 +1,43 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { DEFAULT_IMAGE } from "./constants";
+import { DEFAULT_IMAGE, API_URL } from "./constants";
 import { faInstagram, faFacebookF } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+type Player = {
+  id: string;
+  name: string;
+  imageUrl?: string;
+  achievements?: string;
+  year?: string;
+};
+
 export default function Home() {
+  const [hallOfFame, setHallOfFame] = useState<Player[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // For now, we'll use mock data since we don't have a Hall of Fame API endpoint
+    // In the future, you can replace this with: fetch(`${API_URL}/api/hall-of-fame`)
+    const mockHallOfFame: Player[] = [
+      { id: "1", name: "Kyler Varga", imageUrl: "/image.webp" },
+      { id: "2", name: "Ike Imegwu", imageUrl: "/image1.jpg" },
+      { id: "3", name: "Angela Lee", imageUrl: "/hof3.jpg" },
+      { id: "4", name: "Sam Nichols", imageUrl: "/hof4.jpg" },
+      { id: "5", name: "Wol Wol", imageUrl: "/hof4.jpg" },
+      { id: "6", name: "Kyler Varga", imageUrl: "/hof1.jpg" },
+      { id: "7", name: "Ike", imageUrl: "/hof2.jpg" },
+      { id: "8", name: "Angela Lee", imageUrl: "/hof3.jpg" },
+      { id: "9", name: "Sam Nichols", imageUrl: "/hof4.jpg" },
+      { id: "10", name: "Wol Wol", imageUrl: "/hof4.jpg" },
+    ];
+    
+    setHallOfFame(mockHallOfFame);
+    setLoading(false);
+  }, []);
+
   return (
     <div className="bg-black text-white min-h-screen">
       {/* Hero Section */}
@@ -91,33 +123,35 @@ export default function Home() {
       <section className="bg-black text-white py-12 px-6">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-extrabold mb-10 uppercase">Hall of Fame</h2>
-          <div className="flex overflow-x-auto space-x-6 scrollbar-hide px-2 sm:px-6">
-            {[
-              { name: "Kyler Varga", img: "/image.webp" },
-              { name: "Ike Imegwu", img: "/image1.jpg" },
-              { name: "Angela Lee", img: "/hof3.jpg" },
-              { name: "Sam Nichols", img: "/hof4.jpg" },
-              { name: "Wol Wol", img:"/hof4.jpg" },
-              { name: "Kyler Varga", img: "/hof1.jpg" },
-              { name: "Ike", img: "/hof2.jpg" },
-              { name: "Angela Lee", img: "/hof3.jpg" },
-              { name: "Sam Nichols", img: "/hof4.jpg" },
-              { name: "Wol Wol", img:"/hof4.jpg" },
-            ].map((player, index) => (
-              <div key={index} className="flex-shrink-0 w-48 sm:w-52 md:w-60 text-center">
-                <img
-                  src={DEFAULT_IMAGE}
-                  alt={player.name}
-                  className="w-full h-48 object-cover rounded-md shadow-md"
-                />
-                {player.name && (
-                  <p className="mt-2 text-sm font-bold uppercase text-center">
-                    {player.name}
-                  </p>
-                )}
+          {loading ? (
+            <div className="flex justify-center">
+              <div className="animate-pulse space-x-6 flex">
+                {[...Array(5)].map((_, index) => (
+                  <div key={index} className="flex-shrink-0 w-48 sm:w-52 md:w-60 text-center">
+                    <div className="w-full h-48 bg-gray-800 rounded-md shadow-md mb-2"></div>
+                    <div className="h-4 bg-gray-800 rounded w-24 mx-auto"></div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div className="flex overflow-x-auto space-x-6 scrollbar-hide px-2 sm:px-6">
+              {hallOfFame.map((player) => (
+                <div key={player.id} className="flex-shrink-0 w-48 sm:w-52 md:w-60 text-center">
+                  <img
+                    src={player.imageUrl || DEFAULT_IMAGE}
+                    alt={player.name}
+                    className="w-full h-48 object-cover rounded-md shadow-md"
+                  />
+                  {player.name && (
+                    <p className="mt-2 text-sm font-bold uppercase text-center">
+                      {player.name}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>

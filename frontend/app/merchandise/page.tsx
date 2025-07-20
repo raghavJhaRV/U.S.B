@@ -46,9 +46,21 @@ export default function MerchandisePage() {
         </h1>
 
         {loading ? (
-          <div className="text-center text-gray-400">Loading merchandise...</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+            {[...Array(4)].map((_, index) => (
+              <div key={index} className="text-center animate-pulse">
+                <div className="w-full h-64 bg-gray-800 rounded mb-4"></div>
+                <div className="h-4 bg-gray-800 rounded w-32 mx-auto mb-2"></div>
+                <div className="h-4 bg-gray-800 rounded w-20 mx-auto"></div>
+              </div>
+            ))}
+          </div>
         ) : products.length === 0 ? (
-          <div className="text-center text-gray-400">No merchandise available.</div>
+          <div className="text-center text-gray-400">
+            <div className="text-6xl mb-4">🏀</div>
+            <h3 className="text-xl font-bold mb-2">No Merchandise Available</h3>
+            <p>Check back soon for new items!</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
             {products.map((item) => (
