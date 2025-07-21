@@ -144,7 +144,7 @@ import prisma from './lib/prisma';
 // Test database connection on startup
 const testDatabaseConnection = async (): Promise<boolean> => {
   try {
-    await prisma.$connect();
+    await prisma.$queryRaw`SELECT 1`;
     console.log('✅ Database connected successfully');
     return true;
   } catch (error: any) {
@@ -153,7 +153,7 @@ const testDatabaseConnection = async (): Promise<boolean> => {
   }
 };
 
-// Initialize database connection
+// Test database connection on startup
 testDatabaseConnection();
 
 // Global middleware
