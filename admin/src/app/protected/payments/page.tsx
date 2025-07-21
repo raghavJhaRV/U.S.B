@@ -44,7 +44,7 @@ export default function PaymentsPage() {
               {p.registration.playerName} – ${p.amount.toFixed(2)}
             </div>
             <div className="text-sm text-gray-600">
-              {p.method} on {new Date(p.createdAt).toLocaleDateString()}
+              {p.type} on {new Date(p.createdAt).toLocaleDateString()}
             </div>
           </li>
         ))}

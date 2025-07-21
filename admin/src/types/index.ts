@@ -40,7 +40,7 @@ export interface Event {
 export interface Payment {
   id: string;
   amount: number;
-  method: string;
+  type: string;
   createdAt: string;
 };
 
