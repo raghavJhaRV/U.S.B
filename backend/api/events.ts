@@ -1,7 +1,7 @@
 // src/api/events.ts
 import { Request, Response } from 'express';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import prisma from '../lib/prisma';
+import { getPrismaClient } from '../lib/prisma';
 
 // GET /api/events[?teamId=…]
 export async function GET(req: Request, res: Response) {
@@ -10,6 +10,7 @@ export async function GET(req: Request, res: Response) {
       ? { teamId: String(req.query.teamId) }
       : undefined;
 
+    const prisma = getPrismaClient();
     const events = await prisma.event.findMany({
       where,
       orderBy: { date: 'asc' },
@@ -44,6 +45,7 @@ export async function POST(req: Request, res: Response) {
   }
 
   try {
+    const prisma = getPrismaClient();
     const created = await prisma.event.create({
       data: { 
         title, 
@@ -85,6 +87,7 @@ export async function PUT(req: Request, res: Response) {
   }
 
   try {
+    const prisma = getPrismaClient();
     const updated = await prisma.event.update({
       where: { id },
       data: {
@@ -118,6 +121,7 @@ export async function DELETE(req: Request, res: Response) {
   const { id } = req.params;
 
   try {
+    const prisma = getPrismaClient();
     await prisma.event.delete({ where: { id } });
     return res.json({ message: 'Event deleted' });
   } catch (err: any) {
