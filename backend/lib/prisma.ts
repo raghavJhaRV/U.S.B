@@ -2,11 +2,15 @@ import { PrismaClient } from '@prisma/client';
 
 // Create a new Prisma client instance for each request to avoid connection pooling issues
 function createPrismaClient(): PrismaClient {
+  // Add connection parameters to avoid prepared statement conflicts
+  const dbUrl = process.env.DATABASE_URL;
+  const connectionUrl = dbUrl + (dbUrl?.includes('?') ? '&' : '?') + 'prepared_statements=false';
+  
   return new PrismaClient({
     log: [], // Disable all logging
     datasources: {
       db: {
-        url: process.env.DATABASE_URL,
+        url: connectionUrl,
       },
     },
   });
