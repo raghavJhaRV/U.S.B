@@ -3,6 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 export function requireAdminAuth(req, res, next) {
+  // Allow OPTIONS requests to pass through for CORS preflight
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+  
   let token: string|undefined;
   if (req.headers.authorization?.startsWith('Bearer ')) {
     token = req.headers.authorization.slice(7);
