@@ -62,12 +62,22 @@ async function main() {
       data: [
         {
           title: 'U13 Boys Tournament',
+          description: 'Annual tournament for U13 boys teams',
           date: new Date('2025-07-15'),
+          startTime: new Date('2025-07-15T09:00:00'),
+          endTime: new Date('2025-07-15T17:00:00'),
+          location: 'Community Sports Center',
+          type: 'tournament',
           teamId: boysU13.id,
         },
         {
           title: 'U15 Girls Showcase',
+          description: 'Showcase event for U15 girls teams',
           date: new Date('2025-08-10'),
+          startTime: new Date('2025-08-10T10:00:00'),
+          endTime: new Date('2025-08-10T16:00:00'),
+          location: 'High School Gymnasium',
+          type: 'showcase',
           teamId: girlsU15.id,
         },
       ],
@@ -81,7 +91,12 @@ async function main() {
     create: {
       id: 'dummy-u13-july',
       title: 'U13 Boys Summer Tournament',
+      description: 'Summer tournament for U13 boys',
       date: new Date('2025-07-20'),
+      startTime: new Date('2025-07-20T08:00:00'),
+      endTime: new Date('2025-07-20T18:00:00'),
+      location: 'Summer Sports Complex',
+      type: 'tournament',
       teamId: boysU13!.id, // ✅ use existing ID
     },
   });

@@ -25,15 +25,35 @@ export async function GET(req: Request, res: Response) {
 
 // POST /api/events
 export async function POST(req: Request, res: Response) {
-  const { title, date, teamId } = req.body;
-  console.log('Creating event:', { title, date, teamId });
-  if (!title || !date || !teamId) {
-    return res.status(400).json({ error: 'Missing title, date or teamId' });
+  const { 
+    title, 
+    description, 
+    date, 
+    startTime, 
+    endTime, 
+    location, 
+    type, 
+    teamId 
+  } = req.body;
+  
+  console.log('Creating event:', { title, date, startTime, endTime, location, type, teamId });
+  
+  if (!title || !date || !startTime || !teamId) {
+    return res.status(400).json({ error: 'Missing required fields: title, date, startTime, teamId' });
   }
 
   try {
     const created = await prisma.event.create({
-      data: { title, date: new Date(date), teamId },
+      data: { 
+        title, 
+        description,
+        date: new Date(date), 
+        startTime: new Date(startTime),
+        endTime: endTime ? new Date(endTime) : null,
+        location,
+        type: type || 'game',
+        teamId 
+      },
       include: { team: true }
     });
     return res.status(201).json(created);
@@ -46,10 +66,19 @@ export async function POST(req: Request, res: Response) {
 // PUT /api/events/:id
 export async function PUT(req: Request, res: Response) {
   const { id } = req.params;
-  const { title, date, teamId } = req.body;
+  const { 
+    title, 
+    description, 
+    date, 
+    startTime, 
+    endTime, 
+    location, 
+    type, 
+    teamId 
+  } = req.body;
 
-  if (!title || !date || !teamId) {
-    return res.status(400).json({ error: 'Missing title, date or teamId' });
+  if (!title || !date || !startTime || !teamId) {
+    return res.status(400).json({ error: 'Missing required fields: title, date, startTime, teamId' });
   }
 
   try {
@@ -57,9 +86,15 @@ export async function PUT(req: Request, res: Response) {
       where: { id },
       data: {
         title,
+        description,
         date: new Date(date),
+        startTime: new Date(startTime),
+        endTime: endTime ? new Date(endTime) : null,
+        location,
+        type: type || 'game',
         teamId,
       },
+      include: { team: true }
     });
     return res.json(updated);
   } catch (err: any) {
