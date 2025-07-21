@@ -11,6 +11,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { getPrismaClient } from './lib/prisma.js';
 import { Client } from 'pg';
 
 import * as exportRegistrations from './api/admin/exportRegistrations';
@@ -77,8 +78,10 @@ const app = express();
 // Health check endpoint
 app.get('/api/health', async (req: Request, res: Response) => {
   try {
-    // Test database connection
-    await prisma.$queryRaw`SELECT 1`;
+    // Test database connection with a new client instance
+    const client = await getPrismaClient();
+    await client.$queryRaw`SELECT 1`;
+    await client.$disconnect();
     res.json({ 
       status: 'healthy', 
       database: 'connected',
