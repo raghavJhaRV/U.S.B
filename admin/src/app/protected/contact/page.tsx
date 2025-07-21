@@ -21,7 +21,7 @@ export default function ContactPage() {
   const fetchMessages = async () => {
     try {
       setLoading(true);
-      const data = await fetchAdminData<ContactMessage[]>('admin/contact');
+      const data = await fetchAdminData<ContactMessage[]>('api/admin/contact');
       setMessages(data);
       setError(null);
     } catch (err) {
@@ -33,7 +33,7 @@ export default function ContactPage() {
 
   const markAsRead = async (id: string, isRead: boolean) => {
     try {
-      await fetchAdminData(`admin/contact/${id}`, 'PUT', { isRead });
+      await fetchAdminData(`api/admin/contact/${id}`, 'PUT', { isRead });
       setMessages(prev => 
         prev.map(msg => msg.id === id ? { ...msg, isRead } : msg)
       );
@@ -46,7 +46,7 @@ export default function ContactPage() {
     if (!confirm('Are you sure you want to delete this message?')) return;
     
     try {
-      await fetchAdminData(`admin/contact/${id}`, 'DELETE');
+      await fetchAdminData(`api/admin/contact/${id}`, 'DELETE');
       setMessages(prev => prev.filter(msg => msg.id !== id));
     } catch (err) {
       console.error('Failed to delete message:', err);
