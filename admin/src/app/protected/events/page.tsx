@@ -25,6 +25,7 @@ function EventFormModal({
     endTime?: string;
     location?: string;
     type: string;
+    livestreamUrl?: string;
     teamId: string 
   }) => void;
 }) {
@@ -41,6 +42,7 @@ function EventFormModal({
   );
   const [location, setLocation] = useState(initial?.location ?? '');
   const [type, setType] = useState(initial?.type ?? 'game');
+  const [livestreamUrl, setLivestreamUrl] = useState(initial?.livestreamUrl ?? '');
   const [teamId, setTeamId] = useState(
     (initial?.team && 'id' in initial.team ? (initial.team as Team).id : teams[0]?.id) ?? ''
   );
@@ -57,6 +59,7 @@ function EventFormModal({
       setEndTime(initial.endTime?.slice(0, 16) ?? '')
       setLocation(initial.location ?? '')
       setType(initial.type ?? 'game')
+      setLivestreamUrl(initial.livestreamUrl ?? '')
       setTeamId(
         (initial.team && 'id' in initial.team
           ? (initial.team as Team).id
@@ -71,6 +74,7 @@ function EventFormModal({
       setEndTime('')
       setLocation('')
       setType('game')
+      setLivestreamUrl('')
       setTeamId(teams[0]?.id ?? '')
     }
   }, [
@@ -158,6 +162,19 @@ function EventFormModal({
             </select>
           </div>
           <div>
+            <label className="block text-sm font-medium">Livestream URL</label>
+            <input
+              type="url"
+              placeholder="https://youtube.com/watch?v=..."
+              className="mt-1 w-full border px-2 py-1 rounded"
+              value={livestreamUrl}
+              onChange={(e) => setLivestreamUrl(e.target.value)}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              YouTube, Twitch, or other streaming platform URL
+            </p>
+          </div>
+          <div>
             <label className="block text-sm font-medium">Team *</label>
             <select
               className="mt-1 w-full border px-2 py-1 rounded"
@@ -189,6 +206,7 @@ function EventFormModal({
               endTime, 
               location, 
               type, 
+              livestreamUrl, 
               teamId 
             })}
           >
@@ -222,6 +240,7 @@ export default function EventsPage() {
     endTime?: string;
     location?: string;
     type: string;
+    livestreamUrl?: string;
     teamId: string 
   }) => {
     const token = localStorage.getItem('adminJwt');
@@ -254,6 +273,7 @@ export default function EventsPage() {
     endTime?: string;
     location?: string;
     type: string;
+    livestreamUrl?: string;
     teamId: string 
   }) => {
     if (!editing) return;
@@ -338,6 +358,11 @@ export default function EventsPage() {
                   </p>
                   {ev.location && (
                     <p>📍 {ev.location}</p>
+                  )}
+                  {ev.livestreamUrl && (
+                    <p>📺 <a href={ev.livestreamUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      Watch Livestream
+                    </a></p>
                   )}
                   <p>
                     👥 {ev.team?.gender?.toUpperCase()} {ev.team?.ageGroup}

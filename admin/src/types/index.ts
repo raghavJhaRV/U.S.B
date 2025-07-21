@@ -34,6 +34,7 @@ export interface Event {
   endTime?: string;           // ISO datetime string (optional)
   location?: string;
   type: string;               // "game", "practice", "tournament", etc.
+  livestreamUrl?: string;     // URL for livestream (YouTube, Twitch, etc.)
   isActive: boolean;
   teamId: string;
   team: {                     // since it's required in schema
