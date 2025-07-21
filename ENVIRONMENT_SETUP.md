@@ -7,9 +7,6 @@
 Create a file called `.env.local` in the `frontend` directory:
 
 ```bash
-# Stripe Public Key (Test Mode)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
-
 # API URL (Local Development)
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
@@ -19,9 +16,10 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 Create a file called `.env` in the `backend` directory:
 
 ```bash
-# Stripe Configuration (Test Mode)
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+# Helcim Configuration (Test Mode)
+HELCIM_API_URL=https://api.helcim.com/api/v1
+HELCIM_ACCOUNT_ID=your_helcim_account_id_here
+HELCIM_API_TOKEN=your_helcim_api_token_here
 
 # Database Configuration (Replace with your actual values)
 DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@aws-0-us-west-1.pooler.supabase.com:6543/postgres
@@ -39,11 +37,10 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
 NODE_ENV=development
 ```
 
-## 🧪 Test Card Numbers for Stripe
+## 🧪 Test Card Numbers for Helcim
 
 ### Successful Payments
-- **Visa:** `4242424242424242`
-- **Visa (debit):** `4000056655665556`
+- **Visa:** `4111111111111111`
 - **Mastercard:** `5555555555554444`
 - **American Express:** `378282246310005`
 
@@ -51,7 +48,6 @@ NODE_ENV=development
 - **Card declined:** `4000000000000002`
 - **Insufficient funds:** `4000000000009995`
 - **Expired card:** `4000000000000069`
-- **Incorrect CVC:** `4000000000000127`
 
 ### Test Details for All Cards
 - **Expiry Date:** Any future date (e.g., `12/25`)
@@ -60,9 +56,9 @@ NODE_ENV=development
 
 ## 🚀 How to Use
 
-1. **Get your Stripe test keys** from your Stripe dashboard
+1. **Get your Helcim credentials** from your Helcim dashboard
 2. **Copy the environment variables** above to your respective `.env` files
-3. **Replace the placeholder values** with your actual keys and credentials
+3. **Replace the placeholder values** with your actual credentials
 4. **Start your development servers**:
    ```bash
    # Backend
@@ -77,16 +73,16 @@ NODE_ENV=development
 
 ## ⚠️ Important Notes
 
-- These are **test keys only** - they won't process real payments
-- Test cards work in Stripe's test mode only
+- These are **test credentials only** - they won't process real payments
+- Test cards work in Helcim's test mode only
 - You can safely use these for development and testing
-- For production, use real Stripe keys from your Stripe dashboard
+- For production, use real Helcim credentials from your Helcim dashboard
 
 ## 🔗 Useful Links
 
-- **Stripe Test Dashboard:** https://dashboard.stripe.com/test
-- **Stripe Test Webhooks:** https://dashboard.stripe.com/test/webhooks
-- **Stripe Test Payments:** https://dashboard.stripe.com/test/payments
+- **Helcim Dashboard:** https://app.helcim.com
+- **Helcim API Documentation:** https://api.helcim.com/docs
+- **Helcim Support:** https://helcim.com/support
 
 ## 📝 Testing Checklist
 

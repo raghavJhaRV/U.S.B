@@ -33,7 +33,7 @@ export default function CalendarPage() {
         return res.json();
       })
       .then((data) => {
-        console.log("Fetched events for calendar:", data);
+
         const calendarEvents = data.map((event: any) => ({
           id: event.id,
           title: event.title,

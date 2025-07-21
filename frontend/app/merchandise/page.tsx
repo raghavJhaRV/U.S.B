@@ -25,7 +25,7 @@ export default function MerchandisePage() {
         return res.json();
       })
       .then((data) => {
-        console.log("Fetched merchandise from API:", data);
+
         // Filter only active products
         const activeProducts = data.filter((product: Product) => product.isActive);
         setProducts(activeProducts);

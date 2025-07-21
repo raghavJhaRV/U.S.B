@@ -48,8 +48,7 @@ export default function RegistrationPage() {
         return res.json();
       })
       .then((data) => {
-        console.log("👉 Hardcoded gender for page:", gender);
-        console.log("👉 Fetched teams from API:", data);
+
         setAgeGroups(data);
       })
       .catch((err) => console.error("Failed to load age groups:", err));

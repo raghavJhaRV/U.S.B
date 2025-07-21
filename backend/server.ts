@@ -1,6 +1,6 @@
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
-console.log('dns.setDefaultResultOrder("ipv4first")', dns.getDefaultResultOrder());
+
 import { createClient } from '@supabase/supabase-js';
 import express, { Request, Response, NextFunction } from 'express';
 import multer, { File as MulterFile } from 'multer';
@@ -14,7 +14,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Client } from 'pg';
 
 import * as exportRegistrations from './api/admin/exportRegistrations';
-import * as payments from './api/payments';
+
 import * as stats from './api/stats';
 import * as teams from './api/teams';
 import * as programs from './api/programs';
@@ -26,19 +26,14 @@ import path from 'path';
 import * as newsHandlers from './api/news'
 import * as mediaHandlers from './api/media';
 import merchandiseRouter from './api/merchandise';
+import * as helcim from './api/helcim';
 import { readdirSync } from 'fs';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 
 // Load environment variables
 dotenv.config();
-console.log('ℹ️  process.cwd():', process.cwd());
-console.log('ℹ️  Contents of cwd:', readdirSync(process.cwd()));
-console.log('🔑 process.env.ADMIN_PASSWORD:', process.env.ADMIN_PASSWORD);
-console.log('🔑 process.env.JWT_SECRET:', process.env.JWT_SECRET);
-console.log('❓ DATABASE_URL:', process.env.DATABASE_URL);
-console.log('❓ DIRECT_DATABASE_URL:', process.env.DIRECT_DATABASE_URL);
-console.log('❓ NODE_ENV:', process.env.NODE_ENV);
+
 
 // Handle database URL for different environments
 let databaseUrl = process.env.DATABASE_URL;
@@ -315,7 +310,7 @@ app.get(
   '/api/payments',
   requireAdminAuth,             // if you want this protected
   (req: Request, res: Response, next: NextFunction) => {
-    payments.GET(req, res).catch(next)
+    Promise.resolve(helcim.getPaymentHistory(req, res)).catch(next)
   }
 )
 
@@ -414,42 +409,43 @@ app.post(
   }
 );
 
-// Payment routes
+// --- Helcim Payment routes ---
 app.post(
-  '/api/payments/merchandise',
+  '/api/payments/process',
   (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(payments.createMerchandisePaymentIntent(req, res)).catch(next);
+    Promise.resolve(helcim.processPayment(req, res)).catch(next);
   }
 );
 
 app.post(
-  '/api/payments/registration',
+  '/api/payments/save-card',
   (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(payments.createRegistrationPaymentIntent(req, res)).catch(next);
-  }
-);
-
-app.post(
-  '/api/payments/confirm',
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(payments.confirmPayment(req, res)).catch(next);
-  }
-);
-
-app.post(
-  '/api/payments/webhook',
-  express.raw({ type: 'application/json' }),
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(payments.handleWebhook(req, res)).catch(next);
+    Promise.resolve(helcim.saveCard(req, res)).catch(next);
   }
 );
 
 app.get(
-  '/api/payments/:id',
+  '/api/payments/saved-cards/:customerCode',
   (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(payments.getPaymentById(req, res)).catch(next);
+    Promise.resolve(helcim.getSavedCards(req, res)).catch(next);
   }
 );
+
+app.delete(
+  '/api/payments/saved-cards/:cardToken',
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(helcim.deleteSavedCard(req, res)).catch(next);
+  }
+);
+
+app.get(
+  '/api/payments/history',
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(helcim.getPaymentHistory(req, res)).catch(next);
+  }
+);
+
+
 
 app.post('/api/events', requireAdminAuth, async (req, res, next) => {
   Promise.resolve(events.POST(req, res)).catch(next);
@@ -461,8 +457,7 @@ app.post(
   (req: Request, res: Response) => {
     const { password } = req.body;
     if (password === process.env.ADMIN_PASSWORD) {
-      console.log('▶️  login pw:', password);
-      console.log('🔑  ADMIN_PASSWORD:', process.env.ADMIN_PASSWORD);
+      
       const token = jwt.sign(
         { role: 'admin' },
         process.env.JWT_SECRET!,

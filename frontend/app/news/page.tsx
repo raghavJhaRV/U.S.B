@@ -23,7 +23,7 @@ export default function NewsPage() {
                 return res.json();
             })
             .then((data) => {
-                console.log("Fetched news from API:", data);
+        
                 setNewsItems(data);
                 setLoading(false);
             })

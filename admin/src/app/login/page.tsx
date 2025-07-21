@@ -9,8 +9,7 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log('Attempting login with password:', password)
-    console.log('API URL:', process.env.NEXT_PUBLIC_API_URL)
+
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/login`, {
       method: 'POST',

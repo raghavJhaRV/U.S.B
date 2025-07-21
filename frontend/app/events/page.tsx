@@ -12,7 +12,7 @@ type Event = {
 };
 
 export default function EventsPage() {
-  console.log("API URL:", API_URL); // Debug log to check API URL
+
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +24,7 @@ export default function EventsPage() {
         return res.json();
       })
       .then((data) => {
-        console.log("Fetched events from API:", data);
+
         setEvents(data);
         setLoading(false);
       })
