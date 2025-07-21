@@ -28,13 +28,21 @@ export interface Program {
 export interface Event {
   id: string;
   title: string;
+  description?: string;
   date: string;               // ISO date string
+  startTime: string;          // ISO datetime string
+  endTime?: string;           // ISO datetime string (optional)
+  location?: string;
+  type: string;               // "game", "practice", "tournament", etc.
+  isActive: boolean;
   teamId: string;
-  team: {                     // since it’s required in schema
+  team: {                     // since it's required in schema
     id: string;
     gender: string;
     ageGroup: string;
   };
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Payment {

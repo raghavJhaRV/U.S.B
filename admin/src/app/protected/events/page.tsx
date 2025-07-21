@@ -17,12 +17,30 @@ function EventFormModal({
   initial?: Partial<Event>;
   teams: Team[];
   onClose: () => void;
-  onSave: (e: { title: string; date: string; teamId: string }) => void;
+  onSave: (e: { 
+    title: string; 
+    description?: string;
+    date: string; 
+    startTime: string;
+    endTime?: string;
+    location?: string;
+    type: string;
+    teamId: string 
+  }) => void;
 }) {
   const [title, setTitle] = useState(initial?.title ?? '');
+  const [description, setDescription] = useState(initial?.description ?? '');
   const [date, setDate] = useState(
     initial?.date ? initial.date.slice(0, 10) : ''
   );
+  const [startTime, setStartTime] = useState(
+    initial?.startTime ? initial.startTime.slice(0, 16) : ''
+  );
+  const [endTime, setEndTime] = useState(
+    initial?.endTime ? initial.endTime.slice(0, 16) : ''
+  );
+  const [location, setLocation] = useState(initial?.location ?? '');
+  const [type, setType] = useState(initial?.type ?? 'game');
   const [teamId, setTeamId] = useState(
     (initial?.team && 'id' in initial.team ? (initial.team as Team).id : teams[0]?.id) ?? ''
   );
@@ -33,7 +51,12 @@ function EventFormModal({
     if (initial) {
       // edit mode
       setTitle(initial.title ?? '')
+      setDescription(initial.description ?? '')
       setDate(initial.date?.slice(0, 10) ?? '')
+      setStartTime(initial.startTime?.slice(0, 16) ?? '')
+      setEndTime(initial.endTime?.slice(0, 16) ?? '')
+      setLocation(initial.location ?? '')
+      setType(initial.type ?? 'game')
       setTeamId(
         (initial.team && 'id' in initial.team
           ? (initial.team as Team).id
@@ -42,7 +65,12 @@ function EventFormModal({
     } else {
       // add mode
       setTitle('')
+      setDescription('')
       setDate('')
+      setStartTime('')
+      setEndTime('')
+      setLocation('')
+      setType('game')
       setTeamId(teams[0]?.id ?? '')
     }
   }, [
@@ -55,13 +83,13 @@ function EventFormModal({
   if (!open) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-lg w-full max-w-sm">
+      <div className="bg-white p-6 rounded shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">
           {initial ? 'Edit Event' : 'Add Event'}
         </h2>
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-medium">Title</label>
+            <label className="block text-sm font-medium">Title *</label>
             <input
               type="text"
               className="mt-1 w-full border px-2 py-1 rounded"
@@ -70,7 +98,16 @@ function EventFormModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">Date</label>
+            <label className="block text-sm font-medium">Description</label>
+            <textarea
+              className="mt-1 w-full border px-2 py-1 rounded"
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Date *</label>
             <input
               type="date"
               className="mt-1 w-full border px-2 py-1 rounded"
@@ -79,7 +116,49 @@ function EventFormModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">Team</label>
+            <label className="block text-sm font-medium">Start Time *</label>
+            <input
+              type="datetime-local"
+              className="mt-1 w-full border px-2 py-1 rounded"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">End Time</label>
+            <input
+              type="datetime-local"
+              className="mt-1 w-full border px-2 py-1 rounded"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Location</label>
+            <input
+              type="text"
+              className="mt-1 w-full border px-2 py-1 rounded"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Type</label>
+            <select
+              className="mt-1 w-full border px-2 py-1 rounded"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+            >
+              <option value="game">Game</option>
+              <option value="practice">Practice</option>
+              <option value="tournament">Tournament</option>
+              <option value="showcase">Showcase</option>
+              <option value="meeting">Meeting</option>
+              <option value="training">Training</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Team *</label>
             <select
               className="mt-1 w-full border px-2 py-1 rounded"
               value={teamId}
@@ -102,7 +181,16 @@ function EventFormModal({
           </button>
           <button
             className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-            onClick={() => onSave({ title, date, teamId })}
+            onClick={() => onSave({ 
+              title, 
+              description, 
+              date, 
+              startTime, 
+              endTime, 
+              location, 
+              type, 
+              teamId 
+            })}
           >
             Save
           </button>
@@ -126,7 +214,16 @@ export default function EventsPage() {
   }, []);
 
   // inside doAdd
-  const doAdd = async (e: { title: string; date: string; teamId: string }) => {
+  const doAdd = async (e: { 
+    title: string; 
+    description?: string;
+    date: string; 
+    startTime: string;
+    endTime?: string;
+    location?: string;
+    type: string;
+    teamId: string 
+  }) => {
     const token = localStorage.getItem('adminJwt');
     if (!token) return alert('Not logged in');
     const res = await fetch(`${API}/api/events`, {
@@ -149,7 +246,16 @@ export default function EventsPage() {
   };
 
   // inside doEdit
-  const doEdit = async (e: { title: string; date: string; teamId: string }) => {
+  const doEdit = async (e: { 
+    title: string; 
+    description?: string;
+    date: string; 
+    startTime: string;
+    endTime?: string;
+    location?: string;
+    type: string;
+    teamId: string 
+  }) => {
     if (!editing) return;
     const token = localStorage.getItem('adminJwt');
     if (!token) return alert('Not logged in');
@@ -204,15 +310,41 @@ export default function EventsPage() {
       <ul className="space-y-4">
         {events.map((ev) => (
           <li key={ev.id} className="p-4 bg-white shadow rounded">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="font-semibold">{ev.title}</p>
-                <p className="text-sm text-gray-500">
-                  {new Date(ev.date).toLocaleDateString()} –{' '}
-                  {(ev.team?.gender?.toUpperCase() ?? '')} {ev.team?.ageGroup ?? ''}
-                </p>
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <p className="font-semibold text-lg">{ev.title}</p>
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+                    ev.type === 'tournament' ? 'bg-purple-100 text-purple-800' :
+                    ev.type === 'game' ? 'bg-blue-100 text-blue-800' :
+                    ev.type === 'practice' ? 'bg-green-100 text-green-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {ev.type.charAt(0).toUpperCase() + ev.type.slice(1)}
+                  </span>
+                </div>
+                {ev.description && (
+                  <p className="text-sm text-gray-600 mb-2">{ev.description}</p>
+                )}
+                <div className="text-sm text-gray-500 space-y-1">
+                  <p>
+                    📅 {new Date(ev.date).toLocaleDateString()} 
+                    {ev.startTime && (
+                      <> • 🕐 {new Date(ev.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</>
+                    )}
+                    {ev.endTime && (
+                      <> - {new Date(ev.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</>
+                    )}
+                  </p>
+                  {ev.location && (
+                    <p>📍 {ev.location}</p>
+                  )}
+                  <p>
+                    👥 {ev.team?.gender?.toUpperCase()} {ev.team?.ageGroup}
+                  </p>
+                </div>
               </div>
-              <div className="space-x-2">
+              <div className="space-x-2 ml-4">
                 <button
                   onClick={() => setEditing(ev)}
                   className="text-blue-500 hover:underline"
