@@ -30,6 +30,12 @@ export default function EventPage() {
         }
         const events = await response.json();
         
+        // Check if events is an array
+        if (!Array.isArray(events)) {
+          console.error('Expected array but received:', events);
+          throw new Error('Invalid data format received from server');
+        }
+        
         // Find the event by ID (using slug as ID for now)
         const foundEvent = events.find((e: Event) => e.id === slug);
         

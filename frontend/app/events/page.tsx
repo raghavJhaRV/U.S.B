@@ -24,6 +24,11 @@ export default function EventsPage() {
         return res.json();
       })
       .then((data) => {
+        // Check if data is an array before setting events
+        if (!Array.isArray(data)) {
+          console.error('Expected array but received:', data);
+          throw new Error('Invalid data format received from server');
+        }
 
         setEvents(data);
         setLoading(false);

@@ -39,19 +39,24 @@ export default function CalendarPage() {
         return res.json();
       })
       .then((data) => {
+        // Check if data is an array before calling map
+        if (!Array.isArray(data)) {
+          console.error('Expected array but received:', data);
+          throw new Error('Invalid data format received from server');
+        }
 
-                  const calendarEvents = data.map((event: any) => ({
-            id: event.id,
-            title: event.title,
-            description: event.description,
-            date: new Date(event.date).toISOString().split('T')[0],
-            startTime: new Date(event.date).toISOString().split('T')[1].substring(0, 5),
-            endTime: event.endTime ? new Date(event.date).toISOString().split('T')[1].substring(0, 5) : undefined,
-            location: event.location,
-            type: event.type,
-            livestreamUrl: event.livestreamUrl,
-            team: event.team
-          }));
+        const calendarEvents = data.map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          description: event.description,
+          date: new Date(event.date).toISOString().split('T')[0],
+          startTime: new Date(event.date).toISOString().split('T')[1].substring(0, 5),
+          endTime: event.endTime ? new Date(event.date).toISOString().split('T')[1].substring(0, 5) : undefined,
+          location: event.location,
+          type: event.type,
+          livestreamUrl: event.livestreamUrl,
+          team: event.team
+        }));
         setEvents(calendarEvents);
         setLoading(false);
       })
