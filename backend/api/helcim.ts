@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import prisma from '../lib/prisma';
+import { sendAdminPurchaseNotification } from '../lib/mailer';
 
 // Helcim API Configuration
 const HELCIM_API_URL = process.env.HELCIM_API_URL || 'https://api.helcim.com/api/v1';
@@ -116,6 +117,14 @@ export async function processPayment(req: Request, res: Response) {
           },
         },
       });
+
+      // Send admin notification for successful purchase
+      try {
+        await sendAdminPurchaseNotification(payment);
+      } catch (emailError) {
+        console.error('Failed to send admin purchase notification:', emailError);
+        // Don't fail the payment if email fails
+      }
 
       res.json({
         success: true,

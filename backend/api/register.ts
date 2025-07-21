@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { sendMail, sendRegistrationConfirmation } from '../mailer';
+import { sendMail, sendRegistrationConfirmation, sendAdminRegistrationNotification } from '../lib/mailer';
 import prisma from '../lib/prisma';
 
 export const POST = async (req: Request, res: Response) => {
@@ -33,9 +33,11 @@ export const POST = async (req: Request, res: Response) => {
     });
 
 
-    // ✅ Send registration confirmation email
+    // ✅ Send registration confirmation email to user
     await sendRegistrationConfirmation(email, playerName, eTransferNote);
 
+    // ✅ Send admin notification email
+    await sendAdminRegistrationNotification(registration);
 
     res.status(201).json(registration);
   } catch (error) {

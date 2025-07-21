@@ -202,6 +202,39 @@ app.get('/api/test-db', async (req: Request, res: Response) => {
   }
 });
 
+app.get('/api/test-email', async (req: Request, res: Response) => {
+  try {
+    console.log('📧 Testing email functionality...');
+    
+    const { sendMail } = await import('./lib/mailer');
+    
+    await sendMail(
+      process.env.ADMIN_EMAIL || 'test@example.com',
+      'Test Email - United S.T.O.R.M. Basketball',
+      `
+      <h2>Test Email</h2>
+      <p>This is a test email to verify the email system is working correctly.</p>
+      <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+      <p>Best regards,<br>United S.T.O.R.M. Basketball System</p>
+      `
+    );
+    
+    res.json({ 
+      status: 'success', 
+      message: 'Test email sent successfully',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Email test failed:', error);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Email test failed',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 app.get('/api/news', newsHandlers.GET);
 app.get('/api/media', mediaHandlers.GET);
 app.use('/api/merchandise', merchandiseRouter);

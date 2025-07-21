@@ -1,7 +1,7 @@
 // backend/api/contact.ts
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
-import { sendMail } from '../lib/mailer';
+import { sendMail, sendAdminContactNotification } from '../lib/mailer';
 
 // POST /api/contact - Submit contact form
 export async function POST(req: Request, res: Response) {
@@ -29,27 +29,12 @@ export async function POST(req: Request, res: Response) {
       },
     });
 
-    // Send notification email to admin (optional)
-    const adminEmail = process.env.ADMIN_EMAIL;
-    if (adminEmail) {
-      try {
-        await sendMail(
-          adminEmail,
-          'New Contact Form Submission - United S.T.O.R.M. Basketball',
-          `
-          <h2>New Contact Form Submission</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-          <p><strong>Message:</strong></p>
-          <p>${message.replace(/\n/g, '<br>')}</p>
-          <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
-          `
-        );
-      } catch (emailError) {
-        console.error('Failed to send admin notification email:', emailError);
-        // Don't fail the request if email fails
-      }
+    // Send notification email to admin
+    try {
+      await sendAdminContactNotification(contactMessage);
+    } catch (emailError) {
+      console.error('Failed to send admin notification email:', emailError);
+      // Don't fail the request if email fails
     }
 
     // Send confirmation email to user
