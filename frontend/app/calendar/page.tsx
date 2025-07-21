@@ -17,6 +17,7 @@ type Event = {
   endTime?: string;
   location?: string;
   type: string;
+  livestreamUrl?: string;
   team?: {
     gender: string;
     ageGroup: string;
@@ -39,17 +40,18 @@ export default function CalendarPage() {
       })
       .then((data) => {
 
-        const calendarEvents = data.map((event: any) => ({
-          id: event.id,
-          title: event.title,
-          description: event.description,
-          date: new Date(event.date).toISOString().split('T')[0],
-          startTime: new Date(event.date).toISOString().split('T')[1].substring(0, 5),
-          endTime: event.endTime ? new Date(event.date).toISOString().split('T')[1].substring(0, 5) : undefined,
-          location: event.location,
-          type: event.type,
-          team: event.team
-        }));
+                  const calendarEvents = data.map((event: any) => ({
+            id: event.id,
+            title: event.title,
+            description: event.description,
+            date: new Date(event.date).toISOString().split('T')[0],
+            startTime: new Date(event.date).toISOString().split('T')[1].substring(0, 5),
+            endTime: event.endTime ? new Date(event.date).toISOString().split('T')[1].substring(0, 5) : undefined,
+            location: event.location,
+            type: event.type,
+            livestreamUrl: event.livestreamUrl,
+            team: event.team
+          }));
         setEvents(calendarEvents);
         setLoading(false);
       })
@@ -250,6 +252,20 @@ export default function CalendarPage() {
                               <div className="flex items-center gap-2 text-sm text-gray-300">
                                 <span>📍</span>
                                 <span>{event.location}</span>
+                              </div>
+                            )}
+                            
+                            {event.livestreamUrl && (
+                              <div className="flex items-center gap-2">
+                                <a 
+                                  href={event.livestreamUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 bg-red-600 text-white text-sm px-3 py-1 font-bold hover:bg-red-700 transition-colors"
+                                >
+                                  <span>📺</span>
+                                  <span>Watch Live</span>
+                                </a>
                               </div>
                             )}
                             
