@@ -11,7 +11,12 @@ import { API_URL } from "../constants";
 type Event = {
   id: string;
   title: string;
+  description?: string;
   date: string;
+  startTime: string;
+  endTime?: string;
+  location?: string;
+  type: string;
   team?: {
     gender: string;
     ageGroup: string;
@@ -37,7 +42,12 @@ export default function CalendarPage() {
         const calendarEvents = data.map((event: any) => ({
           id: event.id,
           title: event.title,
+          description: event.description,
           date: new Date(event.date).toISOString().split('T')[0],
+          startTime: new Date(event.date).toISOString().split('T')[1].substring(0, 5),
+          endTime: event.endTime ? new Date(event.date).toISOString().split('T')[1].substring(0, 5) : undefined,
+          location: event.location,
+          type: event.type,
           team: event.team
         }));
         setEvents(calendarEvents);
@@ -207,16 +217,50 @@ export default function CalendarPage() {
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-white mb-2 uppercase">
-                            {event.title}
-                          </h3>
-                          {event.team && (
-                            <div className="flex items-center gap-2 mb-3">
-                              <span className="bg-white text-black text-sm px-3 py-1 font-bold">
-                                {event.team.gender} {event.team.ageGroup}U
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="text-xl font-bold text-white uppercase">
+                              {event.title}
+                            </h3>
+                            <span className={`px-2 py-1 text-xs rounded-full font-bold ${
+                              event.type === 'tournament' ? 'bg-purple-600 text-white' :
+                              event.type === 'game' ? 'bg-blue-600 text-white' :
+                              event.type === 'practice' ? 'bg-green-600 text-white' :
+                              'bg-gray-600 text-white'
+                            }`}>
+                              {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                            </span>
+                          </div>
+                          
+                          {event.description && (
+                            <p className="text-gray-400 text-sm mb-3">{event.description}</p>
+                          )}
+                          
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-center gap-2 text-sm text-gray-300">
+                              <span>🕐</span>
+                              <span>
+                                {new Date(event.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                {event.endTime && (
+                                  <> - {new Date(event.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</>
+                                )}
                               </span>
                             </div>
-                          )}
+                            
+                            {event.location && (
+                              <div className="flex items-center gap-2 text-sm text-gray-300">
+                                <span>📍</span>
+                                <span>{event.location}</span>
+                              </div>
+                            )}
+                            
+                            {event.team && (
+                              <div className="flex items-center gap-2">
+                                <span className="bg-white text-black text-sm px-3 py-1 font-bold">
+                                  {event.team.gender} {event.team.ageGroup}U
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                         <div className="text-2xl opacity-50 group-hover:opacity-100 transition-opacity">
                           🏀
