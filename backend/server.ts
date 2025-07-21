@@ -108,26 +108,45 @@ const envPath = path.resolve(process.cwd(), '.env');
 const app = express();
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    databaseUrl: process.env.DATABASE_URL ? 'configured' : 'missing'
-  });
+app.get('/api/health', async (req: Request, res: Response) => {
+  try {
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ 
+      status: 'healthy', 
+      database: 'connected',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(503).json({ 
+      status: 'unhealthy', 
+      database: 'disconnected',
+      error: 'Database connection failed',
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
-// Database test endpoint
-app.get('/api/test-db', async (req, res) => {
+app.get('/api/test-db', async (req: Request, res: Response) => {
   try {
-    await prisma.$queryRaw`SELECT 1 as test`;
-    res.json({ status: 'connected', message: 'Database is working!' });
+    console.log('🔍 Testing database connection...');
+    console.log('📊 Database URL:', process.env.DATABASE_URL?.replace(/:[^:@]*@/, ':****@'));
+    console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
+    
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ 
+      status: 'success', 
+      message: 'Database connection successful',
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
-    console.error('Database test failed:', error);
+    console.error('❌ Database test failed:', error);
     res.status(500).json({ 
-      status: 'failed', 
-      error: error.message,
-      databaseUrl: process.env.DATABASE_URL ? 'configured' : 'missing'
+      status: 'error', 
+      message: 'Database connection failed',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
     });
   }
 });
@@ -271,6 +290,49 @@ app.use(cors({
 }));
 
 // --- Public routes ---
+app.get('/api/health', async (req: Request, res: Response) => {
+  try {
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ 
+      status: 'healthy', 
+      database: 'connected',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(503).json({ 
+      status: 'unhealthy', 
+      database: 'disconnected',
+      error: 'Database connection failed',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+app.get('/api/test-db', async (req: Request, res: Response) => {
+  try {
+    console.log('🔍 Testing database connection...');
+    console.log('📊 Database URL:', process.env.DATABASE_URL?.replace(/:[^:@]*@/, ':****@'));
+    console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
+    
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ 
+      status: 'success', 
+      message: 'Database connection successful',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Database test failed:', error);
+    res.status(500).json({ 
+      status: 'error', 
+      message: 'Database connection failed',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 app.get('/api/news', newsHandlers.GET);
 app.get('/api/media', mediaHandlers.GET);
 app.use('/api/merchandise', merchandiseRouter);
@@ -279,8 +341,16 @@ app.get(
   '/api/teams',
   (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(teams.GET(req, res)).catch((error) => {
-      console.error('Teams API error:', error);
-      res.status(500).json({ error: 'Database connection failed. Please try again later.' });
+      console.error('❌ Teams API error:', error);
+      console.error('🔍 Error details:', {
+        message: error.message,
+        stack: error.stack,
+        code: error.code
+      });
+      res.status(500).json({ 
+        error: 'Failed to fetch teams',
+        details: process.env.NODE_ENV === 'development' ? error.message : 'Database connection issue'
+      });
     });
   }
 );
@@ -288,14 +358,36 @@ app.get(
 app.get(
   '/api/programs',
   (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(programs.GET(req, res)).catch(next);
+    Promise.resolve(programs.GET(req, res)).catch((error) => {
+      console.error('❌ Programs API error:', error);
+      console.error('🔍 Error details:', {
+        message: error.message,
+        stack: error.stack,
+        code: error.code
+      });
+      res.status(500).json({ 
+        error: 'Failed to fetch programs',
+        details: process.env.NODE_ENV === 'development' ? error.message : 'Database connection issue'
+      });
+    });
   }
 );
 
 app.get(
   '/api/registrations',
   (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(registrations.GET(req, res)).catch(next);
+    Promise.resolve(registrations.GET(req, res)).catch((error) => {
+      console.error('❌ Registrations API error:', error);
+      console.error('🔍 Error details:', {
+        message: error.message,
+        stack: error.stack,
+        code: error.code
+      });
+      res.status(500).json({ 
+        error: 'Failed to fetch registrations',
+        details: process.env.NODE_ENV === 'development' ? error.message : 'Database connection issue'
+      });
+    });
   }
 );
 
@@ -310,9 +402,20 @@ app.get(
   '/api/payments',
   requireAdminAuth,             // if you want this protected
   (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(helcim.getPaymentHistory(req, res)).catch(next)
+    Promise.resolve(helcim.getPaymentHistory(req, res)).catch((error) => {
+      console.error('❌ Payments API error:', error);
+      console.error('🔍 Error details:', {
+        message: error.message,
+        stack: error.stack,
+        code: error.code
+      });
+      res.status(500).json({ 
+        error: 'Failed to fetch payments',
+        details: process.env.NODE_ENV === 'development' ? error.message : 'Payment service issue'
+      });
+    });
   }
-)
+);
 
 app.get(
   '/api/events',
@@ -326,7 +429,16 @@ app.get(
       });
       res.json(list);
     } catch (err) {
-      next(err);
+      console.error('❌ Events API error:', err);
+      console.error('🔍 Error details:', {
+        message: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined,
+        code: (err as any)?.code
+      });
+      res.status(500).json({ 
+        error: 'Failed to fetch events',
+        details: process.env.NODE_ENV === 'development' ? (err instanceof Error ? err.message : 'Unknown error') : 'Database connection issue'
+      });
     }
   }
 );
