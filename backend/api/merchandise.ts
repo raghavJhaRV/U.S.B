@@ -1,9 +1,8 @@
 // backend/api/merchandise.ts
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client'; // Assuming prisma is imported directly or passed
+import prisma from '../lib/prisma';
 
 const router = Router();
-const prisma = new PrismaClient(); // Or import from server.ts if exported
 
 // GET all merchandise
 router.get('/', async (req, res) => {

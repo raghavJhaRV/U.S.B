@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
 import { Parser } from 'json2csv';
-
-const prisma = new PrismaClient();
+import prisma from '../../lib/prisma';
 
 export async function GET() {
 

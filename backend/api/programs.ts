@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Request, Response } from 'express';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
 
 export const GET = async (_req: Request, res: Response) => {
   try {

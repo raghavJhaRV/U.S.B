@@ -1,9 +1,7 @@
 // backend/api/media.ts
-import { PrismaClient } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Request, Response } from 'express';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
 
 // GET all media items (public)
 export const GET = async (_req: Request, res: Response) => {

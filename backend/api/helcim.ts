@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 import crypto from 'crypto';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
 
 // Helcim API Configuration
 const HELCIM_API_URL = process.env.HELCIM_API_URL || 'https://api.helcim.com/api/v1';

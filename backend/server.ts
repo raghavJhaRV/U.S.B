@@ -171,83 +171,23 @@ app.get('/api/_test-db', async (req, res) => {
 });
 
 
-// Create Prisma client with retry logic
-let prisma: PrismaClient;
+// Import shared Prisma client
+import prisma from './lib/prisma';
 
-const createPrismaClient = (url: string) => {
-  return new PrismaClient({
-    log: ['query', 'info', 'warn', 'error'],
-    datasources: {
-      db: {
-        url: url,
-      },
-    },
-  });
-};
-
-prisma = createPrismaClient(databaseUrl || '');
-
-// Test database connection on startup with retry logic
-const testDatabaseConnection = async (url: string, attempt: number = 1): Promise<boolean> => {
+// Test database connection on startup
+const testDatabaseConnection = async (): Promise<boolean> => {
   try {
-    const testClient = createPrismaClient(url);
-    await testClient.$connect();
-    await testClient.$disconnect();
+    await prisma.$connect();
+    console.log('✅ Database connected successfully');
     return true;
   } catch (error: any) {
-    console.error(`❌ Database connection attempt ${attempt} failed:`, error.message);
+    console.error('❌ Database connection failed:', error.message);
     return false;
   }
 };
 
-const initializeDatabase = async () => {
-  // Try the primary database URL first
-  let success = await testDatabaseConnection(databaseUrl || '', 1);
-  
-  if (!success && process.env.NODE_ENV === 'production') {
-    // Try the direct URL as fallback
-    const directUrl = process.env.DATABASE_URL?.replace('aws-0-us-west-1.pooler.supabase.com:6543', 'db.bratlcnxybxyydxnnimr.supabase.co:5432');
-    if (directUrl && directUrl !== databaseUrl) {
-      console.log('🔄 Trying direct URL as fallback...');
-      success = await testDatabaseConnection(directUrl, 2);
-      
-      if (success) {
-        console.log('✅ Connected using direct URL');
-        // Recreate Prisma client with working URL
-        await prisma.$disconnect();
-        prisma = createPrismaClient(directUrl);
-      }
-    }
-    
-    // If direct URL fails, try original pooler URL
-    if (!success && originalPoolerUrl) {
-      console.log('🔄 Trying original pooler URL as final fallback...');
-      success = await testDatabaseConnection(originalPoolerUrl, 3);
-      
-      if (success) {
-        console.log('✅ Connected using original pooler URL');
-        // Recreate Prisma client with working URL
-        await prisma.$disconnect();
-        prisma = createPrismaClient(originalPoolerUrl);
-      }
-    }
-  }
-  
-  if (success) {
-    console.log('✅ Database connected successfully');
-  } else {
-    console.log('⚠️  All database connection attempts failed. Server will continue running but database operations may fail');
-    
-    // Additional debugging information
-    console.log('🔍 Available URLs tried:');
-    console.log('  - Primary:', databaseUrl?.replace(/:[^:@]*@/, ':****@'));
-    if (originalPoolerUrl) {
-      console.log('  - Fallback:', originalPoolerUrl?.replace(/:[^:@]*@/, ':****@'));
-    }
-  }
-};
-
-initializeDatabase();
+// Initialize database connection
+testDatabaseConnection();
 
 // Global middleware
 app.use(cookieParser());

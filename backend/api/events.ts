@@ -1,9 +1,7 @@
 // src/api/events.ts
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
 
 // GET /api/events[?teamId=…]
 export async function GET(req: Request, res: Response) {
