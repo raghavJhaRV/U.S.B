@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-export function requireAdminAuth(req, res, next) {
+export function requireAdminAuth(req: Request, res: Response, next: NextFunction) {
   // Allow OPTIONS requests to pass through for CORS preflight
   if (req.method === 'OPTIONS') {
     return next();

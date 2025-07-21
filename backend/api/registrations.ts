@@ -1,4 +1,4 @@
-import { Prisma, PrismaClientKnownRequestError } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
 
@@ -89,7 +89,6 @@ export async function PUT(req: Request, res: Response) {
   } catch (err: any) {
     console.error('Update Registration Error:', err);
     if (
-      err instanceof PrismaClientKnownRequestError &&
       err.code === 'P2025'
     ) {
       return res.status(404).json({ error: 'Registration not found' });

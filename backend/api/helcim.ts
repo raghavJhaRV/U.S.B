@@ -27,6 +27,8 @@ interface HelcimPaymentResponse {
   approvalCode?: string;
   cardToken?: string;
   customerCode?: string;
+  cards?: any[];
+  [key: string]: any; // Allow additional properties
 }
 
 // Helper function to make authenticated requests to Helcim
@@ -104,16 +106,17 @@ export async function processPayment(req: Request, res: Response) {
           amount: Math.round(amount * 100),
           currency,
           status: 'completed',
-          transactionId: result.transactionId || '',
-          approvalCode: result.approvalCode || '',
+          type: 'merchandise', // or determine based on context
           customerEmail,
           customerName,
-          orderNumber,
-          comments,
           metadata: {
-            helcimResponse: result,
+            helcimResponse: result as any,
             cardToken: result.cardToken,
             customerCode: result.customerCode,
+            transactionId: result.transactionId || '',
+            approvalCode: result.approvalCode || '',
+            orderNumber,
+            comments,
           },
         },
       });
