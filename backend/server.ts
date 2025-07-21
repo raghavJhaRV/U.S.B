@@ -348,28 +348,19 @@ app.get(
 
 app.get(
   '/api/events',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { teamId } = req.query;
-      const client = getPrismaClient();
-      const list = await client.event.findMany({
-        where: teamId ? { teamId: String(teamId) } : undefined,
-        orderBy: { date: 'asc' },
-        include: { team: true },
-      });
-      res.json(list);
-    } catch (err) {
-      console.error('❌ Events API error:', err);
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(events.GET(req, res)).catch((error) => {
+      console.error('❌ Events API error:', error);
       console.error('🔍 Error details:', {
-        message: err instanceof Error ? err.message : 'Unknown error',
-        stack: err instanceof Error ? err.stack : undefined,
-        code: (err as any)?.code
+        message: error.message,
+        stack: error.stack,
+        code: error.code
       });
       res.status(500).json({ 
         error: 'Failed to fetch events',
-        details: process.env.NODE_ENV === 'development' ? (err instanceof Error ? err.message : 'Unknown error') : 'Database connection issue'
+        details: process.env.NODE_ENV === 'development' ? error.message : 'Database connection issue'
       });
-    }
+    });
   }
 );
 

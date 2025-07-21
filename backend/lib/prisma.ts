@@ -8,17 +8,29 @@ function getPrismaClient(): PrismaClient {
   if (!prisma) {
     const dbUrl = process.env.DATABASE_URL;
     if (!dbUrl) {
+      console.error('❌ DATABASE_URL environment variable is not set');
       throw new Error('DATABASE_URL environment variable is not set');
     }
     
+    console.log('🔗 Initializing Prisma client with database URL:', dbUrl.replace(/:[^:@]*@/, ':****@'));
+    
     prisma = new PrismaClient({
-      log: ['error', 'warn'], // Only log errors and warnings
+      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error', 'warn'],
       datasources: {
         db: {
           url: dbUrl,
         },
       },
     });
+    
+    // Test the connection
+    prisma.$connect()
+      .then(() => {
+        console.log('✅ Prisma client connected successfully');
+      })
+      .catch((error) => {
+        console.error('❌ Prisma client connection failed:', error);
+      });
     
     // Handle connection cleanup
     process.on('beforeExit', async () => {

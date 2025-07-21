@@ -6,21 +6,43 @@ import { getPrismaClient } from '../lib/prisma';
 // GET /api/events[?teamId=…]
 export async function GET(req: Request, res: Response) {
   try {
+    console.log('🔍 Fetching events with query:', req.query);
+    
     const where = req.query.teamId
       ? { teamId: String(req.query.teamId) }
       : undefined;
 
+    console.log('📊 Database query where clause:', where);
+    
     const prisma = getPrismaClient();
+    console.log('✅ Prisma client obtained');
+    
     const events = await prisma.event.findMany({
       where,
       orderBy: { date: 'asc' },
       include: { team: true },
     });
 
+    console.log(`✅ Found ${events.length} events`);
     return res.json(events);
   } catch (err) {
-    console.error('Fetch events error:', err);
-    return res.status(500).json({ error: 'Failed to fetch events' });
+    console.error('❌ Fetch events error:', err);
+    console.error('🔍 Error details:', {
+      message: err instanceof Error ? err.message : 'Unknown error',
+      stack: err instanceof Error ? err.stack : undefined,
+      code: (err as any)?.code,
+      name: err instanceof Error ? err.name : undefined
+    });
+    
+    // Provide more detailed error information in development
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? `Failed to fetch events: ${err instanceof Error ? err.message : 'Unknown error'}`
+      : 'Failed to fetch events';
+      
+    return res.status(500).json({ 
+      error: errorMessage,
+      timestamp: new Date().toISOString()
+    });
   }
 }
 
