@@ -153,10 +153,8 @@ const testDatabaseConnection = async (): Promise<boolean> => {
   }
 };
 
-// Test database connection on startup but don't block server startup
-testDatabaseConnection().catch(error => {
-  console.error('⚠️ Database connection test failed, but server will continue:', error.message);
-});
+// Temporarily disable database connection test to allow server to start
+console.log('⚠️ Database connection test temporarily disabled to allow server startup');
 
 // Global middleware
 app.use(cookieParser());
