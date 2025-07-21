@@ -3,7 +3,7 @@ dns.setDefaultResultOrder('ipv4first');
 
 import { createClient } from '@supabase/supabase-js';
 import express, { Request, Response, NextFunction } from 'express';
-import multer, { File as MulterFile } from 'multer';
+import multer from 'multer';
 import fetch from 'node-fetch';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -68,7 +68,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 
 interface MulterRequest extends Request {
-  file?: MulterFile;
+  file?: Express.Multer.File;
 }
 
 
@@ -82,7 +82,6 @@ app.get('/api/_test-db', async (req, res) => {
   const client = new Client({
     connectionString: databaseUrl,
     ssl: { rejectUnauthorized: false },
-    family: 4,    // ← force IPv4
   });
 
   try {
@@ -134,7 +133,7 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
     ]; // Allow local dev origins + production URLs
 
 app.use(cors({
-  origin: function (origin, callback) {
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
     console.log('🌐 CORS request from origin:', origin);
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) {
