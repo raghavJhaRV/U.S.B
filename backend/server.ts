@@ -39,48 +39,14 @@ dotenv.config();
 // Handle database URL for different environments
 let databaseUrl = process.env.DATABASE_URL;
 
-// If we're in production and the URL contains pooler, try multiple connection strategies
-if (process.env.NODE_ENV === 'production' && databaseUrl?.includes('pooler')) {
-  console.log('🔄 Production pooler URL detected, trying multiple connection strategies');
-  console.log('🔗 Original URL:', databaseUrl);
-  
-  // Strategy 1: Try to convert pooler URL to direct connection
-  const directUrl = databaseUrl
-    .replace('aws-0-us-west-1.pooler.supabase.com:6543', 'db.bratlcnxybxyydxnnimr.supabase.co:5432')
-    .replace('pooler.', '');
-  
-  console.log('🔗 Strategy 1 - Direct URL:', directUrl);
-  
-  // Strategy 2: Try with different port (5433 is sometimes used for direct connections)
-  const directUrlAlt = databaseUrl
-    .replace('aws-0-us-west-1.pooler.supabase.com:6543', 'db.bratlcnxybxyydxnnimr.supabase.co:5433')
-    .replace('pooler.', '');
-  
-  console.log('🔗 Strategy 2 - Alternative Direct URL:', directUrlAlt);
-  
-  // Strategy 3: Try the original pooler URL (sometimes it works with proper credentials)
-  console.log('🔗 Strategy 3 - Original Pooler URL:', databaseUrl);
-  
-  // For now, try the original pooler URL first (since the direct connection is failing)
-  // databaseUrl = directUrl; // Commented out to try pooler first
-  console.log('🔄 Using original pooler URL as primary strategy');
+// Log the database URL being used (without credentials)
+console.log('✅ Database URL being used:', databaseUrl?.replace(/:[^:@]*@/, ':****@'));
+
+// Validate that we have a database URL
+if (!databaseUrl) {
+  console.error('❌ DATABASE_URL environment variable is not set!');
+  process.exit(1);
 }
-
-// Alternative: If you have a separate direct database URL environment variable
-if (process.env.DIRECT_DATABASE_URL) {
-  console.log('🔗 Using DIRECT_DATABASE_URL from environment');
-  databaseUrl = process.env.DIRECT_DATABASE_URL;
-}
-
-// Fallback: If still using pooler URL and we're in production, try the original pooler URL
-if (process.env.NODE_ENV === 'production' && databaseUrl?.includes('pooler')) {
-  console.log('⚠️  Still using pooler URL, this might fail but trying anyway');
-}
-
-// Store the original pooler URL for potential fallback
-const originalPoolerUrl = process.env.DATABASE_URL?.includes('pooler') ? process.env.DATABASE_URL : null;
-
-console.log('✅ Final database URL being used:', databaseUrl?.replace(/:[^:@]*@/, ':****@'));
 
 // --- Supabase Client Initialization ---
 const supabaseUrl = process.env.SUPABASE_URL;
