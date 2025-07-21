@@ -78,7 +78,7 @@ const app = express();
 
 
 app.get('/api/_test-db', async (req, res) => {
-  console.log('🔗 Connecting to database...', databaseUrl);
+  console.log('🔗 Testing database connection...');
   const client = new Client({
     connectionString: databaseUrl,
     ssl: { rejectUnauthorized: false },
@@ -92,6 +92,29 @@ app.get('/api/_test-db', async (req, res) => {
   } catch (err: any) {
     console.error('DB test error:', err);
     res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+  try {
+    // Test Prisma connection
+    const prisma = getPrismaClient();
+    await prisma.$queryRaw`SELECT 1`;
+    
+    res.json({ 
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      database: 'connected',
+      environment: process.env.NODE_ENV || 'development'
+    });
+  } catch (err) {
+    console.error('Health check failed:', err);
+    res.status(503).json({ 
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      error: err instanceof Error ? err.message : 'Unknown error'
+    });
   }
 });
 
@@ -328,13 +351,12 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { teamId } = req.query;
-      const client = await getPrismaClient();
+      const client = getPrismaClient();
       const list = await client.event.findMany({
         where: teamId ? { teamId: String(teamId) } : undefined,
         orderBy: { date: 'asc' },
         include: { team: true },
       });
-      await client.$disconnect();
       res.json(list);
     } catch (err) {
       console.error('❌ Events API error:', err);

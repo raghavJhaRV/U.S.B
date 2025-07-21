@@ -1,42 +1,46 @@
 import { PrismaClient } from '@prisma/client';
 
-// Create a new Prisma client instance for each request to avoid connection pooling issues
-function createPrismaClient(): PrismaClient {
-  // Add connection parameters to avoid prepared statement conflicts
-  const dbUrl = process.env.DATABASE_URL;
-  const connectionUrl = dbUrl + (dbUrl?.includes('?') ? '&' : '?') + 'prepared_statements=false';
-  
-  return new PrismaClient({
-    log: [], // Disable all logging
-    datasources: {
-      db: {
-        url: connectionUrl,
+// Global variable to store the Prisma client instance
+let prisma: PrismaClient | undefined;
+
+// Create a singleton Prisma client instance
+function getPrismaClient(): PrismaClient {
+  if (!prisma) {
+    const dbUrl = process.env.DATABASE_URL;
+    if (!dbUrl) {
+      throw new Error('DATABASE_URL environment variable is not set');
+    }
+    
+    prisma = new PrismaClient({
+      log: ['error', 'warn'], // Only log errors and warnings
+      datasources: {
+        db: {
+          url: dbUrl,
+        },
       },
-    },
-  });
+    });
+    
+    // Handle connection cleanup
+    process.on('beforeExit', async () => {
+      await prisma?.$disconnect();
+    });
+    
+    process.on('SIGINT', async () => {
+      await prisma?.$disconnect();
+      process.exit(0);
+    });
+    
+    process.on('SIGTERM', async () => {
+      await prisma?.$disconnect();
+      process.exit(0);
+    });
+  }
+  
+  return prisma;
 }
 
-// Export a function that creates a new client for each request
-export async function getPrismaClient(): Promise<PrismaClient> {
-  const client = createPrismaClient();
-  
-  // Handle connection cleanup
-  process.on('beforeExit', async () => {
-    await client.$disconnect();
-  });
-  
-  process.on('SIGINT', async () => {
-    await client.$disconnect();
-    process.exit(0);
-  });
-  
-  process.on('SIGTERM', async () => {
-    await client.$disconnect();
-    process.exit(0);
-  });
-  
-  return client;
-}
+// Export the function to get the Prisma client
+export { getPrismaClient };
 
-// Keep the default export for backward compatibility, but it will create a new instance
-export default createPrismaClient(); 
+// Export the default client for backward compatibility
+export default getPrismaClient(); 
