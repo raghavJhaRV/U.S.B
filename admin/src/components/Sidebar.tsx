@@ -15,6 +15,7 @@ const navItems = [
   { label: 'News',          href: '/protected/news'          },
   { label: 'Media',         href: '/protected/media'         },
   { label: 'Merchandise',   href: '/protected/merchandise'   },
+  { label: 'Contact',       href: '/protected/contact'       },
 ]
 
 export default function Sidebar() {

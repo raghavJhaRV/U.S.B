@@ -27,6 +27,7 @@ import * as newsHandlers from './api/news'
 import * as mediaHandlers from './api/media';
 import merchandiseRouter from './api/merchandise';
 import * as helcim from './api/helcim';
+import * as contactHandlers from './api/contact';
 import { readdirSync } from 'fs';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
@@ -277,6 +278,11 @@ app.get('/api/news', newsHandlers.GET);
 app.get('/api/media', mediaHandlers.GET);
 app.use('/api/merchandise', merchandiseRouter);
 
+// Contact form routes
+app.post('/api/contact', (req: Request, res: Response, next: NextFunction) => {
+  Promise.resolve(contactHandlers.POST(req, res)).catch(next);
+});
+
 app.get(
   '/api/teams',
   (req: Request, res: Response, next: NextFunction) => {
@@ -388,6 +394,19 @@ app.get(
 app.post('/api/admin/news', requireAdminAuth, (req, res, next) => {
   // Use newsHandlers.POST consistently
   Promise.resolve(newsHandlers.POST(req, res)).catch(next);
+});
+
+// Admin contact message routes
+app.get('/api/admin/contact', requireAdminAuth, (req, res, next) => {
+  Promise.resolve(contactHandlers.GET(req, res)).catch(next);
+});
+
+app.put('/api/admin/contact/:id', requireAdminAuth, (req, res, next) => {
+  Promise.resolve(contactHandlers.PUT(req, res)).catch(next);
+});
+
+app.delete('/api/admin/contact/:id', requireAdminAuth, (req, res, next) => {
+  Promise.resolve(contactHandlers.DELETE(req, res)).catch(next);
 });
 
 app.post('/api/admin/media-upload', requireAdminAuth, upload.single('file'), async (req: MulterRequest, res: Response, next: NextFunction) => {
