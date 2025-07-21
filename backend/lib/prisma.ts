@@ -2,10 +2,10 @@ import { PrismaClient } from '@prisma/client';
 
 // Create a single Prisma client instance to be shared across the application
 const prisma = new PrismaClient({
-  log: ['info', 'warn', 'error'], // Disable query logging to reduce prepared statement conflicts
+  log: ['warn', 'error'], // Disable all query logging to reduce prepared statement conflicts
   datasources: {
     db: {
-      url: process.env.DATABASE_URL,
+      url: process.env.DATABASE_URL + '?pgbouncer=true&connection_limit=1&pool_timeout=20',
     },
   },
 });
