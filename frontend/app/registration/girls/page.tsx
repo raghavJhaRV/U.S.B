@@ -84,8 +84,9 @@ export default function RegistrationPage() {
       if (!res.ok) throw new Error(data?.error || "Registration failed");
 
       alert("Registration successful!");
-    } catch (err: any) {
-      alert(`Registration failed: ${err.message}`);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      alert(`Registration failed: ${errorMessage}`);
     }
   };
 
@@ -148,7 +149,7 @@ export default function RegistrationPage() {
             </div>
             {filteredGroups.length === 0 && (
               <p className="text-sm italic text-red-400 mt-3">
-                No age groups available for boys yet.
+                No age groups available for girls yet.
               </p>
             )}
           </div>
@@ -192,7 +193,7 @@ export default function RegistrationPage() {
 
           <p className="text-sm text-gray-300 mt-4">
             💸 Please send your e-transfer to: <strong>stormbasketball@gmail.com</strong><br />
-            Include your player's name in the message field.
+            Include your player&apos;s name in the message field.
           </p>
 
 
