@@ -33,10 +33,11 @@ export async function POST(req: Request, res: Response) {
     endTime, 
     location, 
     type, 
+    livestreamUrl,
     teamId 
   } = req.body;
   
-  console.log('Creating event:', { title, date, startTime, endTime, location, type, teamId });
+  console.log('Creating event:', { title, date, startTime, endTime, location, type, livestreamUrl, teamId });
   
   if (!title || !date || !startTime || !teamId) {
     return res.status(400).json({ error: 'Missing required fields: title, date, startTime, teamId' });
@@ -52,6 +53,7 @@ export async function POST(req: Request, res: Response) {
         endTime: endTime ? new Date(endTime) : null,
         location,
         type: type || 'game',
+        livestreamUrl,
         teamId 
       },
       include: { team: true }
@@ -74,6 +76,7 @@ export async function PUT(req: Request, res: Response) {
     endTime, 
     location, 
     type, 
+    livestreamUrl,
     teamId 
   } = req.body;
 
@@ -92,6 +95,7 @@ export async function PUT(req: Request, res: Response) {
         endTime: endTime ? new Date(endTime) : null,
         location,
         type: type || 'game',
+        livestreamUrl,
         teamId,
       },
       include: { team: true }
