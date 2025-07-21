@@ -79,7 +79,10 @@ export async function POST(req: Request, res: Response) {
     });
   } catch (error) {
     console.error('Contact form submission error:', error);
-    res.status(500).json({ error: 'Failed to submit contact form' });
+    res.status(500).json({ 
+      error: 'Failed to submit contact form',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 }
 
