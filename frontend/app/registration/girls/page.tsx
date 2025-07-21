@@ -93,7 +93,7 @@ export default function RegistrationPage() {
     <div className="bg-black text-white min-h-screen">
       <main className="max-w-3xl mx-auto px-4 py-12">
         <h1 className="text-4xl font-extrabold text-center uppercase">Registration</h1>
-        <h3 className="text-2xl font-bold text-center mt-2 uppercase">Boys Program</h3>
+        <h3 className="text-2xl font-bold text-center mt-2 uppercase">Girls Program</h3>
 
         <form onSubmit={handleSubmit} className="mt-10 space-y-6">
           <input
