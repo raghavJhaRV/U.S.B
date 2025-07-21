@@ -141,7 +141,7 @@ export async function uploadMediaFile(file: File): Promise<{ url: string }> {
   return res.json();
 }
 
-async function fetchAdminData<T>(
+export async function fetchAdminData<T>(
   fullApiPath: string, // e.g., 'api/admin/media'
   method: string = 'GET',
   body?: object
