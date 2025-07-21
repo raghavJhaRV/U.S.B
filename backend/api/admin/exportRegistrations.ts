@@ -22,7 +22,7 @@ export async function GET() {
       Program: r.program?.name || '',
       Price: r.program?.price?.toFixed(2) || '',
       PaymentAmount: r.payment?.amount?.toFixed(2) || '',
-      PaymentMethod: r.payment?.method || '',
+      PaymentMethod: r.payment?.type || '',
       ETransferNote: r.eTransferNote || '',
       CreatedAt: r.createdAt.toISOString(),
     }));
