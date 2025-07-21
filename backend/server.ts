@@ -75,51 +75,7 @@ interface MulterRequest extends Request {
 const envPath = path.resolve(process.cwd(), '.env');
 const app = express();
 
-// Health check endpoint
-app.get('/api/health', async (req: Request, res: Response) => {
-  try {
-    // Test database connection with a new client instance
-    const client = await getPrismaClient();
-    await client.$queryRaw`SELECT 1`;
-    await client.$disconnect();
-    res.json({ 
-      status: 'healthy', 
-      database: 'connected',
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('Health check failed:', error);
-    res.status(503).json({ 
-      status: 'unhealthy', 
-      database: 'disconnected',
-      error: 'Database connection failed',
-      timestamp: new Date().toISOString()
-    });
-  }
-});
 
-app.get('/api/test-db', async (req: Request, res: Response) => {
-  try {
-    console.log('🔍 Testing database connection...');
-    console.log('📊 Database URL:', process.env.DATABASE_URL?.replace(/:[^:@]*@/, ':****@'));
-    console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
-    
-    await prisma.$queryRaw`SELECT 1`;
-    res.json({ 
-      status: 'success', 
-      message: 'Database connection successful',
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('❌ Database test failed:', error);
-    res.status(500).json({ 
-      status: 'error', 
-      message: 'Database connection failed',
-      error: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString()
-    });
-  }
-});
 
 app.get('/api/_test-db', async (req, res) => {
   console.log('🔗 Connecting to database...', databaseUrl);
@@ -141,13 +97,12 @@ app.get('/api/_test-db', async (req, res) => {
 });
 
 
-// Import shared Prisma client
-import prisma from './lib/prisma';
-
 // Test database connection on startup
 const testDatabaseConnection = async (): Promise<boolean> => {
   try {
-    await prisma.$queryRaw`SELECT 1`;
+    const client = await getPrismaClient();
+    await client.$queryRaw`SELECT 1`;
+    await client.$disconnect();
     console.log('✅ Database connected successfully');
     return true;
   } catch (error: any) {
@@ -202,8 +157,10 @@ app.use(cors({
 // --- Public routes ---
 app.get('/api/health', async (req: Request, res: Response) => {
   try {
-    // Test database connection
-    await prisma.$queryRaw`SELECT 1`;
+    // Test database connection with a new client instance
+    const client = await getPrismaClient();
+    await client.$queryRaw`SELECT 1`;
+    await client.$disconnect();
     res.json({ 
       status: 'healthy', 
       database: 'connected',
@@ -226,7 +183,9 @@ app.get('/api/test-db', async (req: Request, res: Response) => {
     console.log('📊 Database URL:', process.env.DATABASE_URL?.replace(/:[^:@]*@/, ':****@'));
     console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
     
-    await prisma.$queryRaw`SELECT 1`;
+    const client = await getPrismaClient();
+    await client.$queryRaw`SELECT 1`;
+    await client.$disconnect();
     res.json({ 
       status: 'success', 
       message: 'Database connection successful',
@@ -337,11 +296,13 @@ app.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { teamId } = req.query;
-      const list = await prisma.event.findMany({
+      const client = await getPrismaClient();
+      const list = await client.event.findMany({
         where: teamId ? { teamId: String(teamId) } : undefined,
         orderBy: { date: 'asc' },
         include: { team: true },
       });
+      await client.$disconnect();
       res.json(list);
     } catch (err) {
       console.error('❌ Events API error:', err);
@@ -604,7 +565,9 @@ app.put('/api/teams/:id', requireAdminAuth, async (req, res, next) => {
       res.status(400).json({ error: 'Missing id, gender or ageGroup' });
       return;
     }
-    const team = await prisma.team.update({ where: { id }, data: { gender, ageGroup } });
+    const client = await getPrismaClient();
+    const team = await client.team.update({ where: { id }, data: { gender, ageGroup } });
+    await client.$disconnect();
     res.json(team);
   } catch (err: any) {
     if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
