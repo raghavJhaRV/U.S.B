@@ -34,12 +34,7 @@ function EventFormModal({
   const [date, setDate] = useState(
     initial?.date ? initial.date.slice(0, 10) : ''
   );
-  const [startTime, setStartTime] = useState(
-    initial?.startTime ? initial.startTime.slice(0, 16) : ''
-  );
-  const [endTime, setEndTime] = useState(
-    initial?.endTime ? initial.endTime.slice(0, 16) : ''
-  );
+
   const [location, setLocation] = useState(initial?.location ?? '');
   const [type, setType] = useState(initial?.type ?? 'game');
   const [livestreamUrl, setLivestreamUrl] = useState(initial?.livestreamUrl ?? '');
@@ -55,8 +50,6 @@ function EventFormModal({
       setTitle(initial.title ?? '')
       setDescription(initial.description ?? '')
       setDate(initial.date?.slice(0, 10) ?? '')
-      setStartTime(initial.startTime?.slice(0, 16) ?? '')
-      setEndTime(initial.endTime?.slice(0, 16) ?? '')
       setLocation(initial.location ?? '')
       setType(initial.type ?? 'game')
       setLivestreamUrl(initial.livestreamUrl ?? '')
@@ -70,8 +63,6 @@ function EventFormModal({
       setTitle('')
       setDescription('')
       setDate('')
-      setStartTime('')
-      setEndTime('')
       setLocation('')
       setType('game')
       setLivestreamUrl('')
@@ -119,24 +110,7 @@ function EventFormModal({
               onChange={(e) => setDate(e.target.value)}
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium">Start Time *</label>
-            <input
-              type="datetime-local"
-              className="mt-1 w-full border px-2 py-1 rounded"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">End Time</label>
-            <input
-              type="datetime-local"
-              className="mt-1 w-full border px-2 py-1 rounded"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-            />
-          </div>
+
           <div>
             <label className="block text-sm font-medium">Location</label>
             <input
@@ -202,8 +176,6 @@ function EventFormModal({
               title, 
               description, 
               date, 
-              startTime, 
-              endTime, 
               location, 
               type, 
               livestreamUrl, 
@@ -245,13 +217,24 @@ export default function EventsPage() {
   }) => {
     const token = localStorage.getItem('adminJwt');
     if (!token) return alert('Not logged in');
+    
+    // Only send fields that the backend actually expects
+    const eventData = {
+      title: e.title,
+      date: e.date,
+      location: e.location,
+      type: e.type,
+      livestreamUrl: e.livestreamUrl,
+      teamId: e.teamId
+    };
+    
     const res = await fetch(`${API}/api/events`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,      // ← make sure this is set
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(e),
+      body: JSON.stringify(eventData),
     });
 
     if (res.ok) {
@@ -279,13 +262,24 @@ export default function EventsPage() {
     if (!editing) return;
     const token = localStorage.getItem('adminJwt');
     if (!token) return alert('Not logged in');
+    
+    // Only send fields that the backend actually expects
+    const eventData = {
+      title: e.title,
+      date: e.date,
+      location: e.location,
+      type: e.type,
+      livestreamUrl: e.livestreamUrl,
+      teamId: e.teamId
+    };
+    
     const res = await fetch(`${API}/api/events/${editing.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,      // ← and here
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(e),
+      body: JSON.stringify(eventData),
     });
     if (res.ok) {
       const updatedEvent = await res.json();
