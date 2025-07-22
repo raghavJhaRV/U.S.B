@@ -21,8 +21,6 @@ function EventFormModal({
     title: string; 
     description?: string;
     date: string; 
-    startTime: string;
-    endTime?: string;
     location?: string;
     type: string;
     livestreamUrl?: string;
@@ -208,8 +206,6 @@ export default function EventsPage() {
     title: string; 
     description?: string;
     date: string; 
-    startTime: string;
-    endTime?: string;
     location?: string;
     type: string;
     livestreamUrl?: string;
@@ -252,8 +248,6 @@ export default function EventsPage() {
     title: string; 
     description?: string;
     date: string; 
-    startTime: string;
-    endTime?: string;
     location?: string;
     type: string;
     livestreamUrl?: string;
