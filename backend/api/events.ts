@@ -117,7 +117,8 @@ export async function POST(req: Request, res: Response) {
     const eventData: any = { 
       title, 
       date: parsedDate, 
-      teamId
+      teamId,
+      startTime: parsedDate // Use the same date as startTime since it's required
     };
     
     // Only add optional fields if they have values
@@ -188,6 +189,7 @@ export async function PUT(req: Request, res: Response) {
         title,
         description,
         date: new Date(date),
+        startTime: startTime ? new Date(startTime) : new Date(date), // Use date as fallback
         endTime: endTime ? new Date(endTime) : null,
         location,
         type: type || 'game',
