@@ -48,44 +48,139 @@ export async function GET(req: Request, res: Response) {
 
 // POST /api/events
 export async function POST(req: Request, res: Response) {
-  const { 
-    title, 
-    description, 
-    date, 
-    startTime, 
-    endTime, 
-    location, 
-    type, 
-    livestreamUrl,
-    teamId 
-  } = req.body;
-  
-  console.log('Creating event:', { title, date, startTime, endTime, location, type, livestreamUrl, teamId });
-  
-  if (!title || !date || !startTime || !teamId) {
-    return res.status(400).json({ error: 'Missing required fields: title, date, startTime, teamId' });
-  }
-
   try {
+    console.log('🔍 Creating event with body:', req.body);
+    
+    const { 
+      title, 
+      description, 
+      date, 
+      startTime, 
+      endTime, 
+      location, 
+      type, 
+      livestreamUrl,
+      teamId 
+    } = req.body;
+    
+    console.log('📊 Event data:', { title, date, startTime, endTime, location, type, livestreamUrl, teamId });
+    
+    if (!title || !date || !startTime || !teamId) {
+      console.log('❌ Missing required fields:', { title: !!title, date: !!date, startTime: !!startTime, teamId: !!teamId });
+      return res.status(400).json({ 
+        error: 'Missing required fields: title, date, startTime, teamId',
+        received: { title: !!title, date: !!date, startTime: !!startTime, teamId: !!teamId }
+      });
+    }
+
+    console.log('✅ All required fields present, connecting to database...');
     const prisma = getPrismaClient();
+    console.log('✅ Prisma client obtained');
+    
+    // Verify team exists
+    try {
+      const team = await prisma.team.findUnique({
+        where: { id: teamId }
+      });
+      
+      if (!team) {
+        console.error('❌ Team not found:', teamId);
+        return res.status(400).json({ 
+          error: `Team with ID ${teamId} not found`,
+          receivedTeamId: teamId
+        });
+      }
+      
+      console.log('✅ Team found:', team.gender, team.ageGroup);
+    } catch (teamErr) {
+      console.error('❌ Team lookup error:', teamErr);
+      return res.status(500).json({ 
+        error: 'Failed to verify team',
+        details: process.env.NODE_ENV === 'development' ? teamErr.message : 'Database error'
+      });
+    }
+    
+    // Parse dates more robustly
+    let parsedDate, parsedStartTime, parsedEndTime;
+    
+    try {
+      parsedDate = new Date(date);
+      if (isNaN(parsedDate.getTime())) {
+        throw new Error(`Invalid date format: ${date}`);
+      }
+    } catch (dateErr) {
+      console.error('❌ Date parsing error:', dateErr);
+      return res.status(400).json({ 
+        error: `Invalid date format: ${date}`,
+        expected: 'YYYY-MM-DD format'
+      });
+    }
+    
+    try {
+      parsedStartTime = new Date(startTime);
+      if (isNaN(parsedStartTime.getTime())) {
+        throw new Error(`Invalid start time format: ${startTime}`);
+      }
+    } catch (startTimeErr) {
+      console.error('❌ Start time parsing error:', startTimeErr);
+      return res.status(400).json({ 
+        error: `Invalid start time format: ${startTime}`,
+        expected: 'ISO date string or valid date format'
+      });
+    }
+    
+    if (endTime) {
+      try {
+        parsedEndTime = new Date(endTime);
+        if (isNaN(parsedEndTime.getTime())) {
+          console.warn('⚠️ Invalid end time format, setting to null:', endTime);
+          parsedEndTime = null;
+        }
+      } catch (endTimeErr) {
+        console.warn('⚠️ End time parsing error, setting to null:', endTimeErr);
+        parsedEndTime = null;
+      }
+    }
+    
+    const eventData = { 
+      title, 
+      description,
+      date: parsedDate, 
+      startTime: parsedStartTime,
+      endTime: parsedEndTime,
+      location,
+      type: type || 'game',
+      livestreamUrl,
+      teamId 
+    };
+    
+    console.log('📝 Creating event with data:', eventData);
+    
     const created = await prisma.event.create({
-      data: { 
-        title, 
-        description,
-        date: new Date(date), 
-        startTime: new Date(startTime),
-        endTime: endTime ? new Date(endTime) : null,
-        location,
-        type: type || 'game',
-        livestreamUrl,
-        teamId 
-      },
+      data: eventData,
       include: { team: true }
     });
+    
+    console.log('✅ Event created successfully:', created.id);
     return res.status(201).json(created);
   } catch (err) {
-    console.error('Create event error:', err);
-    return res.status(500).json({ error: 'Failed to create event' });
+    console.error('❌ Create event error:', err);
+    console.error('🔍 Error details:', {
+      message: err instanceof Error ? err.message : 'Unknown error',
+      stack: err instanceof Error ? err.stack : undefined,
+      code: (err as any)?.code,
+      name: err instanceof Error ? err.name : undefined
+    });
+    
+    // Provide more detailed error information in development
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? `Failed to create event: ${err instanceof Error ? err.message : 'Unknown error'}`
+      : 'Failed to create event';
+      
+    return res.status(500).json({ 
+      error: errorMessage,
+      timestamp: new Date().toISOString()
+    });
   }
 }
 
