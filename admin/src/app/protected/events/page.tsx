@@ -336,13 +336,7 @@ export default function EventsPage() {
                 )}
                 <div className="text-sm text-gray-500 space-y-1">
                   <p>
-                    📅 {new Date(ev.date).toLocaleDateString()} 
-                    {ev.startTime && (
-                      <> • 🕐 {new Date(ev.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</>
-                    )}
-                    {ev.endTime && (
-                      <> - {new Date(ev.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</>
-                    )}
+                    📅 {new Date(ev.date).toLocaleDateString()}
                   </p>
                   {ev.location && (
                     <p>📍 {ev.location}</p>
