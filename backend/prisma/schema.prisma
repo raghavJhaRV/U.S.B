@@ -53,7 +53,6 @@ model Event {
   endTime       DateTime?
   isActive      Boolean   @default(true)
   location      String?
-  startTime     DateTime
   type          String    @default("game")
   updatedAt     DateTime  @updatedAt
   livestreamUrl String?
