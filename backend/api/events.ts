@@ -160,16 +160,23 @@ export async function POST(req: Request, res: Response) {
       }
     }
     
-    const eventData = { 
+    // Create event with only the fields that exist in production database
+    const eventData: any = { 
       title, 
       date: parsedDate, 
-      startTime: parsedStartTime,
-      endTime: parsedEndTime,
-      location,
-      type: type || 'game',
-      livestreamUrl,
       teamId 
     };
+    
+    // Only add optional fields if they have values
+    if (location && location.trim()) {
+      eventData.location = location.trim();
+    }
+    if (type && type.trim()) {
+      eventData.type = type;
+    }
+    if (livestreamUrl && livestreamUrl.trim()) {
+      eventData.livestreamUrl = livestreamUrl.trim();
+    }
     
     console.log('📝 Creating event with data:', eventData);
     
