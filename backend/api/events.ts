@@ -96,7 +96,7 @@ export async function POST(req: Request, res: Response) {
       console.error('❌ Team lookup error:', teamErr);
       return res.status(500).json({ 
         error: 'Failed to verify team',
-        details: process.env.NODE_ENV === 'development' ? teamErr.message : 'Database error'
+        details: process.env.NODE_ENV === 'development' ? (teamErr instanceof Error ? teamErr.message : 'Unknown error') : 'Database error'
       });
     }
     
@@ -117,7 +117,25 @@ export async function POST(req: Request, res: Response) {
     }
     
     try {
-      parsedStartTime = new Date(startTime);
+      // Handle various date formats
+      let timeToParse = startTime;
+      
+      // If it's in format "2025-01-01, 01:00 AM", convert it
+      if (startTime.includes(',') && startTime.includes('AM') || startTime.includes('PM')) {
+        // Parse "2025-01-01, 01:00 AM" format
+        const [datePart, timePart] = startTime.split(', ');
+        const [time, period] = timePart.split(' ');
+        const [hours, minutes] = time.split(':');
+        
+        let hour = parseInt(hours);
+        if (period === 'PM' && hour !== 12) hour += 12;
+        if (period === 'AM' && hour === 12) hour = 0;
+        
+        timeToParse = `${datePart}T${hour.toString().padStart(2, '0')}:${minutes}:00.000Z`;
+        console.log('🕐 Converted time format:', { original: startTime, converted: timeToParse });
+      }
+      
+      parsedStartTime = new Date(timeToParse);
       if (isNaN(parsedStartTime.getTime())) {
         throw new Error(`Invalid start time format: ${startTime}`);
       }
@@ -125,7 +143,8 @@ export async function POST(req: Request, res: Response) {
       console.error('❌ Start time parsing error:', startTimeErr);
       return res.status(400).json({ 
         error: `Invalid start time format: ${startTime}`,
-        expected: 'ISO date string or valid date format'
+        expected: 'ISO date string or valid date format',
+        received: startTime
       });
     }
     

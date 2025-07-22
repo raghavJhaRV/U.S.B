@@ -9,65 +9,62 @@ datasource db {
 
 model Team {
   id       String         @id @default(cuid())
-  gender   String 
-  ageGroup String 
-  players  Registration[]
+  gender   String
+  ageGroup String
   events   Event[]
+  players  Registration[]
 
   @@unique([gender, ageGroup], name: "gender_ageGroup")
 }
 
 model Program {
   id            String         @id @default(cuid())
-  name          String
+  name          String         @unique
   description   String
   season        String
   price         Float
   registrations Registration[]
-
-  @@unique([name])
 }
 
 model Registration {
-  id             String          @id @default(cuid())
+  id             String   @id @default(cuid())
   playerName     String
   parentName     String
   email          String
   phone          String
   waiverAccepted Boolean
-  createdAt      DateTime        @default(now())
+  createdAt      DateTime @default(now())
   waiverUrl      String?
   eTransferNote  String?
-
   teamId         String
   programId      String
-  team           Team            @relation(fields: [teamId], references: [id])
-  program        Program         @relation(fields: [programId], references: [id])
-  payment        Payment?        @relation("RegistrationPayment")
+  payment        Payment? @relation("RegistrationPayment")
+  program        Program  @relation(fields: [programId], references: [id])
+  team           Team     @relation(fields: [teamId], references: [id])
 }
 
 model Event {
-  id              String   @id @default(cuid())
-  title           String
-  description     String?
-  date            DateTime
-  startTime       DateTime
-  endTime         DateTime?
-  location        String?
-  type            String   @default("game") // "game", "practice", "tournament", "meeting", etc.
-  livestreamUrl   String?  // URL for livestream (YouTube, Twitch, etc.)
-  isActive        Boolean  @default(true)
-  teamId          String
-  team            Team     @relation(fields: [teamId], references: [id])
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String    @id @default(cuid())
+  title         String
+  date          DateTime
+  teamId        String
+  createdAt     DateTime  @default(now())
+  description   String?
+  endTime       DateTime?
+  isActive      Boolean   @default(true)
+  location      String?
+  startTime     DateTime
+  type          String    @default("game")
+  updatedAt     DateTime  @updatedAt
+  livestreamUrl String?
+  team          Team      @relation(fields: [teamId], references: [id])
 }
 
 model News {
   id        String   @id @default(uuid())
   title     String
   content   String
-  imageUrl  String? // Optional image for the news article
+  imageUrl  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -75,55 +72,52 @@ model News {
 model Media {
   id        String   @id @default(uuid())
   title     String
-  url       String   @unique // Each media item should have a unique URL
-  type      String   // e.g., "image", "video", "document"
+  url       String   @unique
+  type      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Order {
-  id          String    @id @default(uuid())
-  userId      String?   // If you have users
-  itemId      String?   // e.g., merchandiseId or registrationId
-  itemType    String?   // 'merchandise', 'event_registration'
-  amount      Decimal
-  currency    String
-  status      String    // 'pending', 'succeeded', 'failed', 'refunded'
-  stripeId    String?   @unique // Stripe Payment Intent ID
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id        String   @id @default(uuid())
+  userId    String?
+  itemId    String?
+  itemType  String?
+  amount    Decimal
+  currency  String
+  status    String
+  stripeId  String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Merchandise {
   id          String   @id @default(uuid())
   name        String
-  description String?  
+  description String?
   price       Float
   imageUrl    String
   stock       Int
-  category    String   
-  isActive    Boolean  @default(true) 
+  category    String
   created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt 
+  isActive    Boolean  @default(true)
+  updated_at  DateTime @updatedAt
 }
 
 model Payment {
-  id                    String   @id @default(cuid())
-  amount                Int      // Amount in cents
-  currency              String   @default("usd")
-  status                String   // 'pending', 'succeeded', 'failed', 'refunded'
-  type                  String   // 'merchandise', 'registration'
-  stripePaymentIntentId String?  @unique
+  id                    String        @id @default(cuid())
+  registrationId        String?       @unique
+  amount                Int
+  createdAt             DateTime      @default(now())
+  currency              String        @default("usd")
   customerEmail         String?
   customerName          String?
-  metadata              Json?    // Store additional payment data
-  
-  // Optional relation to registration (only for registration payments)
-  registrationId        String?  @unique
+  metadata              Json?
+  status                String
+  stripePaymentIntentId String?       @unique
+  type                  String
+  updatedAt             DateTime      @updatedAt
   registration          Registration? @relation("RegistrationPayment", fields: [registrationId], references: [id])
-  
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
 }
 
 model ContactMessage {
