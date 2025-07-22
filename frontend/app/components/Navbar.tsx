@@ -28,6 +28,7 @@ export default function Navbar() {
         <li><Link href="/media" className="hover:text-gray-400">Media</Link></li>
         {/*<li><Link href="/training" className="hover:text-gray-400">Training</Link></li>*/}
         <li><Link href="/events" className="hover:text-gray-400">Events</Link></li>
+        <li><Link href="/livestream" className="hover:text-gray-400">Live Streams</Link></li>
         <li><Link href="/news" className="hover:text-gray-400">News</Link></li>
         <li><Link href="/contact" className="hover:text-gray-400">Contact</Link></li>
         <li><Link href="/partners" className="hover:text-gray-400">Proud Partners</Link></li>
