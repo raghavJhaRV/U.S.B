@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       'bratlcnxybxyydxnnimr.supabase.co',
-      'images.unsplash.com'
+      'images.unsplash.com',
+      'd36m266ykvepgv.cloudfront.net'
     ],
   },
 };

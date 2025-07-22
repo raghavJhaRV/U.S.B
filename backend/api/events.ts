@@ -54,21 +54,19 @@ export async function POST(req: Request, res: Response) {
     const { 
       title, 
       date, 
-      startTime, 
-      endTime, 
       location, 
       type, 
       livestreamUrl,
       teamId 
     } = req.body;
     
-    console.log('📊 Event data:', { title, date, startTime, endTime, location, type, livestreamUrl, teamId });
+    console.log('📊 Event data:', { title, date, location, type, livestreamUrl, teamId });
     
-    if (!title || !date || !startTime || !teamId) {
-      console.log('❌ Missing required fields:', { title: !!title, date: !!date, startTime: !!startTime, teamId: !!teamId });
+    if (!title || !date || !teamId) {
+      console.log('❌ Missing required fields:', { title: !!title, date: !!date, teamId: !!teamId });
       return res.status(400).json({ 
-        error: 'Missing required fields: title, date, startTime, teamId',
-        received: { title: !!title, date: !!date, startTime: !!startTime, teamId: !!teamId }
+        error: 'Missing required fields: title, date, teamId',
+        received: { title: !!title, date: !!date, teamId: !!teamId }
       });
     }
 
@@ -99,8 +97,8 @@ export async function POST(req: Request, res: Response) {
       });
     }
     
-    // Parse dates more robustly
-    let parsedDate, parsedStartTime, parsedEndTime;
+    // Parse date
+    let parsedDate;
     
     try {
       parsedDate = new Date(date);
@@ -113,51 +111,6 @@ export async function POST(req: Request, res: Response) {
         error: `Invalid date format: ${date}`,
         expected: 'YYYY-MM-DD format'
       });
-    }
-    
-    try {
-      // Handle various date formats
-      let timeToParse = startTime;
-      
-      // If it's in format "2025-01-01, 01:00 AM", convert it
-      if (startTime.includes(',') && startTime.includes('AM') || startTime.includes('PM')) {
-        // Parse "2025-01-01, 01:00 AM" format
-        const [datePart, timePart] = startTime.split(', ');
-        const [time, period] = timePart.split(' ');
-        const [hours, minutes] = time.split(':');
-        
-        let hour = parseInt(hours);
-        if (period === 'PM' && hour !== 12) hour += 12;
-        if (period === 'AM' && hour === 12) hour = 0;
-        
-        timeToParse = `${datePart}T${hour.toString().padStart(2, '0')}:${minutes}:00.000Z`;
-        console.log('🕐 Converted time format:', { original: startTime, converted: timeToParse });
-      }
-      
-      parsedStartTime = new Date(timeToParse);
-      if (isNaN(parsedStartTime.getTime())) {
-        throw new Error(`Invalid start time format: ${startTime}`);
-      }
-    } catch (startTimeErr) {
-      console.error('❌ Start time parsing error:', startTimeErr);
-      return res.status(400).json({ 
-        error: `Invalid start time format: ${startTime}`,
-        expected: 'ISO date string or valid date format',
-        received: startTime
-      });
-    }
-    
-    if (endTime) {
-      try {
-        parsedEndTime = new Date(endTime);
-        if (isNaN(parsedEndTime.getTime())) {
-          console.warn('⚠️ Invalid end time format, setting to null:', endTime);
-          parsedEndTime = null;
-        }
-      } catch (endTimeErr) {
-        console.warn('⚠️ End time parsing error, setting to null:', endTimeErr);
-        parsedEndTime = null;
-      }
     }
     
     // Create event with only the fields that exist in production database
