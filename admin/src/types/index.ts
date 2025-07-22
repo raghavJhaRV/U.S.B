@@ -30,8 +30,6 @@ export interface Event {
   title: string;
   description?: string;
   date: string;               // ISO date string
-  startTime: string;          // ISO datetime string
-  endTime?: string;           // ISO datetime string (optional)
   location?: string;
   type: string;               // "game", "practice", "tournament", etc.
   livestreamUrl?: string;     // URL for livestream (YouTube, Twitch, etc.)
