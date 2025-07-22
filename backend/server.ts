@@ -494,7 +494,23 @@ app.get(
 
 
 app.post('/api/events', requireAdminAuth, async (req, res, next) => {
-  Promise.resolve(events.POST(req, res)).catch(next);
+  try {
+    await events.POST(req, res);
+  } catch (error) {
+    console.error('❌ Events POST error in server handler:', error);
+    console.error('🔍 Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      code: (error as any)?.code
+    });
+    
+    if (!res.headersSent) {
+      res.status(500).json({ 
+        error: 'Internal server error during event creation',
+        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : 'Database or validation error'
+      });
+    }
+  }
 });
 
 // --- Public login ---
