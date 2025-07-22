@@ -53,7 +53,6 @@ export async function POST(req: Request, res: Response) {
     
     const { 
       title, 
-      description, 
       date, 
       startTime, 
       endTime, 
@@ -163,7 +162,6 @@ export async function POST(req: Request, res: Response) {
     
     const eventData = { 
       title, 
-      description,
       date: parsedDate, 
       startTime: parsedStartTime,
       endTime: parsedEndTime,
