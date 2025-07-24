@@ -25,8 +25,6 @@ export default function MerchandisePage() {
         return res.json();
       })
       .then((data) => {
-
-        // Filter only active products
         const activeProducts = data.filter((product: Product) => product.isActive);
         setProducts(activeProducts);
         setLoading(false);
@@ -48,7 +46,7 @@ export default function MerchandisePage() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
             {[...Array(4)].map((_, index) => (
-              <div key={index} className="text-center animate-pulse">
+              <div key={index} className="bg-gray-900 rounded-lg shadow-md p-4 animate-pulse text-center">
                 <div className="w-full h-64 bg-gray-800 rounded mb-4"></div>
                 <div className="h-4 bg-gray-800 rounded w-32 mx-auto mb-2"></div>
                 <div className="h-4 bg-gray-800 rounded w-20 mx-auto"></div>
@@ -65,14 +63,20 @@ export default function MerchandisePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
             {products.map((item) => (
               <Link key={item.id} href={`/merchandise/${item.id}`}>
-                <div className="text-center cursor-pointer hover:opacity-80 transition">
+                <div className="relative bg-gray-900 rounded-lg shadow-md overflow-hidden p-4 text-center cursor-pointer hover:opacity-80 transition">
                   <img
                     src={item.imageUrl}
                     alt={item.name}
-                    className="w-full object-cover mb-4"
+                    className="w-full h-64 object-cover mb-4 rounded"
                   />
-                  <p className="font-bold uppercase tracking-wide">{item.name}</p>
+                  <p className="font-bold uppercase tracking-wide text-white">{item.name}</p>
                   <p className="text-gray-400">${item.price.toFixed(2)}</p>
+
+                  {item.stock < 5 && (
+                    <span className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full">
+                      Low Stock
+                    </span>
+                  )}
                 </div>
               </Link>
             ))}

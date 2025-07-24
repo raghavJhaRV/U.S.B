@@ -24,14 +24,14 @@ export default function Home() {
     const mockHallOfFame: Player[] = [
       { id: "1", name: "Kyler Varga", imageUrl: "/image.webp" },
       { id: "2", name: "Ike Imegwu", imageUrl: "/image1.jpg" },
-      { id: "3", name: "Angela Lee", imageUrl: "/hof3.jpg" },
-      { id: "4", name: "Sam Nichols", imageUrl: "/hof4.jpg" },
-      { id: "5", name: "Wol Wol", imageUrl: "/hof4.jpg" },
-      { id: "6", name: "Kyler Varga", imageUrl: "/hof1.jpg" },
-      { id: "7", name: "Ike", imageUrl: "/hof2.jpg" },
-      { id: "8", name: "Angela Lee", imageUrl: "/hof3.jpg" },
-      { id: "9", name: "Sam Nichols", imageUrl: "/hof4.jpg" },
-      { id: "10", name: "Wol Wol", imageUrl: "/hof4.jpg" },
+      { id: "3", name: "Angela Lee", imageUrl: "/image1.jpg" },
+      { id: "4", name: "Sam Nichols", imageUrl: "/image1.jpg" },
+      { id: "5", name: "Wol Wol", imageUrl: "/image1.jpg" },
+      { id: "6", name: "Kyler Varga", imageUrl: "/image1.jpg" },
+      { id: "7", name: "Ike", imageUrl: "/image1.jpg" },
+      { id: "8", name: "Angela Lee", imageUrl: "/image1.jpg" },
+      { id: "9", name: "Sam Nichols", imageUrl: "/image1.jpg" },
+      { id: "10", name: "Wol Wol", imageUrl: "/image1.jpg" },
     ];
     
     setHallOfFame(mockHallOfFame);
