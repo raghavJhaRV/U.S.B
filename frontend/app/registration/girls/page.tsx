@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { API_URL } from "../../constants";
+
 type Program = {
   id: string;
   name: string;
@@ -229,7 +230,7 @@ export default function RegistrationPage() {
                   className="mr-2 mt-1"
                 />
                 <label className="text-sm">
-                  I have read and agree to the <a href="/waiver.pdf" target="_blank" className="underline text-blue-400 hover:text-blue-300">waiver terms and conditions</a>
+                  I have read and agree to the waiver terms and conditions
                 </label>
               </div>
 
