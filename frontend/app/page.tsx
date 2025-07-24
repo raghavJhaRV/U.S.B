@@ -43,7 +43,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-[80vh] w-full overflow-hidden">
         <img
-          src={DEFAULT_IMAGE}
+          src="/images/image2.jpg"
           alt="Basketball Hero"
           className="absolute inset-0 w-full h-full object-cover opacity-60"
         />
