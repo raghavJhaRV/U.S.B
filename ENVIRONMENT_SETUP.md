@@ -29,6 +29,11 @@ DIRECT_DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.your-project.supaba
 JWT_SECRET=your_super_secret_jwt_key_here
 ADMIN_PASSWORD=your_admin_password_here
 
+# Email Configuration (Replace with your actual values)
+EMAIL_USERNAME=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password_here
+ADMIN_EMAIL=admin@yourdomain.com
+
 # Supabase Configuration (Replace with your actual values)
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here

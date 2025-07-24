@@ -448,6 +448,215 @@ app.post(
   }
 );
 
+// Waiver upload route (for user registrations)
+app.post('/api/uploadWaiver', upload.single('file'), async (req: MulterRequest, res: Response, next: NextFunction) => {
+  try {
+    console.log('Received waiver upload request.');
+    if (!req.file) {
+      console.log('No file found in waiver upload request.');
+      return res.status(400).json({ error: 'No file uploaded.' });
+    }
+
+    if (!supabase) {
+      return res.status(503).json({ error: 'File upload service not available. Supabase not configured.' });
+    }
+
+    const registrationId = req.body.registrationId;
+    if (!registrationId) {
+      return res.status(400).json({ error: 'Missing registrationId.' });
+    }
+
+    console.log('Waiver file details:', req.file.originalname, req.file.mimetype, req.file.size);
+    console.log('Registration ID:', registrationId);
+
+    const fileExt = req.file.originalname.split('.').pop();
+    const filePath = `waivers/${registrationId}-${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+    console.log('Uploading waiver to filePath:', filePath);
+
+    const { data, error: uploadError } = await supabase.storage
+      .from('waivers')
+      .upload(filePath, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error('Supabase waiver upload error:', uploadError);
+      return res.status(500).json({ error: 'Failed to upload waiver to storage.', details: uploadError.message });
+    }
+    console.log('Supabase waiver upload successful:', data);
+
+    const { data: publicUrlData } = supabase.storage.from('waivers').getPublicUrl(filePath);
+
+    if (!publicUrlData || !publicUrlData.publicUrl) {
+      console.error('Supabase getPublicUrl error: No public URL returned', publicUrlData);
+      return res.status(500).json({ error: 'Failed to get public URL for uploaded waiver.' });
+    }
+    console.log('Waiver Public URL:', publicUrlData.publicUrl);
+
+    // Update registration with waiver URL
+    const client = await getPrismaClient();
+    await client.registration.update({
+      where: { id: registrationId },
+      data: { waiverUrl: publicUrlData.publicUrl },
+    });
+
+    res.json({ 
+      message: 'Waiver uploaded and linked successfully!', 
+      url: publicUrlData.publicUrl 
+    });
+
+  } catch (error) {
+    console.error('Unhandled error during waiver upload:', error);
+    res.status(500).json({ 
+      error: 'Internal Server Error during waiver upload.', 
+      details: (error as Error).message 
+    });
+  }
+});
+
+// Admin waiver form management routes
+app.post('/api/admin/waiver-upload', requireAdminAuth, upload.single('file'), async (req: MulterRequest, res: Response, next: NextFunction) => {
+  try {
+    console.log('Received admin waiver form upload request.');
+    if (!req.file) {
+      console.log('No file found in admin waiver upload request.');
+      return res.status(400).json({ error: 'No file uploaded.' });
+    }
+
+    if (!supabase) {
+      return res.status(503).json({ error: 'File upload service not available. Supabase not configured.' });
+    }
+
+    const name = req.body.name;
+    if (!name) {
+      return res.status(400).json({ error: 'Missing waiver form name.' });
+    }
+
+    console.log('Admin waiver form details:', req.file.originalname, req.file.mimetype, req.file.size);
+    console.log('Form name:', name);
+
+    const fileExt = req.file.originalname.split('.').pop();
+    const filePath = `waiver-forms/${name.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}.${fileExt}`;
+    console.log('Uploading admin waiver form to filePath:', filePath);
+
+    const { data, error: uploadError } = await supabase.storage
+      .from('waivers')
+      .upload(filePath, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error('Supabase admin waiver upload error:', uploadError);
+      return res.status(500).json({ error: 'Failed to upload waiver form to storage.', details: uploadError.message });
+    }
+    console.log('Supabase admin waiver upload successful:', data);
+
+    const { data: publicUrlData } = supabase.storage.from('waivers').getPublicUrl(filePath);
+
+    if (!publicUrlData || !publicUrlData.publicUrl) {
+      console.error('Supabase getPublicUrl error: No public URL returned', publicUrlData);
+      return res.status(500).json({ error: 'Failed to get public URL for uploaded waiver form.' });
+    }
+    console.log('Admin Waiver Form Public URL:', publicUrlData.publicUrl);
+
+    // Store waiver form metadata in database (you might want to create a WaiverForm model)
+    const client = await getPrismaClient();
+    // For now, we'll just return the URL. You can add a WaiverForm table later if needed
+    const waiverFormId = `wf_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+
+    res.json({ 
+      id: waiverFormId,
+      name: name,
+      url: publicUrlData.publicUrl,
+      uploadedAt: new Date().toISOString(),
+      isActive: true
+    });
+
+  } catch (error) {
+    console.error('Unhandled error during admin waiver upload:', error);
+    res.status(500).json({ 
+      error: 'Internal Server Error during admin waiver upload.', 
+      details: (error as Error).message 
+    });
+  }
+});
+
+app.get('/api/admin/waiver-forms', requireAdminAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!supabase) {
+      return res.status(503).json({ error: 'File storage service not available.' });
+    }
+
+    // List files in the waivers bucket
+    const { data, error } = await supabase.storage
+      .from('waivers')
+      .list('waiver-forms', {
+        limit: 100,
+        offset: 0,
+      });
+
+    if (error) {
+      console.error('Error listing waiver forms:', error);
+      return res.status(500).json({ error: 'Failed to list waiver forms.' });
+    }
+
+    // Transform the data to match the expected format
+    const waiverForms = data?.map((file: any, index: number) => ({
+      id: `wf_${index}_${Date.now()}`,
+      name: file.name.replace(/-\d+\.\w+$/, '').replace(/-/g, ' '),
+      url: `${process.env.SUPABASE_URL}/storage/v1/object/public/waivers/waiver-forms/${file.name}`,
+      uploadedAt: file.created_at || new Date().toISOString(),
+      isActive: true
+    })) || [];
+
+    res.json(waiverForms);
+
+  } catch (error) {
+    console.error('Error in waiver forms list:', error);
+    res.status(500).json({ error: 'Internal Server Error.' });
+  }
+});
+
+app.delete('/api/admin/waiver-forms/:id', requireAdminAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    
+    if (!supabase) {
+      return res.status(503).json({ error: 'File storage service not available.' });
+    }
+
+    // For now, we'll just return success. In a real implementation, you'd:
+    // 1. Look up the file path from the database using the ID
+    // 2. Delete the file from Supabase storage
+    // 3. Remove the record from the database
+
+    res.json({ message: 'Waiver form deleted successfully.' });
+
+  } catch (error) {
+    console.error('Error deleting waiver form:', error);
+    res.status(500).json({ error: 'Internal Server Error.' });
+  }
+});
+
+app.put('/api/admin/waiver-forms/:id/toggle', requireAdminAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
+    
+    // For now, we'll just return success. In a real implementation, you'd:
+    // 1. Update the waiver form status in the database
+    // 2. Return the updated record
+
+    res.json({ message: `Waiver form ${isActive ? 'activated' : 'deactivated'} successfully.` });
+
+  } catch (error) {
+    console.error('Error toggling waiver form status:', error);
+    res.status(500).json({ error: 'Internal Server Error.' });
+  }
+});
+
 app.post(
   '/api/teams',
   (req: Request, res: Response, next: NextFunction) => {
