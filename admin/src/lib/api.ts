@@ -187,3 +187,56 @@ export async function updateMedia(id: string, data: { title?: string; url?: stri
 export async function deleteMedia(id: string): Promise<void> {
   await fetchAdminData<void>(`api/admin/media/${id}`, 'DELETE');
 }
+
+// Waiver Form Management Functions
+export async function uploadWaiverForm(file: File, name: string): Promise<{ id: string; url: string }> {
+  const token = localStorage.getItem('adminJwt');
+  if (!token) {
+    throw new Error('Authentication required. Please log in.');
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('name', name);
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/waiver-upload`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    let errorData: unknown;
+    try {
+      errorData = await res.json();
+    } catch { }
+    if (!errorData) {
+      errorData = { message: `Waiver form upload failed with status ${res.status}: ${res.statusText}` };
+    }
+    throw new Error(typeof errorData === 'object' && errorData !== null && 'message' in errorData
+      ? (errorData as { message: string }).message
+      : 'Waiver form upload failed');
+  }
+
+  return res.json();
+}
+
+export async function getWaiverForms(): Promise<Array<{
+  id: string;
+  name: string;
+  url: string;
+  uploadedAt: string;
+  isActive: boolean;
+}>> {
+  return fetchAdminData(`api/admin/waiver-forms`);
+}
+
+export async function deleteWaiverForm(id: string): Promise<void> {
+  await fetchAdminData<void>(`api/admin/waiver-forms/${id}`, 'DELETE');
+}
+
+export async function toggleWaiverFormStatus(id: string, isActive: boolean): Promise<void> {
+  await fetchAdminData<void>(`api/admin/waiver-forms/${id}/toggle`, 'PUT', { isActive });
+}
