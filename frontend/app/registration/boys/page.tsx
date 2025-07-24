@@ -2,7 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { API_URL } from "../../constants";
-import { Program, Team } from "../../types";
+
+type Program = {
+  id: string;
+  name: string;
+};
+
+type Team = {
+  id: string;
+  gender: string;
+  ageGroup: string;
+};
 
 export default function RegistrationPage() {
   // 👦 Hardcoded gender for this page
