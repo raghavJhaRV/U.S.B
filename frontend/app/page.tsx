@@ -43,7 +43,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-[80vh] w-full overflow-hidden">
         <img
-          src={DEFAULT_IMAGE}
+          src="/images/image2.jpg"
           alt="Basketball Hero"
           className="absolute inset-0 w-full h-full object-cover opacity-60"
         />
@@ -87,9 +87,9 @@ export default function Home() {
           <div className="bg-white shadow-lg p-6 text-center">
             <h2 className="font-bold text-xl mb-4">PLAYER HIGHLIGHTS</h2>
             <img src={DEFAULT_IMAGE} alt="Highlight" className="mb-4 w-full h-40 object-cover" />
-            <Link href="/player-highlights">
+            <Link href="/Media">
               <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
-                JOIN A TEAM
+                VIEW MEDIA
               </button>
             </Link>
           </div>
@@ -100,7 +100,7 @@ export default function Home() {
             <img src={DEFAULT_IMAGE} alt="Tournaments" className="mb-4 w-full h-40 object-cover" />
             <Link href="/events">
               <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
-                VIEW SCHEDULE
+                VIEW EVENTS
               </button>
             </Link>
           </div>
@@ -109,7 +109,6 @@ export default function Home() {
           <div className="bg-white shadow-lg p-6 text-center">
             <h2 className="font-bold text-xl mb-4">LATEST NEWS</h2>
             <img src={DEFAULT_IMAGE} alt="News" className="mb-4 w-full h-40 object-cover" />
-            <span className="text-gray-500 text-sm block mb-4">April 23, 2015</span>
             <Link href="/news">
               <button className="border border-black px-4 py-2 font-bold hover:bg-black hover:text-white transition">
                 READ MORE
@@ -157,4 +156,7 @@ export default function Home() {
     </div>
   );
 }
+
+
+
 
