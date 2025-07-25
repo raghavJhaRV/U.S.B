@@ -302,6 +302,62 @@ app.get(
   }
 );
 
+// Get a specific registration by ID (public endpoint for payment page)
+app.get('/api/registrations/:id', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const client = await getPrismaClient();
+    
+    const registration = await client.registration.findUnique({
+      where: { id },
+      include: {
+        program: true,
+        team: true,
+        payment: true,
+      },
+    });
+
+    if (!registration) {
+      return res.status(404).json({ error: 'Registration not found' });
+    }
+
+    res.json(registration);
+  } catch (error) {
+    console.error('Error fetching registration:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Confirm payment for registration
+app.post('/api/registrations/:id/confirm-payment', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { paymentId } = req.body;
+    const client = await getPrismaClient();
+    
+    // Update registration status to paid
+    const updatedRegistration = await client.registration.update({
+      where: { id },
+      data: {
+        paymentStatus: 'paid',
+        payment: {
+          connect: { id: paymentId }
+        }
+      },
+      include: {
+        program: true,
+        team: true,
+        payment: true,
+      },
+    });
+
+    res.json(updatedRegistration);
+  } catch (error) {
+    console.error('Error confirming payment:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.get(
   '/api/registrations',
   (req: Request, res: Response, next: NextFunction) => {

@@ -133,18 +133,8 @@ export default function RegistrationPage() {
       //   }
       // }
 
-      alert("Registration successful!");
-
-      // Reset form
-      setPlayerName("");
-      setParentName("");
-      setEmail("");
-      setPhone("");
-      setWaiverAccepted(false);
-      setWaiverSignature("");
-      // setWaiverFile(null); // Removed waiverFile reset
-      setProgramId("");
-      setSelectedTeam("");
+      // Redirect to payment page instead of showing alert
+      window.location.href = `/registration/payment/${data.id}`;
 
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';

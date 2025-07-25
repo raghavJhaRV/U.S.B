@@ -38,6 +38,7 @@ model Registration {
   eTransferNote  String?
   teamId         String
   programId      String
+  paymentStatus  String   @default("pending") // pending, paid, failed
   payment        Payment? @relation("RegistrationPayment")
   program        Program  @relation(fields: [programId], references: [id])
   team           Team     @relation(fields: [teamId], references: [id])
