@@ -29,6 +29,7 @@ import * as mediaHandlers from './api/media';
 import merchandiseRouter from './api/merchandise';
 import * as helcim from './api/helcim';
 import * as contactHandlers from './api/contact';
+import * as orderHandlers from './api/orders';
 import { readdirSync } from 'fs';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
@@ -260,6 +261,19 @@ app.get('/api/test-email', async (req: Request, res: Response) => {
 app.get('/api/news', newsHandlers.GET);
 app.get('/api/media', mediaHandlers.GET);
 app.use('/api/merchandise', merchandiseRouter);
+
+// Order routes
+app.post('/api/orders', (req: Request, res: Response, next: NextFunction) => {
+  Promise.resolve(orderHandlers.createOrder(req, res)).catch(next);
+});
+
+app.get('/api/orders', (req: Request, res: Response, next: NextFunction) => {
+  Promise.resolve(orderHandlers.getOrders(req, res)).catch(next);
+});
+
+app.get('/api/orders/:id', (req: Request, res: Response, next: NextFunction) => {
+  Promise.resolve(orderHandlers.getOrderById(req, res)).catch(next);
+});
 
 // Contact form routes
 app.post('/api/contact', (req: Request, res: Response, next: NextFunction) => {

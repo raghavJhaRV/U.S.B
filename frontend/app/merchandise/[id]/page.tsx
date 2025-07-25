@@ -56,10 +56,30 @@ export default function ProductPage() {
   }, [id]);
 
   const handleBuyNow = () => {
-    // For now, redirect to a payment form or show a message
-    // You can replace this with your payment integration
-    if (!selectedSize) return;
-    window.location.href = `/merchandise/${id}/buy?size=${selectedSize}&qty=${quantity}`;
+    if (!selectedSize) {
+      alert("Please select a size");
+      return;
+    }
+    
+    if (product.stock === 0) {
+      alert("This item is out of stock");
+      return;
+    }
+    
+    // Redirect to checkout with product details
+    const checkoutData = {
+      productId: product.id,
+      productName: product.name,
+      price: product.price,
+      size: selectedSize,
+      quantity: quantity,
+      imageUrl: product.imageUrl,
+      total: product.price * quantity
+    };
+    
+    // Encode the data and redirect to checkout
+    const encodedData = encodeURIComponent(JSON.stringify(checkoutData));
+    window.location.href = `/merchandise/checkout?data=${encodedData}`;
   };
 
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
