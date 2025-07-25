@@ -583,6 +583,48 @@ app.post('/api/admin/waiver-upload', requireAdminAuth, upload.single('file'), as
   }
 });
 
+// Public endpoint for fetching waiver forms (no authentication required)
+app.get('/api/waiver-forms', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!supabase) {
+      return res.status(503).json({ error: 'File storage service not available.' });
+    }
+
+    // List files in the waivers bucket
+    const { data, error } = await supabase.storage
+      .from('waivers')
+      .list('waiver-forms', {
+        limit: 100,
+        offset: 0,
+      });
+
+    if (error) {
+      console.error('Error listing waiver forms:', error);
+      return res.status(500).json({ error: 'Failed to list waiver forms.' });
+    }
+
+    // Transform the data to match the expected format
+    // Filter out .emptyFolderPlaceholder and only return active forms
+    const waiverForms = data?.filter((file: any) => 
+      file.name !== '.emptyFolderPlaceholder' && 
+      file.name && 
+      file.name.trim() !== ''
+    ).map((file: any, index: number) => ({
+      id: file.name, // Use filename as ID for consistency
+      name: file.name.replace(/-\d+\.\w+$/, '').replace(/-/g, ' '),
+      url: `${process.env.SUPABASE_URL}/storage/v1/object/public/waivers/waiver-forms/${file.name}`,
+      uploadedAt: file.created_at || new Date().toISOString(),
+      isActive: true
+    })) || [];
+
+    res.json(waiverForms);
+
+  } catch (error) {
+    console.error('Error in waiver forms list:', error);
+    res.status(500).json({ error: 'Internal Server Error.' });
+  }
+});
+
 app.get('/api/admin/waiver-forms', requireAdminAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!supabase) {
