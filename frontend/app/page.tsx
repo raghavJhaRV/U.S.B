@@ -49,7 +49,7 @@ export default function Home() {
 
 
         <p className="text-sm">
-          We&apos;re working on getting everything back up and running!
+          We&apos;re working on getting everything back up and running! this monday sorry for the inconvenience 😅.
         </p>
       </div>
     </div>
