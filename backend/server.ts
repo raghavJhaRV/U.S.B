@@ -302,6 +302,24 @@ app.get(
   }
 );
 
+app.get(
+  '/api/registrations',
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(registrations.GET(req, res)).catch((error) => {
+      console.error('❌ Registrations API error:', error);
+      console.error('🔍 Error details:', {
+        message: error.message,
+        stack: error.stack,
+        code: error.code
+      });
+      res.status(500).json({ 
+        error: 'Failed to fetch registrations',
+        details: process.env.NODE_ENV === 'development' ? error.message : 'Database connection issue'
+      });
+    });
+  }
+);
+
 // Get a specific registration by ID (public endpoint for payment page)
 app.get('/api/registrations/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -357,24 +375,6 @@ app.post('/api/registrations/:id/confirm-payment', async (req: Request, res: Res
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-app.get(
-  '/api/registrations',
-  (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(registrations.GET(req, res)).catch((error) => {
-      console.error('❌ Registrations API error:', error);
-      console.error('🔍 Error details:', {
-        message: error.message,
-        stack: error.stack,
-        code: error.code
-      });
-      res.status(500).json({ 
-        error: 'Failed to fetch registrations',
-        details: process.env.NODE_ENV === 'development' ? error.message : 'Database connection issue'
-      });
-    });
-  }
-);
 
 app.get(
   '/api/stats',
