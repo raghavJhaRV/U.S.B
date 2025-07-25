@@ -234,9 +234,14 @@ export async function getWaiverForms(): Promise<Array<{
 }
 
 export async function deleteWaiverForm(id: string): Promise<void> {
-  await fetchAdminData<void>(`api/admin/waiver-forms/${id}`, 'DELETE');
+  // Encode the filename for URL safety
+  const encodedId = encodeURIComponent(id);
+  console.log('Delete API called with ID:', id, 'Encoded ID:', encodedId);
+  await fetchAdminData<void>(`api/admin/waiver-forms/${encodedId}`, 'DELETE');
 }
 
 export async function toggleWaiverFormStatus(id: string, isActive: boolean): Promise<void> {
-  await fetchAdminData<void>(`api/admin/waiver-forms/${id}/toggle`, 'PUT', { isActive });
+  // Encode the filename for URL safety
+  const encodedId = encodeURIComponent(id);
+  await fetchAdminData<void>(`api/admin/waiver-forms/${encodedId}/toggle`, 'PUT', { isActive });
 }

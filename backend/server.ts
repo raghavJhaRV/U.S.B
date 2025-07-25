@@ -604,7 +604,7 @@ app.get('/api/admin/waiver-forms', requireAdminAuth, async (req: Request, res: R
 
     // Transform the data to match the expected format
     const waiverForms = data?.map((file: any, index: number) => ({
-      id: `wf_${index}_${Date.now()}`,
+      id: file.name, // Use filename as ID for consistency
       name: file.name.replace(/-\d+\.\w+$/, '').replace(/-/g, ' '),
       url: `${process.env.SUPABASE_URL}/storage/v1/object/public/waivers/waiver-forms/${file.name}`,
       uploadedAt: file.created_at || new Date().toISOString(),
@@ -622,16 +622,29 @@ app.get('/api/admin/waiver-forms', requireAdminAuth, async (req: Request, res: R
 app.delete('/api/admin/waiver-forms/:id', requireAdminAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    console.log('Attempting to delete waiver form with ID:', id);
     
     if (!supabase) {
       return res.status(503).json({ error: 'File storage service not available.' });
     }
 
-    // For now, we'll just return success. In a real implementation, you'd:
-    // 1. Look up the file path from the database using the ID
-    // 2. Delete the file from Supabase storage
-    // 3. Remove the record from the database
+    // The ID is now the filename directly
+    const filename = decodeURIComponent(id);
+    const filePath = `waiver-forms/${filename}`;
+    
+    console.log('Deleting file:', filePath);
 
+    // Delete the file from Supabase storage
+    const { error: deleteError } = await supabase.storage
+      .from('waivers')
+      .remove([filePath]);
+
+    if (deleteError) {
+      console.error('Error deleting file from storage:', deleteError);
+      return res.status(500).json({ error: 'Failed to delete file from storage.' });
+    }
+
+    console.log('Successfully deleted file:', filePath);
     res.json({ message: 'Waiver form deleted successfully.' });
 
   } catch (error) {
@@ -645,11 +658,17 @@ app.put('/api/admin/waiver-forms/:id/toggle', requireAdminAuth, async (req: Requ
     const { id } = req.params;
     const { isActive } = req.body;
     
-    // For now, we'll just return success. In a real implementation, you'd:
-    // 1. Update the waiver form status in the database
-    // 2. Return the updated record
+    console.log('Toggling waiver form status:', id, 'to:', isActive);
+    
+    // For now, we'll just return success since we don't have a database table for waiver forms yet
+    // In a real implementation, you'd update the waiver form status in the database
+    // For now, the status is managed in the frontend state
+    // The filename is available as the id parameter
 
-    res.json({ message: `Waiver form ${isActive ? 'activated' : 'deactivated'} successfully.` });
+    res.json({ 
+      message: `Waiver form ${isActive ? 'activated' : 'deactivated'} successfully.`,
+      isActive: isActive
+    });
 
   } catch (error) {
     console.error('Error toggling waiver form status:', error);

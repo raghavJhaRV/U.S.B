@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { uploadWaiverForm, getWaiverForms, deleteWaiverForm } from '@/lib/api';
+import { uploadWaiverForm, getWaiverForms, deleteWaiverForm, toggleWaiverFormStatus } from '@/lib/api';
 
 interface WaiverForm {
   id: string;
@@ -85,6 +85,7 @@ export default function WaiversPage() {
     }
 
     try {
+      console.log('Attempting to delete waiver form with ID:', id);
       await deleteWaiverForm(id);
       setSuccess('Waiver form deleted successfully!');
       await loadWaiverForms();
@@ -96,9 +97,9 @@ export default function WaiversPage() {
 
   const toggleActive = async (id: string, currentStatus: boolean) => {
     try {
-      // This would require a backend endpoint to toggle status
-      // For now, we'll just show a message
-      setSuccess(`Waiver form ${currentStatus ? 'deactivated' : 'activated'} successfully!`);
+      await toggleWaiverFormStatus(id, !currentStatus);
+      setSuccess(`Waiver form ${!currentStatus ? 'activated' : 'deactivated'} successfully!`);
+      await loadWaiverForms(); // Reload to get updated status
     } catch (err) {
       setError('Failed to update waiver form status');
       console.error('Toggle error:', err);

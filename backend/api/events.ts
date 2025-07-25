@@ -117,7 +117,7 @@ export async function POST(req: Request, res: Response) {
     const eventData: any = { 
       title, 
       date: parsedDate, 
-      teamId
+      teamId 
     };
     
     // Only add optional fields if they have values

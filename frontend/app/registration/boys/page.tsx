@@ -25,8 +25,11 @@ export default function RegistrationPage() {
 
   const [waiverAccepted, setWaiverAccepted] = useState(false);
   const [waiverSignature, setWaiverSignature] = useState("");
-  const [waiverFile, setWaiverFile] = useState<File | null>(null);
+  // Remove waiverFile state
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Add state for latest waiver URL
+  const [latestWaiverUrl, setLatestWaiverUrl] = useState<string | null>(null);
 
   const [programs, setPrograms] = useState<Program[]>([]);
   const [ageGroups, setAgeGroups] = useState<Team[]>([]);
@@ -53,6 +56,16 @@ export default function RegistrationPage() {
         setAgeGroups(data);
       })
       .catch((err) => console.error("Failed to load age groups:", err));
+
+    // Fetch latest waiver form
+    fetch(`${API_URL}/api/waiver-forms`)
+      .then((res) => res.ok ? res.json() : [])
+      .then((forms) => {
+        if (forms && forms.length > 0) {
+          setLatestWaiverUrl(forms[0].url); // Use the first (latest) waiver form
+        }
+      })
+      .catch(() => setLatestWaiverUrl(null));
   }, []);
 
 
@@ -87,25 +100,25 @@ export default function RegistrationPage() {
       if (!res.ok) throw new Error(data?.error || "Registration failed");
 
       // Step 2: Upload waiver file if provided
-      if (waiverFile && data.id) {
-        const formData = new FormData();
-        formData.append('file', waiverFile);
-        formData.append('registrationId', data.id);
+      // if (waiverFile && data.id) {
+      //   const formData = new FormData();
+      //   formData.append('file', waiverFile);
+      //   formData.append('registrationId', data.id);
 
-        const waiverRes = await fetch(`${API_URL}/api/uploadWaiver`, {
-          method: "POST",
-          body: formData,
-        });
+      //   const waiverRes = await fetch(`${API_URL}/api/uploadWaiver`, {
+      //     method: "POST",
+      //     body: formData,
+      //   });
 
-        if (!waiverRes.ok) {
-          console.warn("Waiver upload failed, but registration was successful");
-        } else {
-          console.log("Waiver uploaded successfully");
-        }
-      }
+      //   if (!waiverRes.ok) {
+      //     console.warn("Waiver upload failed, but registration was successful");
+      //   } else {
+      //     console.log("Waiver uploaded successfully");
+      //   }
+      // }
 
       alert("Registration successful!");
-      
+
       // Reset form
       setPlayerName("");
       setParentName("");
@@ -113,10 +126,10 @@ export default function RegistrationPage() {
       setPhone("");
       setWaiverAccepted(false);
       setWaiverSignature("");
-      setWaiverFile(null);
+      // setWaiverFile(null); // Removed waiverFile reset
       setProgramId("");
       setSelectedTeam("");
-      
+
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       alert(`Registration failed: ${errorMessage}`);
@@ -218,57 +231,47 @@ export default function RegistrationPage() {
           {/* Waiver Section */}
           <div className="mt-8">
             <h3 className="text-xl font-bold uppercase">Waiver & Consent</h3>
-            <p className="mt-1 mb-4">Please read and agree to our waiver</p>
-            
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <input
-                  type="checkbox"
-                  required
-                  checked={waiverAccepted}
-                  onChange={(e) => setWaiverAccepted(e.target.checked)}
-                  className="mr-2 mt-1"
-                />
-                <label className="text-sm">
-                  I have read and agree to the waiver terms and conditions
-                </label>
+            {latestWaiverUrl ? (
+              <div className="space-y-4 mt-2">
+                <a
+                  href={latestWaiverUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-blue-300 underline hover:text-blue-100"
+                >
+                  📄 View Waiver Form
+                </a>
+                <div className="flex items-start">
+                  <input
+                    type="checkbox"
+                    required
+                    checked={waiverAccepted}
+                    onChange={(e) => setWaiverAccepted(e.target.checked)}
+                    className="mr-2 mt-1"
+                  />
+                  <label className="text-sm">
+                    I have read and agree to the waiver terms and conditions
+                  </label>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Digital Signature (Type your full name)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Type your full name as digital signature"
+                    value={waiverSignature}
+                    onChange={(e) => setWaiverSignature(e.target.value)}
+                    className="w-full p-3 border border-white bg-transparent placeholder-white focus:outline-none"
+                    required
+                  />
+                </div>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Digital Signature (Type your full name)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Type your full name as digital signature"
-                  value={waiverSignature}
-                  onChange={(e) => setWaiverSignature(e.target.value)}
-                  className="w-full p-3 border border-white bg-transparent placeholder-white focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Upload Signed Waiver (Optional but Recommended)
-                </label>
-                <input
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => setWaiverFile(e.target.files?.[0] || null)}
-                  className="w-full p-3 border border-white bg-transparent text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-white file:text-black hover:file:bg-gray-100"
-                />
-                <p className="text-xs text-gray-400 mt-1">
-                  Accepted formats: PDF, JPG, JPEG, PNG. Max size: 10MB
-                </p>
-                {waiverFile && (
-                  <p className="text-sm text-green-400 mt-2">
-                    ✓ Selected: {waiverFile.name}
-                  </p>
-                )}
-              </div>
-            </div>
+            ) : (
+              <p className="text-red-300 mt-4 text-sm">Waiver form not available at the moment.</p>
+            )}
           </div>
+
 
           <p className="text-sm text-gray-300 mt-4">
             💸 Please send your e-transfer to: <strong>stormbasketball@gmail.com</strong><br />
