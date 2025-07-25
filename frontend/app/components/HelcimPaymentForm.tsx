@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { API_URL } from '../constants';
 
 interface HelcimPaymentFormProps {
@@ -37,6 +37,7 @@ export default function HelcimPaymentForm({
   const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
   const [selectedCardToken, setSelectedCardToken] = useState('');
   const [saveCard, setSaveCard] = useState(false);
+  const [helcimConfigured, setHelcimConfigured] = useState(true); // Assume configured by default
   
   // New card form fields
   const [cardNumber, setCardNumber] = useState('');
@@ -45,13 +46,9 @@ export default function HelcimPaymentForm({
   const [cvv, setCvv] = useState('');
   const [cardholderName, setCardholderName] = useState('');
 
-  useEffect(() => {
-    if (customerEmail) {
-      loadSavedCards();
-    }
-  }, [customerEmail]);
-
-  const loadSavedCards = async () => {
+  const loadSavedCards = useCallback(async () => {
+    if (!customerEmail) return;
+    
     try {
       // This would need to be implemented based on your customer identification
       // For now, we'll use a simple approach
@@ -59,11 +56,24 @@ export default function HelcimPaymentForm({
       if (response.ok) {
         const data = await response.json();
         setSavedCards(data.cards || []);
+      } else if (response.status === 503) {
+        // Helcim not configured, just set empty cards list
+        console.warn('Helcim not configured, no saved cards available');
+        setSavedCards([]);
+        setHelcimConfigured(false);
       }
     } catch (error) {
       console.error('Failed to load saved cards:', error);
+      // Don't show error to user, just set empty cards list
+      setSavedCards([]);
     }
-  };
+  }, [customerEmail]);
+
+  useEffect(() => {
+    if (customerEmail) {
+      loadSavedCards();
+    }
+  }, [customerEmail, loadSavedCards]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,7 +125,12 @@ export default function HelcimPaymentForm({
           await loadSavedCards();
         }
       } else {
-        onError(result.error || 'Payment failed');
+        // Handle specific error cases
+        if (result.error && result.error.includes('currently unavailable')) {
+          onError('Payment processing is temporarily unavailable. Please contact support or try again later.');
+        } else {
+          onError(result.error || 'Payment failed');
+        }
       }
     } catch (error) {
       console.error('Payment error:', error);
@@ -144,6 +159,15 @@ export default function HelcimPaymentForm({
     <div className="bg-gray-900 rounded-lg p-6">
       <h3 className="text-xl font-bold mb-4">Payment Information</h3>
       <p className="text-gray-300 mb-6">Total: ${amount.toFixed(2)} CAD</p>
+      
+      {/* Notice for when Helcim is not configured */}
+      {!helcimConfigured && (
+        <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-700/50 rounded-lg">
+          <p className="text-yellow-300 text-sm">
+            ⚠️ Payment processing is currently in setup mode. Please contact support for assistance.
+          </p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Saved Cards Section */}
@@ -307,14 +331,14 @@ export default function HelcimPaymentForm({
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={isProcessing}
+          disabled={isProcessing || !helcimConfigured}
           className={`w-full py-3 px-6 rounded-lg font-bold text-lg transition ${
-            isProcessing
+            isProcessing || !helcimConfigured
               ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
               : 'bg-blue-600 hover:bg-blue-700 text-white'
           }`}
         >
-          {isProcessing ? 'Processing...' : `Pay $${amount.toFixed(2)} CAD`}
+          {isProcessing ? 'Processing...' : !helcimConfigured ? 'Payment Unavailable' : `Pay $${amount.toFixed(2)} CAD`}
         </button>
 
         {/* Security Notice */}

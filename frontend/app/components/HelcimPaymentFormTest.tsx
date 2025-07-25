@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { API_URL } from "../constants";
 
 interface HelcimPaymentFormTestProps {
@@ -34,14 +34,11 @@ export default function HelcimPaymentFormTest({
   const [useSavedCard, setUseSavedCard] = useState(false);
   const [savedCards, setSavedCards] = useState<any[]>([]);
   const [selectedCardToken, setSelectedCardToken] = useState("");
+  const [helcimConfigured, setHelcimConfigured] = useState(true); // Assume configured by default
 
-  useEffect(() => {
-    if (customerEmail) {
-      loadSavedCards();
-    }
-  }, [customerEmail]);
-
-  const loadSavedCards = async () => {
+  const loadSavedCards = useCallback(async () => {
+    if (!customerEmail) return;
+    
     try {
       const response = await fetch(`${API_URL}/api/test-payments/saved-cards?customerEmail=${customerEmail}`);
       if (response.ok) {
@@ -51,7 +48,13 @@ export default function HelcimPaymentFormTest({
     } catch (error) {
       console.error("Error loading saved cards:", error);
     }
-  };
+  }, [customerEmail]);
+
+  useEffect(() => {
+    if (customerEmail) {
+      loadSavedCards();
+    }
+  }, [customerEmail, loadSavedCards]);
 
   const formatCardNumber = (value: string) => {
     const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");

@@ -96,6 +96,14 @@ export async function processPayment(req: Request, res: Response) {
       return res.status(400).json({ error: 'Card information required' });
     }
 
+    // Check if Helcim credentials are configured
+    if (!HELCIM_ACCOUNT_ID || !HELCIM_API_TOKEN) {
+      return res.status(503).json({
+        success: false,
+        error: 'Payment processing is currently unavailable. Please contact support.',
+      });
+    }
+
     // Process payment with Helcim
     const result = await makeHelcimRequest('/transactions/preauth', paymentData);
 
@@ -165,6 +173,14 @@ export async function saveCard(req: Request, res: Response) {
       return res.status(400).json({ error: 'Customer email and card data required' });
     }
 
+    // Check if Helcim credentials are configured
+    if (!HELCIM_ACCOUNT_ID || !HELCIM_API_TOKEN) {
+      return res.status(503).json({
+        success: false,
+        error: 'Card saving is currently unavailable. Please contact support.',
+      });
+    }
+
     // Use Helcim's card tokenization
     const result = await makeHelcimRequest('/cards/tokenize', {
       customerEmail,
@@ -202,6 +218,15 @@ export async function getSavedCards(req: Request, res: Response) {
       return res.status(400).json({ error: 'Customer code required' });
     }
 
+    // Check if Helcim credentials are configured
+    if (!HELCIM_ACCOUNT_ID || !HELCIM_API_TOKEN) {
+      console.warn('Helcim credentials not configured, returning empty saved cards list');
+      return res.json({
+        success: true,
+        cards: [],
+      });
+    }
+
     const result = await makeHelcimRequest('/cards/list', {
       customerCode,
     });
@@ -233,6 +258,14 @@ export async function deleteSavedCard(req: Request, res: Response) {
 
     if (!cardToken) {
       return res.status(400).json({ error: 'Card token required' });
+    }
+
+    // Check if Helcim credentials are configured
+    if (!HELCIM_ACCOUNT_ID || !HELCIM_API_TOKEN) {
+      return res.status(503).json({
+        success: false,
+        error: 'Card deletion is currently unavailable. Please contact support.',
+      });
     }
 
     const result = await makeHelcimRequest('/cards/delete', {
