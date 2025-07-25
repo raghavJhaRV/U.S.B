@@ -22,9 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-black text-white">
         <ErrorBoundary>
           <CartProvider>
-            <Navbar />
+            {/* <Navbar /> */}
             <main>{children}</main>
-            <Footer />
+            {/* <Footer /> */}
           </CartProvider>
         </ErrorBoundary>
       </body>

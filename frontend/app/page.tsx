@@ -40,6 +40,13 @@ export default function Home() {
 
   return (
     <div>
+      <img src="/images/logo.png" alt="logo" />
+      <p>United S.T.O.R.M. Basketball</p>
+      <Link href="https://www.instagram.com/unitedstormbasketball/"><FontAwesomeIcon icon={faInstagram} /></Link>
+      <Link href="https://www.facebook.com/unitedstormbasketball/"><FontAwesomeIcon icon={faFacebookF} /></Link>
+
+
+
       <p className="text-sm">
         We&apos;re working on getting everything back up and running!
       </p>
