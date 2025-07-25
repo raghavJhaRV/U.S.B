@@ -19,9 +19,17 @@ export default function PaymentsPage() {
       try {
         setLoading(true);
         const data = await fetchAdminData<PaymentWithRegistration[]>('api/payments');
+        
+        // Ensure data is an array
+        if (!Array.isArray(data)) {
+          console.error('Payments API returned non-array data:', data);
+          throw new Error('Invalid data format received from server');
+        }
+        
         setPayments(data);
         setError(null);
       } catch (err) {
+        console.error('Error fetching payments:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch payments');
         setPayments([]);
       } finally {

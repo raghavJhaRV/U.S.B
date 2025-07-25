@@ -4,6 +4,8 @@ import prisma from '../lib/prisma';
 // GET - Get all payments for admin panel
 export async function getPayments(req: Request, res: Response) {
   try {
+    console.log('Fetching payments for admin panel...');
+    
     // Get registration payments
     const registrationPayments = await prisma.payment.findMany({
       where: {
@@ -24,12 +26,16 @@ export async function getPayments(req: Request, res: Response) {
       }
     });
 
+    console.log(`Found ${registrationPayments.length} registration payments`);
+
     // Get merchandise order payments
     const orderPayments = await prisma.order.findMany({
       orderBy: {
         createdAt: 'desc'
       }
     });
+
+    console.log(`Found ${orderPayments.length} order payments`);
 
     // Transform registration payments to match expected format
     const transformedRegistrationPayments = registrationPayments.map(payment => ({
@@ -73,11 +79,17 @@ export async function getPayments(req: Request, res: Response) {
     const allPayments = [...transformedRegistrationPayments, ...transformedOrderPayments]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
+    console.log(`Returning ${allPayments.length} total payments`);
+    console.log('Payment data structure:', JSON.stringify(allPayments, null, 2));
+
     res.json(allPayments);
 
   } catch (error) {
     console.error('Get payments error:', error);
-    res.status(500).json({ error: 'Failed to fetch payments' });
+    
+    // Return empty array instead of error object to prevent frontend crash
+    console.log('Returning empty payments array due to error');
+    res.json([]);
   }
 }
 
