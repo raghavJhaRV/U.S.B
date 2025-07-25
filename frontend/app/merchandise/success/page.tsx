@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function SuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState<string | null>(null);
 
@@ -65,5 +65,23 @@ export default function SuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="bg-black text-white min-h-screen px-6 py-12">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-800 rounded mb-6"></div>
+            <div className="h-32 bg-gray-800 rounded mb-6"></div>
+            <div className="h-16 bg-gray-800 rounded"></div>
+          </div>
+        </div>
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
   );
 } 
