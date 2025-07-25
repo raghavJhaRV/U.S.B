@@ -39,17 +39,19 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
-      <img src="/images/logo.png" alt="logo" />
-      <p>United S.T.O.R.M. Basketball</p>
-      <Link href="https://www.instagram.com/unitedstormbasketball/"><FontAwesomeIcon icon={faInstagram} /></Link>
-      <Link href="https://www.facebook.com/unitedstormbasketball/"><FontAwesomeIcon icon={faFacebookF} /></Link>
+
+    // I want it to be in center of the page
+    <div className="flex flex-col items-center justify-center h-screen">
+      <div>
+        <img src="../public/images/media1.jpg" alt="logo" />
+        <p>United S.T.O.R.M. Basketball</p>
 
 
 
-      <p className="text-sm">
-        We&apos;re working on getting everything back up and running!
-      </p>
+        <p className="text-sm">
+          We&apos;re working on getting everything back up and running!
+        </p>
+      </div>
     </div>
   );
 }
