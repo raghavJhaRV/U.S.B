@@ -1,5 +1,6 @@
 "use client";
 
+import { DEFAULT_IMAGE } from "../constants"; 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { DEFAULT_IMAGE, API_URL } from "./constants";
@@ -43,8 +44,8 @@ export default function Home() {
     // I want it to be in center of the page
     <div className="flex flex-col items-center justify-center h-screen">
       <div>
-        <img src="../public/images/media1.jpg" alt="logo" />
-        <p>United S.T.O.R.M. Basketball</p>
+        <img src={DEFAULT_IMAGE} alt="logo" />
+        <p className="text-2xl font-bold">United S.T.O.R.M. Basketball</p>
 
 
 
