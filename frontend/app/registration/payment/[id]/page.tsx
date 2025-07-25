@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { API_URL } from "../../../constants";
-import HelcimPaymentForm from "../../../components/HelcimPaymentForm";
+import HelcimPaymentFormTest from "../../../components/HelcimPaymentFormTest";
 
 interface Registration {
   id: string;
@@ -154,7 +154,7 @@ export default function RegistrationPaymentPage() {
         {/* Payment Form */}
         <div className="bg-gray-900 rounded-lg p-6">
           <h2 className="text-2xl font-bold mb-4">Payment Information</h2>
-          <HelcimPaymentForm
+          <HelcimPaymentFormTest
             amount={registration.program.price}
             onSuccess={handlePaymentSuccess}
             onError={handlePaymentError}

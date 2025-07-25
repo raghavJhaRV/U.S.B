@@ -512,6 +512,21 @@ app.post(
   }
 );
 
+// Test Helcim payment endpoints (for development without real Helcim credentials)
+app.post(
+  '/api/test-payments/process',
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(require('./api/helcim-test').processTestPayment(req, res)).catch(next);
+  }
+);
+
+app.get(
+  '/api/test-payments/saved-cards',
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(require('./api/helcim-test').getTestSavedCards(req, res)).catch(next);
+  }
+);
+
 // Waiver upload route (for user registrations)
 app.post('/api/uploadWaiver', upload.single('file'), async (req: MulterRequest, res: Response, next: NextFunction) => {
   try {
