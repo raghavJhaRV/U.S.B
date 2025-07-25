@@ -58,11 +58,27 @@ export default function RegistrationPage() {
       .catch((err) => console.error("Failed to load age groups:", err));
 
     // Fetch latest waiver form
-    fetch(`${API_URL}/api/waiver-forms`)
-      .then((res) => res.ok ? res.json() : [])
+    fetch(`${API_URL}/api/admin/waiver-forms`)
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else if (res.status === 401) {
+          // If unauthorized, try the public endpoint
+          return fetch(`${API_URL}/api/waiver-forms`).then(res2 => res2.ok ? res2.json() : []);
+        }
+        return [];
+      })
       .then((forms) => {
         if (forms && forms.length > 0) {
-          setLatestWaiverUrl(forms[0].url); // Use the first (latest) waiver form
+          // Filter out .emptyFolderPlaceholder
+          const realForms = forms.filter((form: any) => 
+            form.name !== '.emptyFolderPlaceholder' && 
+            form.name && 
+            form.name.trim() !== ''
+          );
+          if (realForms.length > 0) {
+            setLatestWaiverUrl(realForms[0].url);
+          }
         }
       })
       .catch(() => setLatestWaiverUrl(null));
