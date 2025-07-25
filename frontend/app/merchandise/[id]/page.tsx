@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { API_URL } from "../../constants";
-import { useCart } from "../../components/CartContext";
-import { Product as CartProduct } from "../products";
 
 type Product = {
   id: string;
@@ -26,7 +24,6 @@ export default function ProductPage() {
   const [error, setError] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
-  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -58,18 +55,11 @@ export default function ProductPage() {
     }
   }, [id]);
 
-  const handleAddToCart = () => {
-    if (product) {
-      // Convert API product to CartContext Product type
-      const cartItem: CartProduct = {
-        id: product.id,
-        title: product.name,
-        price: product.price,
-        sizes: ["XS", "S", "M", "L", "XL", "XXL"], // Default sizes
-        image: product.imageUrl
-      };
-      addToCart(cartItem);
-    }
+  const handleBuyNow = () => {
+    // For now, redirect to a payment form or show a message
+    // You can replace this with your payment integration
+    if (!selectedSize) return;
+    window.location.href = `/merchandise/${id}/buy?size=${selectedSize}&qty=${quantity}`;
   };
 
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -211,25 +201,24 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Add to Cart */}
+            {/* Buy Now */}
             <div className="space-y-4">
               <button
-                onClick={handleAddToCart}
+                onClick={handleBuyNow}
                 disabled={!selectedSize || product.stock === 0}
                 className={`w-full py-4 px-6 rounded-lg font-bold text-lg transition ${
                   !selectedSize || product.stock === 0
                     ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-green-600 hover:bg-green-700 text-white"
                 }`}
               >
                 {product.stock === 0 
                   ? "Out of Stock" 
                   : !selectedSize 
                     ? "Select Size" 
-                    : "Add to Cart"
+                    : "Buy Now"
                 }
               </button>
-              
               <div className="text-sm text-gray-400 text-center">
                 <p>Free shipping on orders over $50</p>
                 <p>30-day return policy</p>

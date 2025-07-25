@@ -58,7 +58,7 @@ export default function RegistrationPage() {
       .catch((err) => console.error("Failed to load age groups:", err));
 
     // Fetch latest waiver form
-    fetch(`${API_URL}/api/waiver-forms`)
+    fetch(`${API_URL}/api/admin/waiver-forms`)
       .then((res) => res.ok ? res.json() : [])
       .then((forms) => {
         if (forms && forms.length > 0) {
