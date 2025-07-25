@@ -77,7 +77,68 @@ export default function RegistrationPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Add client-side validation
+    if (!playerName.trim()) {
+      alert("Please enter the player's name");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!parentName.trim()) {
+      alert("Please enter the parent's name");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!email.trim()) {
+      alert("Please enter a valid email address");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!phone.trim()) {
+      alert("Please enter a phone number");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!selectedTeam) {
+      alert("Please select an age group");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!programId) {
+      alert("Please select a program");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!waiverAccepted) {
+      alert("Please accept the waiver terms");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!waiverSignature.trim()) {
+      alert("Please provide your digital signature");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
+      console.log("Submitting registration with data:", {
+        playerName,
+        parentName,
+        email,
+        phone,
+        waiverAccepted,
+        waiverSignature,
+        teamId: selectedTeam,
+        programId,
+        eTransferNote: `Registration for ${playerName}`,
+      });
+
       // Step 1: Submit registration
       const res = await fetch(`${API_URL}/api/register`, {
         method: "POST",
@@ -95,32 +156,24 @@ export default function RegistrationPage() {
         }),
       });
 
+      console.log("Response status:", res.status);
+      console.log("Response headers:", res.headers);
+
       const data = await res.json();
+      console.log("Response data:", data);
 
-      if (!res.ok) throw new Error(data?.error || "Registration failed");
+      if (!res.ok) {
+        console.error("Registration failed:", data);
+        throw new Error(data?.error || "Registration failed");
+      }
 
-      // Step 2: Upload waiver file if provided
-      // if (waiverFile && data.id) {
-      //   const formData = new FormData();
-      //   formData.append('file', waiverFile);
-      //   formData.append('registrationId', data.id);
-
-      //   const waiverRes = await fetch(`${API_URL}/api/uploadWaiver`, {
-      //     method: "POST",
-      //     body: formData,
-      //   });
-
-      //   if (!waiverRes.ok) {
-      //     console.warn("Waiver upload failed, but registration was successful");
-      //   } else {
-      //     console.log("Waiver uploaded successfully");
-      //   }
-      // }
+      console.log("Registration successful:", data);
 
       // Redirect to payment page instead of showing alert
       window.location.href = `/registration/payment/${data.id}`;
 
     } catch (err: unknown) {
+      console.error("Registration error:", err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       alert(`Registration failed: ${errorMessage}`);
     } finally {

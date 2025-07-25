@@ -504,6 +504,14 @@ app.post(
   }
 );
 
+// Test registration endpoint for debugging
+app.post(
+  '/api/test-register',
+  (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(require('./api/test-register').POST(req, res)).catch(next);
+  }
+);
+
 // Waiver upload route (for user registrations)
 app.post('/api/uploadWaiver', upload.single('file'), async (req: MulterRequest, res: Response, next: NextFunction) => {
   try {

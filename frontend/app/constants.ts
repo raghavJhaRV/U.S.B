@@ -3,4 +3,4 @@ export const DEFAULT_IMAGE = "/images/media1.jpg";
 export const BackgroundImageAboutUS = "/images/aboutUs/backgroundImage.png";
 
 // API Configuration
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://usb-backend.onrender.com";
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
