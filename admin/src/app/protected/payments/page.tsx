@@ -62,8 +62,13 @@ export default function PaymentsPage() {
               {p.registration.playerName} – ${p.amount.toFixed(2)}
             </div>
             <div className="text-sm text-gray-600">
-              {p.type} on {new Date(p.createdAt).toLocaleDateString()}
+              {p.type} • {p.registration.programName} • {new Date(p.createdAt).toLocaleDateString()}
             </div>
+            {p.registration.email !== 'N/A' && (
+              <div className="text-xs text-gray-500 mt-1">
+                {p.registration.email}
+              </div>
+            )}
           </li>
         ))}
         {payments.length === 0 && (

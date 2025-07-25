@@ -30,6 +30,7 @@ import merchandiseRouter from './api/merchandise';
 import * as helcim from './api/helcim';
 import * as contactHandlers from './api/contact';
 import * as orderHandlers from './api/orders';
+import * as paymentHandlers from './api/payments';
 import { readdirSync } from 'fs';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
@@ -273,6 +274,15 @@ app.get('/api/orders', (req: Request, res: Response, next: NextFunction) => {
 
 app.get('/api/orders/:id', (req: Request, res: Response, next: NextFunction) => {
   Promise.resolve(orderHandlers.getOrderById(req, res)).catch(next);
+});
+
+// Payment routes
+app.get('/api/payments', (req: Request, res: Response, next: NextFunction) => {
+  Promise.resolve(paymentHandlers.getPayments(req, res)).catch(next);
+});
+
+app.get('/api/payments/:id', (req: Request, res: Response, next: NextFunction) => {
+  Promise.resolve(paymentHandlers.getPaymentById(req, res)).catch(next);
 });
 
 // Contact form routes
