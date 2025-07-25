@@ -315,4 +315,28 @@ export async function getPaymentHistory(req: Request, res: Response) {
       error: 'Failed to retrieve payment history',
     });
   }
+}
+
+// Create a customer in Helcim and return the customerCode
+export async function createCustomer(req: Request, res: Response) {
+  try {
+    const { customerName, customerEmail } = req.body;
+    if (!customerName || !customerEmail) {
+      return res.status(400).json({ error: 'Name and email required' });
+    }
+
+    const result = await makeHelcimRequest('/customers/add', {
+      customerName,
+      customerEmail,
+    });
+
+    if (result.response === 0 && result.customerCode) {
+      // You should store result.customerCode in your DB for this user!
+      res.json({ success: true, customerCode: result.customerCode });
+    } else {
+      res.status(400).json({ success: false, error: result.responseMessage });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Failed to create customer' });
+  }
 } 
