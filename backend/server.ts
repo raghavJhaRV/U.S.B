@@ -146,7 +146,7 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
       'https://usb-admin.onrender.com', 
       'https://u-s-b-frontend.onrender.com',
       'https://usb-frontend.onrender.com',
-      'https://usb-business-consulting.onrender.com'
+      'https://usbball.com',
     ] // Allow multiple possible frontend URLs in production
   : [
       'http://localhost:3002', 
