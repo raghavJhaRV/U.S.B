@@ -56,6 +56,11 @@ export default function ProductPage() {
   }, [id]);
 
   const handleBuyNow = () => {
+    if (!product) {
+      alert("Product not found");
+      return;
+    }
+    
     if (!selectedSize) {
       alert("Please select a size");
       return;
