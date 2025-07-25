@@ -1,20 +1,21 @@
 "use client";
 import Image from "next/image";
-import { DEFAULT_IMAGE } from "../constants";
+import { DEFAULT_IMAGE, BackgroundImageAboutUS } from "../constants";
+import Footer from "../components/Footer";
 
 export default function AboutUsPage() {
   return (
-    <div className="relative bg-black text-white min-h-screen overflow-hidden">
-      {/* Background Image (CSS-based) */}
+    <div className="flex flex-col min-h-screen bg-black text-white overflow-hidden relative z-0">
+      {/* ✅ Background Image */}
       <div
-        className="fixed inset-0 -z-10 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/aboutUs/backgroundImg.png')" }}
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url('${BackgroundImageAboutUS}')` }}
       >
-        <div className="absolute inset-0 bg-black bg-opacity-70" />
+        <div className="absolute inset-0 bg-black opacity-50" />
       </div>
 
-      {/* Main Content */}
-      <main className="relative z-10 max-w-3xl mx-auto px-6 py-20">
+      {/* ✅ Main Content */}
+      <main className="relative z-10 flex-grow max-w-3xl mx-auto px-6 py-20">
         {/* Logo */}
         <div className="flex justify-center mb-10">
           <Image
@@ -34,7 +35,7 @@ export default function AboutUsPage() {
           Strength. Together. Opportunity. Resilience. Multicultural.
         </p>
 
-        {/* History */}
+        {/* History Section */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold uppercase mb-3">History</h2>
           <p className="text-gray-200 leading-relaxed">
@@ -52,7 +53,7 @@ export default function AboutUsPage() {
           </p>
         </section>
 
-        {/* Philosophy */}
+        {/* Philosophy Section */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold uppercase mb-3">Philosophy</h2>
           <p className="text-gray-200 leading-relaxed">
@@ -67,7 +68,7 @@ export default function AboutUsPage() {
           </p>
         </section>
 
-        {/* Coaches */}
+        {/* Coaches Section */}
         <section>
           <h2 className="text-2xl font-bold uppercase mb-3">Coaches</h2>
           <p className="text-gray-200 leading-relaxed">
@@ -82,9 +83,15 @@ export default function AboutUsPage() {
           </p>
         </section>
       </main>
+
+      {/* ✅ Footer */}
+      <Footer />
     </div>
   );
 }
+
+
+
 
 
 
