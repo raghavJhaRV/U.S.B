@@ -1,6 +1,5 @@
 "use client";
 
-import { DEFAULT_IMAGE } from "../constants"; 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { DEFAULT_IMAGE, API_URL } from "./constants";
